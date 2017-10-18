@@ -23,7 +23,7 @@ class GUI(Tk):
 
 
         self.frames = {}
-        for F in (LoginPage, SelectActionPage):
+        for F in (LoginPage, SelectActionPage, ListOfSubjects):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -47,6 +47,7 @@ class LoginPage(Frame):
 
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
+        Frame.grid(self,row=10, column=11)
         self.controller = controller
         self.label = Label(self, text="Login", font=controller.title_font)
         self.label_1 = Label(self, text="Username")
@@ -55,11 +56,11 @@ class LoginPage(Frame):
         self.entry_1 = Entry(self)
         self.entry_2 = Entry(self, show="*")
 
-        self.label.grid(columnspan=3)
+        self.label.grid(row=0,column=1)
         self.label_1.grid(row=1, sticky=E)
         self.label_2.grid(row=2, sticky=E)
-        self.entry_1.grid(row=1, column=2)
-        self.entry_2.grid(row=2, column=2)
+        self.entry_1.grid(row=1, column=4)
+        self.entry_2.grid(row=2, column=4)
 
         self.checkbox = Checkbutton(self, text="Keep me logged in")
         self.checkbox.grid(columnspan=3)
@@ -98,9 +99,12 @@ class SelectActionPage(Frame):
         download_icon = ImageTk.PhotoImage(download_img)
         upload_icon = ImageTk.PhotoImage(upload_img)
 
-        self.list_button = Button(self, height=10, width=20, text= "Zobrazit zoznam predmetov")
-        self.download_button = Button(self, height=10, width=20, text='Upload zaznami')
-        self.upload_button = Button(self, height=20, width=20, text= "Stiahnut zoznami studentov")
+        self.list_button = Button(self, text= "List of subjects",
+                            command=lambda: controller.show_frame("ListOfSubjects"))
+        self.download_button = Button(self, height=400, width=200, text='Upload zaznami',
+                                     command=lambda: controller.show_frame("ListOfSubjects"), image= download_icon)
+        self.upload_button = Button(self, height=400, width=200, text= "Stiahnut zoznami studentov",
+                                    command = lambda: controller.show_frame("ListOfSubjects"), image = upload_icon)
         # self.download_button = Button(self, image= download_icon)
         # self.upload_button = Button(self, image= upload_icon)
 
@@ -112,7 +116,7 @@ class SelectActionPage(Frame):
         self.pack()
 
 
-class SelectActionPage(Frame):
+class ListOfSubjects(Frame):
 
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
@@ -121,10 +125,24 @@ class SelectActionPage(Frame):
         self.label = Label(self, text="Subjects", font=controller.title_font)
         self.button = Button(self, text="Logout",
                            command=lambda: controller.show_frame("LoginPage"))
+        self.button_2 = Button(self, text="Back",
+                             command=lambda: controller.show_frame("SelectActionPage"))
 
         subjects_araay = ["JOS" , "PT", "Logika"]
-        for i in range(0,len(subjects_araay)):
-            self.label = Label(self, text='Upload zaznami')
+        self.label.grid(row=0, columnspan=2)
+
+        for i in range(1,len(subjects_araay)+1):
+            self.i = Label(self, text= subjects_araay[i-1])
+            self.i.grid(row=1*i, column=1)
+            a = i*10
+            b= i*10 + 1
+            self.a = Button(self)
+            self.a.grid(row=1*i, column=2)
+            self.b = Button(self)
+            self.b.grid(row=1*i, column=3)
+
+        self.button.grid(row=len(subjects_araay)+2, column=1)
+        self.button_2.grid(row=len(subjects_araay)+2, column=2)
 
 
         self.pack()
