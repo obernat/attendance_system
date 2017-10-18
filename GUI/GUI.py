@@ -112,6 +112,23 @@ class SelectActionPage(Frame):
         self.pack()
 
 
+class SelectActionPage(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        self.controller = controller
+
+        self.label = Label(self, text="Subjects", font=controller.title_font)
+        self.button = Button(self, text="Logout",
+                           command=lambda: controller.show_frame("LoginPage"))
+
+        subjects_araay = ["JOS" , "PT", "Logika"]
+        for i in range(0,len(subjects_araay)):
+            self.label = Label(self, text='Upload zaznami')
+
+
+        self.pack()
+
 if __name__ == "__main__":
 
     app = GUI()
