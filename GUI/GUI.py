@@ -2,6 +2,7 @@ from tkinter  import *               # python 3
 from tkinter import font  as tkfont # python 3
 import tkinter.messagebox as tm
 from PIL import Image, ImageTk
+import sqlite3
 
 
 #import Tkinter as tk     # python 2
@@ -42,7 +43,6 @@ class GUI(Tk):
 
 
 
-
 class LoginPage(Frame):
 
     def __init__(self, parent, controller):
@@ -56,17 +56,18 @@ class LoginPage(Frame):
         self.entry_1 = Entry(self)
         self.entry_2 = Entry(self, show="*")
 
-        self.label.grid(row=0,column=1)
-        self.label_1.grid(row=1, sticky=E)
-        self.label_2.grid(row=2, sticky=E)
-        self.entry_1.grid(row=1, column=4)
-        self.entry_2.grid(row=2, column=4)
 
         self.checkbox = Checkbutton(self, text="Keep me logged in")
-        self.checkbox.grid(columnspan=3)
-
         self.logbtn = Button(self, text="Login", command=self._login_btn_clickked)
-        self.logbtn.grid(columnspan=3)
+
+
+        self.label.place(x=200, y=80, width=120, height=25)
+        self.label_1.place(x=150,y=125,width=120, height=25)
+        self.label_2.place(x=150,y=150,width=120, height=25)
+        self.entry_1.place(x=255,y=125,width=120, height=25)
+        self.entry_2.place(x=255,y=150,width=120, height=25)
+        self.checkbox.place(x=200,y=175,width=120, height=25)
+        self.logbtn.place(x=200,y=200,width=120, height =25)
 
         self.pack()
 
