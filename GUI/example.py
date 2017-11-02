@@ -1,34 +1,26 @@
-from tkinter import *
+class Test():
+    def __init__(self,root):
+        self.root = root
+        self.root.columnconfigure(0, weight=1)
+        self.root.config(bg='green')
+        self.message = 'test message'
 
-class MyApp:
-    def __init__(self, parent):
-        self.myParent = parent
+        self.contentFrame = Frame(self.root)
+        self.contentFrame.config(background='black',borderwidth=5,relief ='sunken')
+        self.contentFrame.grid(row=0, column=0, sticky='news')
+        self.contentFrame.columnconfigure(0, weight=1)
 
-        self.main_container = Frame(parent, bg="green")
-        self.main_container.grid()
+        self.topBar = Frame(self.contentFrame, border=2, relief=RAISED)
+        self.topBar.grid(row=0, column=0, columnspan=23,sticky=W+E)
+        self.topBar.config(background='blue')
+        self.topBar.columnconfigure(0, weight=1)
 
-        self.top_frame = Frame(self.main_container)
-        self.top_frame.grid()
+        self.newGameButton = Button(self.topBar, text="New Game")
+        self.newGameButton.grid(row=0, column=0)
+        self.newGameButton.config(background='red')
 
-        self.top_left = Frame(self.top_frame, bd=2)
-        self.top_left.grid(row=0, column=0)
+        self.messageBox = Label(self.topBar, text=self.message, height=2)
+        self.messageBox.grid(row=1, column=0, columnspan=1,sticky=W+E)
+        self.messageBox.config(background='yellow')
 
-        self.top_right = Frame(self.top_frame, bd=2)
-        self.top_right.grid(row=0, column=2)
-
-        self.top_left_label = Label(self.top_left, bd=2, bg="red", text="Top Left", width=100, anchor=W)
-        self.top_left_label.grid(row=0, column=0)
-
-        self.top_right_label = Label(self.top_right, bd=2, bg="blue", text="Top Right", width=22, anchor=E)
-        self.top_right_label.grid(row=0, column=0)
-
-        self.bottom_frame = Frame(self.main_container, bg="yellow", bd=2)
-        self.bottom_frame.grid(row=1, column=0)
-
-        self.text_box = Text(self.bottom_frame, width=40, height=5)
-        self.text_box.grid(row=0, column=0)
-
-root = Tk()
-root.title("Test UI")
-myapp = MyApp(root)
-root.mainloop()
+Test(root)
