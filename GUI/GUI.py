@@ -66,7 +66,9 @@ class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.grid_forget()
         self.label = tk.Label(self, text="Login", font=controller.title_font)
+
 
         self.label_1 = tk.Label(self, text="Username")
         self.label_2 = tk.Label(self, text="Password")
