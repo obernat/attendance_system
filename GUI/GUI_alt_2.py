@@ -4,17 +4,24 @@ from tkinter import ttk
 
 
 
-class Application(Frame):
+class Application(Tk):
     #GUI Application
 
-    def __init__(self, master):
-        #Initialize the Frame
-        Frame.__init__(self,master)
+    def __init__(self, *args, **kwargs):
+        Tk.__init__(self, *args, **kwargs)
+
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
-        self.pack()
+        self.geometry("600x500")
         self.login_page()
 
+    def clear_frame(self):
+        # clear frame
+        for child in self.winfo_children():
+            child.destroy()
+
     def login_page(self):
+
+        self.clear_frame()
 
         self.label = Label(self, text="Login" ,font=self.title_font)
 
@@ -27,19 +34,14 @@ class Application(Frame):
         self.checkbox = Checkbutton(self, text="Keep me logged in")
         self.logbtn = Button(self, text="Login", command = self.select_action_page )
 
-        self.label.grid(row=0, columnspan=2)
-        self.label_2.grid(row=1, column=0)
-        self.label_3.grid(row=2, column=0)
+        self.label.place(x=200, y=80, width=120, height=25)
+        self.label_2.place(x=150, y=125, width=120, height=25)
+        self.label_3.place(x=150, y=150, width=120, height=25)
+        self.entry_1.place(x=255, y=125, width=120, height=25)
+        self.entry_2.place(x=255, y=150, width=120, height=25)
+        self.checkbox.place(x=200, y=175, width=120, height=25)
+        self.logbtn.place(x=200, y=200, width=120, height=25)
 
-        self.entry_1.grid(row=1, column=1)
-        self.entry_2.grid(row=2, column=1)
-        self.checkbox.grid(row=3, columnspan=2)
-        self.logbtn.grid(row=4, columnspan=2)
-
-    def clear_frame(self):
-        # clear frame
-        for child in self.winfo_children():
-            child.destroy()
 
 
     def select_action_page(self):
@@ -153,9 +155,7 @@ class Application(Frame):
         self.button_2.grid(row=1, column=1)
 
 
-root = Tk()
-root.title("Welcome")
-root.geometry('700x500')
-app = Application(root)
 
-root.mainloop()
+app = Application()
+
+app.mainloop()
