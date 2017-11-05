@@ -40,7 +40,7 @@ class Application(Tk):
         self.entry_1.place(x=255, y=125, width=120, height=25)
         self.entry_2.place(x=255, y=150, width=120, height=25)
         self.checkbox.place(x=200, y=175, width=120, height=25)
-        self.logbtn.place(x=200, y=200, width=120, height=25)
+        self.logbtn.place(x=200, y=210, width=120, height=25)
 
 
 
@@ -54,18 +54,19 @@ class Application(Tk):
         self.download_button = Button(self, text='Upload records',command = self.upload_page)
         self.upload_button = Button(self, text="Download student lists")
 
-        self.label.grid(row=0, columnspan=3)
-        self.list_button.grid(row=1, column=0)
+        self.label.place(x=200, y=40, width=160, height=25)
+        self.list_button.place(x=215, y=120, width=120, height=25)
         self.list_button ["command"] = self.subjects_page
-        self.download_button.grid(row=1, column=1)
-        self.upload_button.grid(row=1, column=2)
+        self.download_button.place(x=215, y=150, width=120, height=25)
+        self.upload_button.place(x=200, y=180, width=150, height=25)
+
 
     def subjects_page(self):
 
         self.clear_frame()
 
         self.label = Label(self, text="Subjects", font=self.title_font)
-        self.label.grid(row=0, columnspan=3)
+        self.back_button = Button(self, text="Back", command = self.select_action_page)
 
         subjects_araay = ["JOS" , "PT", "Logika"]
 
@@ -80,12 +81,18 @@ class Application(Tk):
             self.b = Button(self,text="Create record", command =self.select_event_page)
             self.b.grid(row=1*i, column=2)
 
+        self.label.place(x=200, y=0, width=160, height=25)
+        self.back_button.place(x=200, y=120 + 30*(i+1), width=150, height=25)
+
     def subject_info_page(self):
 
         self.clear_frame()
 
         self.label = Label(self, text="Subject Info", font=self.title_font)
-        self.label.grid(row=0, column=1)
+        self.label.grid(row=0, column=2)
+
+        self.back_button = Button(self, text="Back", command = self.subjects_page)
+
 
         self.tree = ttk.Treeview(self)
 
@@ -102,6 +109,9 @@ class Application(Tk):
         self.tree.insert("", 0, text="22.10.2017 - 15:00", values=("18", "22", "NOT OK"))
         self.tree.grid(row=1, columnspan=3)
 
+        self.back_button.place(x=220, y=300, width=150, height=25)
+
+
     def select_event_page(self):
 
         self.clear_frame()
@@ -113,6 +123,9 @@ class Application(Tk):
 
         self.button_1 = Button(self, text="Select", command = self.agree_page)
 
+        self.back_button = Button(self, text="Back", command = self.subjects_page)
+
+
         self.label.grid(row=0, columnspan=4)
         self.label_2.grid(row=1, column=0)
         self.label_3.grid(row=1, column=1)
@@ -120,6 +133,10 @@ class Application(Tk):
         self.label_4.grid(row=1, column=2)
 
         self.button_1.grid(row=1, column=3)
+
+        self.back_button.place(x=220, y=300, width=150, height=25)
+
+
 
     def agree_page(self):
         self.clear_frame()
@@ -149,10 +166,12 @@ class Application(Tk):
         self.label = Label(self, text="Do you want upload records? ", font=self.title_font)
         self.button = Button(self, text="Yes",command = self.select_action_page)
         self.button_2 = Button(self, text="No", command =self.select_action_page)
+        self.back_button = Button(self, text="Back", command = self.select_action_page)
 
-        self.label.grid(row=0, columnspan=3)
-        self.button.grid(row=1, column=0)
-        self.button_2.grid(row=1, column=1)
+        self.label.place(x=150, y=0, width=350, height=25)
+        self.button.place(x=215, y=150, width=80, height=25)
+        self.button_2.place(x=295, y=150, width=80, height=25)
+        self.back_button.place(x=220, y=190, width=150, height=25)
 
 
 
