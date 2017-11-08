@@ -1,270 +1,170 @@
-import tkinter as tk
+from tkinter import *
 from tkinter import font  as tkfont
 from tkinter import ttk
 
 
-class SampleApp(tk.Tk):
 
-    actual_page = "LoginPage"
-    D = {'LoginPage': 'LoginPage', 'SelectActionPage': 'LoginPage','SubjectListsPage':'SelectActionPage',
-         'UploadPage':'SelectActionPage','StudentListsPage':'SelectActionPage', 'SubjectInfoPage' :'SubjectListsPage',
-         'SelectEventPage':'SubjectListsPage'}
+class Application(Tk):
+    #GUI Application
 
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+        Tk.__init__(self, *args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
-        self.geometry('700x500')
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.geometry("600x500")
+        self.login_page()
 
-        menu = tk.Menu(self)
-        self.config(menu=menu)
+    def clear_frame(self):
+        # clear frame
+        for child in self.winfo_children():
+            child.destroy()
 
+    def login_page(self):
 
+        self.clear_frame()
 
+        self.title_label = Label(self, text="Login" ,font=self.title_font)
+        self.username_label = Label(self, text="Username")
+        self.password_label = Label(self, text="Password")
+        self.username_entry = Entry(self)
+        self.password_entry = Entry(self, show="*")
+        self.checkbox = Checkbutton(self, text="Keep me logged in")
+        self.login_button = Button(self, text="Login", command = self.select_action_page )
 
-        edit_menu = tk.Menu(menu)
-        menu.add_cascade(label='Edit', menu= edit_menu)
-        edit_menu.add_command(label='Previous page', command=lambda: self.show_frame(self.D[self.actual_page]))
-
-        log_menu = tk.Menu(menu)
-        menu.add_cascade(label='Logout', menu=log_menu)
-        log_menu.add_command(label='Logout', command=lambda: self.show_frame("LoginPage"))
-
-        # the container is where we'll stack a bunch of frames
-        # on top of each other, then the one we want visible
-        # will be raised above the others
-        container = tk.Frame(self)
-        container.pack()
-
-
-
-        self.frames = {}
-        for F in (LoginPage, SelectActionPage, SubjectListsPage,SubjectInfoPage,SelectEventPage,AgreePage,
-                  IsicPage,UploadPage,StudentListsPage):
-            page_name = F.__name__
-            frame = F(parent=container, controller=self)
-            self.frames[page_name] = frame
-
-            # put all of the pages in the same location;
-            # the one on the top of the stacking order
-            # will be the one that is visible.
-            frame.grid(row=10, column=10, sticky="nsew")
-
-        self.show_frame("LoginPage")
-
-    def show_frame(self, page_name):
-        '''Show a frame for the given page name'''
-        frame = self.frames[page_name]
-        self.actual_page = page_name
-        frame.tkraise()
-
-
-class LoginPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self.grid_forget()
-        self.label = tk.Label(self, text="Login", font=controller.title_font)
-
-
-        self.label_1 = tk.Label(self, text="Username")
-        self.label_2 = tk.Label(self, text="Password")
-
-        self.entry_1 = tk.Entry(self)
-        self.entry_2 = tk.Entry(self, show="*")
-
-        self.checkbox = tk.Checkbutton(self, text="Keep me logged in")
-        self.logbtn = tk.Button(self, text="Login",
-                         command=lambda: controller.show_frame("SelectActionPage"))
-
-
-        self.label.grid(row=0, columnspan=2)
-        self.label_1.grid(row=1,column=0)
-        self.label_2.grid(row=2,column=0)
-
-        self.entry_1.grid(row=1, column=1)
-        self.entry_2.grid(row=2, column=1)
-        self.checkbox.grid(row=3, columnspan=2)
-        self.logbtn.grid(row=4, columnspan=2)
+        self.title_label.place(x=200, y=80, width=120, height=25)
+        self.username_label.place(x=150, y=125, width=120, height=25)
+        self.password_label.place(x=150, y=150, width=120, height=25)
+        self.username_entry.place(x=255, y=125, width=120, height=25)
+        self.password_entry.place(x=255, y=150, width=120, height=25)
+        self.checkbox.place(x=200, y=175, width=120, height=25)
+        self.login_button.place(x=200, y=210, width=120, height=25)
 
 
 
-class SelectActionPage(tk.Frame):
+    def select_action_page(self):
 
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.clear_frame()
 
-        self.label = tk.Label(self, text="Select Action", font=controller.title_font)
+        self.title_label = Label(self, text="Select Action",font=self.title_font)
+        self.subjects_button = Button(self, text="Subjects", command = self.subjects_page)
+        self.upload_button = Button(self, text='Upload records',command = self.upload_page)
+        self.download_button = Button(self, text="Download student lists")
 
-        self.list_button = tk.Button(self, text= "Subjects",
-                            command=lambda: controller.show_frame("SubjectListsPage"))
-        self.download_button = tk.Button(self, text='Upload records',
-                                     command=lambda: controller.show_frame("UploadPage"))
-        self.upload_button = tk.Button(self, text= "Download student lists",
-                                    command = lambda: controller.show_frame("StudentListsPage"))
-
-        self.label.grid(row=0, columnspan=3)
-        self.list_button.grid(row=1,column=0)
-        self.download_button.grid(row=1,column=1)
-        self.upload_button.grid(row=1,column=2)
+        self.title_label.place(x=200, y=40, width=160, height=25)
+        self.subjects_button.place(x=215, y=120, width=120, height=25)
+        self.upload_button.place(x=215, y=150, width=120, height=25)
+        self.download_button.place(x=185, y=180, width=170, height=25)
 
 
-class SubjectListsPage(tk.Frame):
+    def subjects_page(self):
 
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        self.label = tk.Label(self, text="Subjects", font=controller.title_font)
-        self.label.grid(row=0, columnspan=3)
-
+        self.clear_frame()
 
         subjects_araay = ["JOS" , "PT", "Logika"]
 
+        self.title_label = Label(self, text="Subjects", font=self.title_font)
+        self.back_button = Button(self, text="Back", command = self.select_action_page)
+
         for i in range(1,len(subjects_araay)+1):
-            c = i
-            self.c = tk.Label(self, text= subjects_araay[i-1])
-            self.c.grid(row=1*i, column=0)
-            a =i*10
-            b= i*10 + 1
-            self.a = tk.Button(self,text="Subject info",
-                          command=lambda: controller.show_frame("SubjectInfoPage"))
-            self.a.grid(row=1*i, column=1)
-            self.b = tk.Button(self,text="Create record",
-                          command=lambda: controller.show_frame("SelectEventPage"))
-            self.b.grid(row=1*i, column=2)
+            a = i
+            b = i * 10
+            c = i * 10 + 1
+
+            self.a = Label(self, text= subjects_araay[i-1])
+            self.b = Button(self,text="Subject info", command = self.subject_info_page)
+            self.c = Button(self,text="Create record", command =self.select_event_page)
 
 
+            self.a.place(x=95, y=90 + (i * 30), width=120, height=25)
+            self.b.place(x=215, y=90+(i*30), width=120, height=25)
+            self.c.place(x=335, y=90+(i*30), width=120, height=25)
 
+        self.title_label.place(x=200, y=40, width=160, height=25)
+        self.back_button.place(x=200, y=120 + 30*(i+1), width=150, height=25)
 
-class SubjectInfoPage(tk.Frame):
+    def subject_info_page(self):
 
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.clear_frame()
 
-        self.label = tk.Label(self, text="Subject Info", font=controller.title_font)
-        self.label.grid(row=0, column =1)
-
+        self.title_label = Label(self, text="Subject Info", font=self.title_font)
+        self.back_button = Button(self, text="Back", command = self.subjects_page)
         self.tree = ttk.Treeview(self)
 
-        self.tree["columns"] = ("one", "two","three")
-
+        self.tree["columns"] = ("one", "two", "three")
         self.tree.column("one", width=50)
         self.tree.column("two", width=70)
         self.tree.column("three", width=70)
-
 
         self.tree.heading("one", text="Class")
         self.tree.heading("two", text="Number of")
         self.tree.heading("three", text="Status")
 
+        self.tree.insert("", 0, text="22.10.2017 - 15:00", values=("18", "22", "NOT OK"))
+
+        self.title_label.place(x=200, y=40, width=160, height=25)
+        self.tree.place(x=100, y=80)
+        self.back_button.place(x=220, y=300, width=150, height=25)
+
+
+    def select_event_page(self):
+
+        self.clear_frame()
+
+        self.title_label = Label(self, text="SelectEvent", font=self.title_font)
+        self.date_label = Label(self, text="22.10.2017")
+        self.time_label = Label(self, text="15:00")
+        self.class_label = Label(self, text="Class 01")
+        self.select_button = Button(self, text="Select", command = self.agree_page)
+        self.back_button = Button(self, text="Back", command = self.subjects_page)
+
+
+        self.title_label.place(x=220, y=40, width=160, height=25)
+        self.date_label.place(x=150, y=120, width=130, height=25)
+        self.time_label.place(x=258, y=120, width=50, height=25)
+        self.class_label.place(x=310, y=120, width=60, height=25)
+        self.select_button.place(x=380, y=120, width=60, height=25)
+        self.back_button.place(x=220, y=300, width=150, height=25)
 
 
 
+    def agree_page(self):
 
-        self.tree.insert("", 0,text="22.10.2017 - 15:00", values=("18","22","NOT OK"))
-        self.tree.grid(row=1, columnspan =3)
+        self.clear_frame()
 
-
-class SelectEventPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        self.label = tk.Label(self, text="SelectEvent", font=controller.title_font)
-        self.label_2 = tk.Label(self, text="22.10.2017")
-        self.label_3 = tk.Label(self, text="15:00")
-        self.label_4 = tk.Label(self, text="Class 01")
-
-        self.button_1 = tk.Button(self, text="Select",
-                             command = lambda: controller.show_frame("AgreePage"))
+        self.title_label = Label(self, text="22.10.2017-15:00-Class 01", font=self.title_font)
+        self.agree_button = Button(self, text="Agree", command = self.isic_page)
+        self.disagree_button = Button(self, text="Disagree",command =self.select_event_page)
 
 
-        self.label.grid(row=0, columnspan=4)
-        self.label_2.grid(row=1, column =0)
-        self.label_3.grid(row=1, column=1)
-
-        self.label_4.grid(row=1, column=2)
-
-        self.button_1.grid(row=1, column=3)
+        self.title_label.place(x=120, y=40, width=350, height=25)
+        self.agree_button.place(x=215, y=150, width=80, height=25)
+        self.disagree_button.place(x=295, y=150, width=80, height=25)
 
 
+    def isic_page(self):
 
+        self.clear_frame()
 
-class AgreePage(tk.Frame):
+        self.title_label = Label(self, text="Add isic", font=self.title_font)
+        self.close_button = Button(self, text="Close and save", command=self.select_action_page)
 
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.title_label.place(x=220, y=40, width=160, height=25)
+        self.close_button.place(x=220, y=190, width=150, height=25)
 
+    def upload_page(self):
 
-        self.label = tk.Label(self, text="Predmet datum cas ", font=controller.title_font)
-        self.button = tk.Button(self, text="Agree",
-                                command=lambda: controller.show_frame("IsicPage"))
-        self.button_2 = tk.Button(self, text="Disagree",
-                                  command=lambda: controller.show_frame("SelectEventPage"))
+        self.clear_frame()
 
-        self.label.grid(row=0, columnspan=3)
-        self.button.grid(row=1, column=0)
-        self.button_2.grid(row=1, column=1)
+        self.title_label = Label(self, text="Do you want upload records? ", font=self.title_font)
+        self.agree_button = Button(self, text="Yes",command = self.select_action_page)
+        self.disagree_button = Button(self, text="No", command =self.select_action_page)
 
-class IsicPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        label = tk.Label(self, text="Prilozte isic", font=controller.title_font)
-        button = tk.Button(self, text="Close and save",
-                           command=lambda: controller.show_frame("SelectActionPage"))
-
-
-        label.pack()
-        button.pack()
-
-class StudentListsPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        label = tk.Label(self, text="Student Lists", font=controller.title_font)
-        button = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("LoginPage"))
-        button_2 = tk.Button(self, text="Back",
-                             command=lambda: controller.show_frame("SelectActionPage"))
+        self.title_label.place(x=130, y=40, width=350, height=25)
+        self.agree_button.place(x=215, y=150, width=80, height=25)
+        self.disagree_button.place(x=295, y=150, width=80, height=25)
 
 
 
-        label.pack()
-        button.pack()
-        button_2.pack()
+app = Application()
 
-
-
-class UploadPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        self.label = tk.Label(self, text="Do you want upload records? ", font=controller.title_font)
-        self.button = tk.Button(self, text="Yes",
-                           command=lambda: controller.show_frame("SelectActionPage"))
-        self.button_2 = tk.Button(self, text="No",
-                             command=lambda: controller.show_frame("SelectActionPage"))
-
-        self.label.grid(row=0,columnspan=3)
-        self.button.grid(row=1,column=0)
-        self.button_2.grid(row=1, column=1)
-
-
-if __name__ == "__main__":
-    app = SampleApp()
-    app.mainloop()
+app.mainloop()
