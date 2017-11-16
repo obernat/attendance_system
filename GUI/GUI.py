@@ -47,7 +47,7 @@ class Application(Tk):
         self.title_label = Label(self, text="Select Action",font=self.title_font)
         self.subjects_button = Button(self, text="Subjects", command = self.subjects_page)
         self.upload_button = Button(self, text='Upload records',command = self.upload_page)
-        self.download_button = Button(self, text="Download student lists", command = self.download_page)
+        self.download_button = Button(self, text="Download student lists")
 
         self.title_label.place(x=200, y=40, width=160, height=25)
         self.subjects_button.place(x=215, y=120, width=120, height=25)

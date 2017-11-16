@@ -67,7 +67,7 @@ class Application(Tk):
     def cross_road_function(self):
 
         if self.file_check('active_subjects'):
-            self.subjects_page()
+            self.subjects_page(1)
         else:
             self.sync_page()
 
@@ -132,7 +132,7 @@ class Application(Tk):
         except Exception as e:
             print('Unable to read data from '+ file+  ':', e)
 
-    def move_subject(self, subject):
+    def move_subject(self, subject, tab_number):
         if subject in self.active_subjects_array:
             self.active_subjects_array.remove(subject)
             self.inactive_subjects_array.append(subject)
@@ -142,10 +142,10 @@ class Application(Tk):
             self.active_subjects_array.append(subject)
 
         self.save_subject_arrays()
-        self.subjects_page()
+        self.subjects_page_edit(tab_number)
 
 
-    def subjects_page(self):
+    def subjects_page(self, tab_number):
         self.clear_frame()
 
         tabControl = ttk.Notebook(self)
@@ -157,6 +157,10 @@ class Application(Tk):
         tabControl.add(tab2, text='Inactive')
         back_button_tab1 = Button(tab1, text="Back", command = self.login_page)
         back_button_tab2 = Button(tab2, text="Back", command = self.login_page)
+        edit_button_tab1 = Button(tab1, text="Edit", command=lambda : self.subjects_page_edit(1))
+        edit_button_tab2 = Button(tab2, text="Edit", command=lambda : self.subjects_page_edit(2))
+
+
 
         self.active_subjects_array = self.load_data('active_subjects')
         self.inactive_subjects_array = self.load_data('inactive_subjects')
@@ -174,12 +178,10 @@ class Application(Tk):
                 a = Label(tab1, text=self.active_subjects_array[i - 1])
                 b = Button(tab1, text="Subject info")
                 c = Button(tab1, text="Create record")
-                d = Button(tab1, text="Disable", command= lambda text=self.active_subjects_array[i - 1]: self.move_subject(text))
 
-                a.place(x=45, y=90 + (i * 30), width=120, height=25)
-                b.place(x=165, y=90 + (i * 30), width=120, height=25)
-                c.place(x=285, y=90 + (i * 30), width=120, height=25)
-                d.place(x=405, y=90 + (i * 30), width=120, height=25)
+                a.place(x=105, y=90 + (i * 30), width=120, height=25)
+                b.place(x=225, y=90 + (i * 30), width=120, height=25)
+                c.place(x=345, y=90 + (i * 30), width=120, height=25)
 
         if(len(self.inactive_subjects_array)):
 
@@ -189,15 +191,89 @@ class Application(Tk):
                 b = i * 10
 
                 a = Label(tab2, text=self.inactive_subjects_array[i - 1])
-                b = Button(tab2, text="Enable", command= lambda text=self.inactive_subjects_array[i - 1]: self.move_subject(text))
+
+                a.place(x=220, y=90 + (i * 30), width=120, height=25)
+
+        back_button_tab1.place(x=200, y=300, width=150, height=25)
+        back_button_tab2.place(x=200, y=300, width=150, height=25)
+        edit_button_tab1.place(x=470, y=0, width=75, height=25)
+        edit_button_tab2.place(x=470, y=0, width=75, height=25)
+
+        tabControl.pack(expand=1, fill="both")
+
+        if tab_number == 1:
+            tabControl.select(tab1)
+        else:
+            tabControl.select(tab2)
+
+
+
+    def subjects_page_edit(self,tab_number):
+        self.clear_frame()
+
+        tabControl = ttk.Notebook(self)
+
+        tab1 = ttk.Frame(tabControl)
+        tab2 = ttk.Frame(tabControl)
+
+        tabControl.add(tab1, text='Active')
+        tabControl.add(tab2, text='Inactive')
+        back_button_tab1 = Button(tab1, text="Back", command=self.login_page)
+        back_button_tab2 = Button(tab2, text="Back", command=self.login_page)
+        save_button_tab1 = Button(tab1, text="Save changes", command=lambda : self.subjects_page(1))
+        save_button_tab2 = Button(tab2, text="Save changes",command= lambda : self.subjects_page(2))
+        sync_button_tab1 = Button(tab1, text="Sync")
+        sync_button_tab2 = Button(tab2, text="Sync")
+
+        self.active_subjects_array = self.load_data('active_subjects')
+        self.inactive_subjects_array = self.load_data('inactive_subjects')
+
+        if (len(self.active_subjects_array)):
+
+            for i in range(1, len(self.active_subjects_array) + 1):
+                a = i
+                b = i * 10
+                c = i * 10 + 1
+                d = i * 10 + 2
+
+                a = Label(tab1, text=self.active_subjects_array[i - 1])
+                b = Button(tab1, text="Subject info")
+                c = Button(tab1, text="Create record")
+                d = Button(tab1, text="Disable",
+                           command=lambda text=self.active_subjects_array[i - 1]: self.move_subject(text,1))
+
+                a.place(x=45, y=90 + (i * 30), width=120, height=25)
+                b.place(x=165, y=90 + (i * 30), width=120, height=25)
+                c.place(x=285, y=90 + (i * 30), width=120, height=25)
+                d.place(x=405, y=90 + (i * 30), width=120, height=25)
+
+        if (len(self.inactive_subjects_array)):
+
+            for i in range(1, len(self.inactive_subjects_array) + 1):
+                a = i
+                b = i * 10
+
+                a = Label(tab2, text=self.inactive_subjects_array[i - 1])
+                b = Button(tab2, text="Enable",
+                           command=lambda text=self.inactive_subjects_array[i - 1]: self.move_subject(text,2))
 
                 a.place(x=145, y=90 + (i * 30), width=120, height=25)
                 b.place(x=265, y=90 + (i * 30), width=120, height=25)
 
         back_button_tab1.place(x=200, y=300, width=150, height=25)
         back_button_tab2.place(x=200, y=300, width=150, height=25)
+        save_button_tab1.place(x=425, y=0, width=120, height=25)
+        save_button_tab2.place(x=425, y=0, width=120, height=25)
+        sync_button_tab1.place(x=340, y=0, width=75, height=25)
+        sync_button_tab2.place(x=340, y=0, width=75, height=25)
 
         tabControl.pack(expand=1, fill="both")
+
+        if tab_number == 1:
+            tabControl.select(tab1)
+        else:
+            tabControl.select(tab2)
+
 
 
 app = Application()
