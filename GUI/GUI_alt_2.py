@@ -3,9 +3,7 @@ from tkinter import font  as tkfont
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
-import time
-
-
+import datetime
 
 
 class Application(Tk):
@@ -38,7 +36,7 @@ class Application(Tk):
         self.remove_button = Button(self, text="Remove files", command = self.remove_files )
 
 
-        self.title_label.place(x=200, y=80, width=120, height=25)
+        self.title_label.place(x= 200,y=80, width=120, height=25)
         self.username_label.place(x=150, y=125, width=120, height=25)
         self.password_label.place(x=150, y=150, width=120, height=25)
         self.username_entry.place(x=255, y=125, width=120, height=25)
@@ -79,22 +77,23 @@ class Application(Tk):
         self.active_subjects_array = ["JOS", "PT", "Logika"]
         self.inactive_subjects_array = ["Haha"]
 
-        word_dict = dict()
-        word_dict["Skupina 1"] = ["Matus", "Tomas", "Dano"]
-        word_dict["Skupina 2"] = ["Matus2", "Tomas2", "Dano2"]
+        groups = dict()
+        groups["Skupina 1"] = ["Matus", "Tomas", "Dano"]
+        groups["Skupina 2"] = ["Matus2", "Tomas2", "Dano2"]
 
-        dochadzka = dict()
-        dochadzka["Matus"] = [0, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1]
-        dochadzka["Tomas"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 3, 3, 3]
-        dochadzka["Dano"] = [1, 2, 3, 4, 5, 1, 1, 1, 2, 4, 1, 1]
-        dochadzka["Matus2"] = [1, 2, 3, 4, 5, 1, 5, 1, 1, 1, 1, 1]
-        dochadzka["Tomas2"] = [1, 2, 3, 4, 5, 1, 1, 5, 4, 1, 1, 1]
-        dochadzka["Dano2"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 2, 3, 1]
+        attendance = dict()
+        attendance["Matus"] = [0, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1]
+        attendance["Tomas"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 3, 3, 3]
+        attendance["Dano"] = [1, 2, 3, 4, 5, 1, 1, 1, 2, 4, 1, 1]
+        attendance["Matus2"] = [1, 2, 3, 4, 5, 1, 5, 1, 1, 1, 1, 1]
+        attendance["Tomas2"] = [1, 2, 3, 4, 5, 1, 1, 5, 4, 1, 1, 1]
+        attendance["Dano2"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 2, 3, 1]
 
         try:
             f = open('attendance', 'wb')
             save = {
-                'attendance': dochadzka,
+                'attendance': attendance,
+                'groups': groups,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
@@ -152,12 +151,12 @@ class Application(Tk):
             f = open('attendance', 'wb')
             save = {
                 'attendance': self.attendance,
+                'groups': self.groups,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
         except Exception as e:
             print('Unable to save data to attendance:', e)
-
 
 
     def load_data(self, file):
@@ -181,6 +180,18 @@ class Application(Tk):
                 attendance = data['attendance']
 
             return attendance
+        except Exception as e:
+            print('Unable to read data from attendance:', e)
+
+    def load_groups(self):
+
+        try:
+            with open('attendance', 'rb') as f:
+                data = pickle.load(f)
+
+                groups = data['groups']
+
+            return groups
         except Exception as e:
             print('Unable to read data from attendance:', e)
 
@@ -330,13 +341,12 @@ class Application(Tk):
 
         self.clear_frame()
         colors = ["red", "green","yellow","black","gray","yellow"]
-        word_dict = dict()
-        word_dict["Skupina 1"] = ["Matus", "Tomas", "Dano" ]
-        word_dict["Skupina 2"] = ["Matus2", "Tomas2", "Dano2" ]
+        word_dict = self.load_groups()
 
         dochadzka = self.load_attendace()
 
         self.attendance= dochadzka
+        self.groups = word_dict
 
 
 
@@ -349,6 +359,9 @@ class Application(Tk):
         self.popupMenu.add_command(label="yellow", command= lambda :self.change_attendance(subject_name,group,2))
         self.popupMenu.add_command(label="black", command= lambda :self.change_attendance(subject_name,group,3))
         self.popupMenu.add_command(label="gray", command= lambda :self.change_attendance(subject_name,group,4))
+
+        self.popupMenu2 = Menu(self, tearoff=0)
+        self.popupMenu2.add_command(label="Change group", command= lambda: self.change_group(group,subject_name))
 
         OPTIONS = []
         for i in range(1,20):
@@ -377,6 +390,8 @@ class Application(Tk):
                 a = name
                 a = Label(self, text= name, anchor="w")
                 a.place(x=30, y=150+(i*20), width=200, height=20)
+                a.bind("<Button-2>", self.popup_student)
+                a.bind("<Enter>", self.on_enter)
 
 
                 for j in range (0,12):
@@ -394,16 +409,49 @@ class Application(Tk):
     def popup(self, event):
         self.popupMenu.post(event.x_root, event.y_root)
 
+    def popup_student(self, event):
+        self.popupMenu2.post(event.x_root, event.y_root)
+
     def on_enter(self, event):
         self.selected = event.widget['text']
 
+    def close_window(self,window):
+        window.destroy()
+
+    def move_stundet_to_other_group(self,window,from_group, to_group,subject_name):
+        self.groups[to_group].append(self.selected)
+        self.groups[from_group].remove(self.selected)
+        self.save_attendace()
+        self.subject_info_page(subject_name,to_group)
+
+        self.close_window(window)
+
+
+    def change_group(self,group,subject_name):
+
+        toplevel = Toplevel()
+        toplevel.geometry("320x35")
+        OPTIONS = []
+        for i in range(1, 20):
+            OPTIONS.append("Skupina " + str(i))
+
+        variable = StringVar(self)
+        variable.set(OPTIONS[0])
+
+        w = OptionMenu(toplevel, variable, *OPTIONS)
+        w.place(x=5, y=5, width=150, height=25)
+
+        button = Button(toplevel, text="Select", command= lambda : self.move_stundet_to_other_group(toplevel,group,variable.get(),subject_name))
+        button.place(x=160, y=5, width=150, height=25)
+
 
     def change_attendance(self,subject_name,group,a):
-        print(self.selected,a)
         name,week = str(self.selected).split('_')
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
         self.subject_info_page(subject_name,group)
+
+
 app = Application()
 
 app.mainloop()
