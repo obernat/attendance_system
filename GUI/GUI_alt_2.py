@@ -248,73 +248,13 @@ class Application(Tk):
             self.active_subjects_list.append(subject)
 
         self.save_subject_arrays()
-        self.subjects_page_edit(tab_number)
-
-
-    def subjects_page(self, tab_number):
-        self.clear_frame()
-
-        tabControl = ttk.Notebook(self)
-
-        tab1 = ttk.Frame(tabControl)
-        tab2 = ttk.Frame(tabControl)
-
-        tabControl.add(tab1, text='Active')
-        tabControl.add(tab2, text='Inactive')
-        back_button_tab1 = Button(tab1, text="Back", command = self.login_page)
-        back_button_tab2 = Button(tab2, text="Back", command = self.login_page)
-        edit_button_tab1 = Button(tab1, text="Edit", command=lambda : self.subjects_page_edit(1))
-        edit_button_tab2 = Button(tab2, text="Edit", command=lambda : self.subjects_page_edit(2))
+        self.subjects_page(tab_number)
 
 
 
-        self.active_subjects_list = self.load_data('active_subjects')
-        self.inactive_subjects_list = self.load_data('inactive_subjects')
 
 
-        if(len(self.active_subjects_list)):
-
-            for i in range(1, len(self.active_subjects_list) + 1):
-
-                a = i
-                b = i * 10
-                c = i * 10 + 1
-                d = i * 10 + 2
-
-                a = Label(tab1, text=self.active_subjects_list[i - 1])
-                b = Button(tab1, text="Subject info", command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina"))
-                c = Button(tab1, text="Create record")
-
-                a.place(x=105, y=90 + (i * 30), width=120, height=25)
-                b.place(x=225, y=90 + (i * 30), width=120, height=25)
-                c.place(x=345, y=90 + (i * 30), width=120, height=25)
-
-        if(len(self.inactive_subjects_list)):
-
-            for i in range(1, len(self.inactive_subjects_list) + 1):
-
-                a = i
-                b = i * 10
-
-                a = Label(tab2, text=self.inactive_subjects_list[i - 1])
-
-                a.place(x=220, y=90 + (i * 30), width=120, height=25)
-
-        back_button_tab1.place(x=200, y=300, width=150, height=25)
-        back_button_tab2.place(x=200, y=300, width=150, height=25)
-        edit_button_tab1.place(x=470, y=0, width=75, height=25)
-        edit_button_tab2.place(x=470, y=0, width=75, height=25)
-
-        tabControl.pack(expand=1, fill="both")
-
-        if tab_number == 1:
-            tabControl.select(tab1)
-        else:
-            tabControl.select(tab2)
-
-
-
-    def subjects_page_edit(self,tab_number):
+    def subjects_page(self,tab_number):
         self.clear_frame()
 
         tabControl = ttk.Notebook(self)
@@ -326,8 +266,6 @@ class Application(Tk):
         tabControl.add(tab2, text='Inactive')
         back_button_tab1 = Button(tab1, text="Back", command=self.login_page)
         back_button_tab2 = Button(tab2, text="Back", command=self.login_page)
-        save_button_tab1 = Button(tab1, text="Save changes", command=lambda : self.subjects_page(1))
-        save_button_tab2 = Button(tab2, text="Save changes",command= lambda : self.subjects_page(2))
         sync_button_tab1 = Button(tab1, text="Sync")
         sync_button_tab2 = Button(tab2, text="Sync")
 
@@ -343,7 +281,7 @@ class Application(Tk):
                 d = i * 10 + 2
 
                 a = Label(tab1, text=self.active_subjects_list[i - 1])
-                b = Button(tab1, text="Subject info")
+                b = Button(tab1, text="Subject info", command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina"))
                 c = Button(tab1, text="Create record")
                 d = Button(tab1, text="Disable",
                            command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text,1))
@@ -368,10 +306,8 @@ class Application(Tk):
 
         back_button_tab1.place(x=200, y=300, width=150, height=25)
         back_button_tab2.place(x=200, y=300, width=150, height=25)
-        save_button_tab1.place(x=425, y=0, width=120, height=25)
-        save_button_tab2.place(x=425, y=0, width=120, height=25)
-        sync_button_tab1.place(x=340, y=0, width=75, height=25)
-        sync_button_tab2.place(x=340, y=0, width=75, height=25)
+        sync_button_tab1.place(x=425, y=0, width=120, height=25)
+        sync_button_tab2.place(x=425, y=0, width=120, height=25)
 
         tabControl.pack(expand=1, fill="both")
 
@@ -458,35 +394,6 @@ class Application(Tk):
     def on_enter(self, event):
         self.selected = event.widget['text']
 
-    def close_window(self,window):
-        window.destroy()
-
-    def move_stundet_to_other_group(self,window,from_group, to_group,subject_name):
-        self.groups[to_group].append(self.selected)
-        self.groups[from_group].remove(self.selected)
-        self.save_attendace()
-        self.subject_info_page(subject_name,to_group)
-
-        self.close_window(window)
-
-
-    def change_group(self,group,subject_name):
-
-        toplevel = Toplevel()
-        toplevel.geometry("320x35")
-        OPTIONS = []
-        for i in range(1, 20):
-            OPTIONS.append("Skupina " + str(i))
-
-        variable = StringVar(self)
-        variable.set(OPTIONS[0])
-
-        w = OptionMenu(toplevel, variable, *OPTIONS)
-        w.place(x=5, y=5, width=150, height=25)
-
-        button = Button(toplevel, text="Select", command= lambda : self.move_stundet_to_other_group(toplevel,group,variable.get(),subject_name))
-        button.place(x=160, y=5, width=150, height=25)
-
 
     def change_attendance(self,subject_name,group,a):
         print(self.selected,a)
@@ -494,8 +401,6 @@ class Application(Tk):
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
         self.subject_info_page(subject_name,group)
-
-
 app = Application()
 
 app.mainloop()
