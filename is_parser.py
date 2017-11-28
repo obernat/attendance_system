@@ -44,10 +44,10 @@ def get_subjects(s):
         return -4 #session not created
 
     #Creating get to teacher page, cookies send automatically
-    #r = s.get("https://test.is.stuba.sk/auth/ucitel") #LANG TO SET
+    r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
 
     #Creating get to delegated teacher page
-    r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
+    #r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
 
     if r.status_code != 200:
         return -3 #error getting tje page, maybe page down/no internet access

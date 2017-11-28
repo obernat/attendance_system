@@ -101,7 +101,7 @@ class Application(Tk):
         for subject in subjects_list_with_links:
             self.active_subjects_list.append(subject[0])
 
-        self.inactive_subjects_list = ["Haha"]
+        self.inactive_subjects_list = []
 
         word_dict = dict()
         word_dict["Skupina 1"] = ["Matus", "Tomas", "Dano"]
