@@ -394,6 +394,36 @@ class Application(Tk):
     def on_enter(self, event):
         self.selected = event.widget['text']
 
+    def close_window(self, window):
+        window.destroy()
+
+    def move_stundet_to_other_group(self, window, from_group, to_group, subject_name):
+
+        self.groups[to_group].append(self.selected)
+        self.groups[from_group].remove(self.selected)
+        self.save_attendace()
+        self.subject_info_page(subject_name, to_group)
+
+        self.close_window(window)
+
+    def change_group(self, group, subject_name):
+
+        toplevel = Toplevel()
+        toplevel.geometry("320x35")
+        OPTIONS = []
+
+        for i in range(1, 20):
+            OPTIONS.append("Skupina " + str(i))
+
+        variable = StringVar(self)
+        variable.set(OPTIONS[0])
+
+        w = OptionMenu(toplevel, variable, *OPTIONS)
+        w.place(x=5, y=5, width=150, height=25)
+
+        button = Button(toplevel, text="Select",
+                        command=lambda: self.move_stundet_to_other_group(toplevel, group, variable.get(), subject_name))
+        button.place(x=160, y=5, width=150, height=25)
 
     def change_attendance(self,subject_name,group,a):
         print(self.selected,a)
@@ -401,6 +431,7 @@ class Application(Tk):
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
         self.subject_info_page(subject_name,group)
+
 app = Application()
 
 app.mainloop()
