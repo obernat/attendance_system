@@ -4,7 +4,10 @@ from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
 import time
-
+import sys
+import requests
+sys.path.append("../")
+import is_parser as isp
 
 
 
@@ -18,6 +21,7 @@ class Application(Tk):
         self.geometry("600x500")
         self.login_page()
         self.selected = 0
+        self.session = requests.Session()
 
     def clear_frame(self):
 
@@ -34,7 +38,7 @@ class Application(Tk):
         self.username_entry = Entry(self)
         self.password_entry = Entry(self, show="*")
         self.checkbox = Checkbutton(self, text="Keep me logged in")
-        self.login_button = Button(self, text="Login", command = self.cross_road_function )
+        self.login_button = Button(self, text="Login", command = lambda: self.cross_road_function(self.username_entry.get(),self.password_entry.get()))
         self.remove_button = Button(self, text="Remove files", command = self.remove_files )
 
 
@@ -54,7 +58,7 @@ class Application(Tk):
         self.sync_button = Button(self, text='Sync', command=self.load_subjects)
         self.sync_button.place(x=235, y=150, width=120, height=25)
 
-    def file_check(slef,file):
+    def file_check(self,file): #TODO - remove
 
         try:
             open(file, "r")
@@ -67,17 +71,37 @@ class Application(Tk):
         os.remove('active_subjects')
         os.remove('inactive_subjects')
 
-    def cross_road_function(self):
+    def cross_road_function(self, name="none", password="none"):
+        if isp.try_login(self.session, name, password) < 0:
+            print ("TU VYHODIME EXCEPTION ZE NEPODARILO SA PRIHLASIT (NESPRAVNE MENO/HESLO/INTERNET)")
+            return
 
-        if self.file_check('active_subjects'):
+        #if self.file_check('active_subjects'):
+        if os.path.isfile('active_subjects'):
             self.subjects_page(1)
         else:
             self.sync_page()
 
+
+
+
+
+
+
+
+
     def load_subjects(self):
 
-        self.active_subjects_array = ["JOS", "PT", "Logika"]
-        self.inactive_subjects_array = ["Haha"]
+        ret_value, subjects_list_with_links = isp.get_subjects(self.session)
+        if ret_value < 0:
+            print ("TU VYHODIME EXCEPTION ZE ZIADNE PREDMETY NEMAME")
+            return
+
+        self.active_subjects_list = []
+        for subject in subjects_list_with_links:
+            self.active_subjects_list.append(subject[0])
+
+        self.inactive_subjects_list = ["Haha"]
 
         word_dict = dict()
         word_dict["Skupina 1"] = ["Matus", "Tomas", "Dano"]
@@ -105,7 +129,7 @@ class Application(Tk):
         try:
             f = open('active_subjects', 'wb')
             save = {
-                'subjects_array': self.active_subjects_array,
+                'subjects_array': self.active_subjects_list,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
@@ -115,7 +139,7 @@ class Application(Tk):
         try:
             f = open('inactive_subjects', 'wb')
             save = {
-                'subjects_array': self.inactive_subjects_array,
+                'subjects_array': self.inactive_subjects_list,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
@@ -124,12 +148,28 @@ class Application(Tk):
 
         self.cross_road_function()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def save_subject_arrays(self):
 
         try:
             f = open('active_subjects', 'wb')
             save = {
-                'subjects_array': self.active_subjects_array,
+                'subjects_array': self.active_subjects_list,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
@@ -139,7 +179,7 @@ class Application(Tk):
         try:
             f = open('inactive_subjects', 'wb')
             save = {
-                'subjects_array': self.inactive_subjects_array,
+                'subjects_array': self.inactive_subjects_list,
             }
             pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
             f.close()
@@ -185,13 +225,13 @@ class Application(Tk):
             print('Unable to read data from attendance:', e)
 
     def move_subject(self, subject, tab_number):
-        if subject in self.active_subjects_array:
-            self.active_subjects_array.remove(subject)
-            self.inactive_subjects_array.append(subject)
+        if subject in self.active_subjects_list:
+            self.active_subjects_list.remove(subject)
+            self.inactive_subjects_list.append(subject)
 
         else:
-            self.inactive_subjects_array.remove(subject)
-            self.active_subjects_array.append(subject)
+            self.inactive_subjects_list.remove(subject)
+            self.active_subjects_list.append(subject)
 
         self.save_subject_arrays()
         self.subjects_page_edit(tab_number)
@@ -214,35 +254,35 @@ class Application(Tk):
 
 
 
-        self.active_subjects_array = self.load_data('active_subjects')
-        self.inactive_subjects_array = self.load_data('inactive_subjects')
+        self.active_subjects_list = self.load_data('active_subjects')
+        self.inactive_subjects_list = self.load_data('inactive_subjects')
 
 
-        if(len(self.active_subjects_array)):
+        if(len(self.active_subjects_list)):
 
-            for i in range(1, len(self.active_subjects_array) + 1):
+            for i in range(1, len(self.active_subjects_list) + 1):
 
                 a = i
                 b = i * 10
                 c = i * 10 + 1
                 d = i * 10 + 2
 
-                a = Label(tab1, text=self.active_subjects_array[i - 1])
-                b = Button(tab1, text="Subject info", command=lambda text=self.active_subjects_array[i - 1]: self.subject_info_page(text,"Skupina"))
+                a = Label(tab1, text=self.active_subjects_list[i - 1])
+                b = Button(tab1, text="Subject info", command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina"))
                 c = Button(tab1, text="Create record")
 
                 a.place(x=105, y=90 + (i * 30), width=120, height=25)
                 b.place(x=225, y=90 + (i * 30), width=120, height=25)
                 c.place(x=345, y=90 + (i * 30), width=120, height=25)
 
-        if(len(self.inactive_subjects_array)):
+        if(len(self.inactive_subjects_list)):
 
-            for i in range(1, len(self.inactive_subjects_array) + 1):
+            for i in range(1, len(self.inactive_subjects_list) + 1):
 
                 a = i
                 b = i * 10
 
-                a = Label(tab2, text=self.inactive_subjects_array[i - 1])
+                a = Label(tab2, text=self.inactive_subjects_list[i - 1])
 
                 a.place(x=220, y=90 + (i * 30), width=120, height=25)
 
@@ -277,37 +317,37 @@ class Application(Tk):
         sync_button_tab1 = Button(tab1, text="Sync")
         sync_button_tab2 = Button(tab2, text="Sync")
 
-        self.active_subjects_array = self.load_data('active_subjects')
-        self.inactive_subjects_array = self.load_data('inactive_subjects')
+        self.active_subjects_list = self.load_data('active_subjects')
+        self.inactive_subjects_list = self.load_data('inactive_subjects')
 
-        if (len(self.active_subjects_array)):
+        if (len(self.active_subjects_list)):
 
-            for i in range(1, len(self.active_subjects_array) + 1):
+            for i in range(1, len(self.active_subjects_list) + 1):
                 a = i
                 b = i * 10
                 c = i * 10 + 1
                 d = i * 10 + 2
 
-                a = Label(tab1, text=self.active_subjects_array[i - 1])
+                a = Label(tab1, text=self.active_subjects_list[i - 1])
                 b = Button(tab1, text="Subject info")
                 c = Button(tab1, text="Create record")
                 d = Button(tab1, text="Disable",
-                           command=lambda text=self.active_subjects_array[i - 1]: self.move_subject(text,1))
+                           command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text,1))
 
                 a.place(x=45, y=90 + (i * 30), width=120, height=25)
                 b.place(x=165, y=90 + (i * 30), width=120, height=25)
                 c.place(x=285, y=90 + (i * 30), width=120, height=25)
                 d.place(x=405, y=90 + (i * 30), width=120, height=25)
 
-        if (len(self.inactive_subjects_array)):
+        if (len(self.inactive_subjects_list)):
 
-            for i in range(1, len(self.inactive_subjects_array) + 1):
+            for i in range(1, len(self.inactive_subjects_list) + 1):
                 a = i
                 b = i * 10
 
-                a = Label(tab2, text=self.inactive_subjects_array[i - 1])
+                a = Label(tab2, text=self.inactive_subjects_list[i - 1])
                 b = Button(tab2, text="Enable",
-                           command=lambda text=self.inactive_subjects_array[i - 1]: self.move_subject(text,2))
+                           command=lambda text=self.inactive_subjects_list[i - 1]: self.move_subject(text,2))
 
                 a.place(x=145, y=90 + (i * 30), width=120, height=25)
                 b.place(x=265, y=90 + (i * 30), width=120, height=25)
