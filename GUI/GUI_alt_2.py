@@ -72,7 +72,9 @@ class Application(Tk):
         os.remove('inactive_subjects')
 
     def cross_road_function(self, name="none", password="none"):
-        if isp.try_login(self.session, name, password) < 0:
+        ret_value = isp.try_login(self.session, name, password)
+
+        if ret_value < 0:
             print ("TU VYHODIME EXCEPTION ZE NEPODARILO SA PRIHLASIT (NESPRAVNE MENO/HESLO/INTERNET)")
             return
 
@@ -98,10 +100,13 @@ class Application(Tk):
             return
 
         self.active_subjects_list = []
+        self.active_subjects_links_list = []
         for subject in subjects_list_with_links:
             self.active_subjects_list.append(subject[0])
+            self.active_subjects_links_list.append(subject[1])
 
         self.inactive_subjects_list = []
+        self.inactive_subjects_links_list = []
 
         groups = dict()
         groups["Skupina 1"] = ["Matus", "Tomas", "Dano"]
@@ -147,7 +152,8 @@ class Application(Tk):
         except Exception as e:
             print('Unable to save data to inactive_subjects:', e)
 
-        self.cross_road_function()
+        #self.cross_road_function()
+        self.subjects_page(1)
 
 
 

@@ -50,12 +50,39 @@ def get_subjects(s):
     #r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
 
     if r.status_code != 200:
-        return -3 #error getting tje page, maybe page down/no internet access
+        return -3 #error getting the page, maybe page down/no internet access
 
     #Parsing subjects url
-    match = "title=\"Sylabus predmetu\">(.*?)<.*?(index.pl\?predmet=[0-9]+)"
+    match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"
     result = re.findall(match, r.text, re.DOTALL)
     if result:
         return 1, result
     else:
         return -1 #parsing error, no subjects
+
+
+def get_groups_ids(s, subject_id):
+
+    if s == None:
+        return -4 #session not created
+
+    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
+            str(subject_id) + ";lang=sk"
+
+    r = s.get(url)
+    if r.status_code != 200:
+        return -3 #error getting the page, maybe page down/no internet access
+
+    match = "<select name=\"vybrane_cviceni\".*?</select>"
+    result_select = re.search(match, r.text, re.DOTALL)
+    if not result_select:
+        return -1 #parsing error, no groups
+    else:
+        result_select = result_select.group()
+        match = "<option value=\"([0-9]+)\">"
+        result = re.findall(match, result_select, re.DOTALL)
+        if result:
+            return 1, result
+        else:
+            return -1 #parsing error, no groups
+

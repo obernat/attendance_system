@@ -24,19 +24,14 @@ s = requests.Session()
 
 #Creating post with given payload to log in
 r = s.post("https://test.is.stuba.sk/auth/?lang=sk", data=payload)
-print (s.cookies)
 
 #Creating get to teacher page
-#r = s.get("https://test.is.stuba.sk/auth/ucitel")
+r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
 #print(r.text)
-
-#Creating get to delegated teacher page
-r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
-print (r.text)
 
 
 #Parsing subjects url
-match = "title=\"Sylabus predmetu\">(.*?)<.*?(index.pl\?predmet=[0-9]+)"
+match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"
 result = re.findall(match, r.text)
 if result:
     print (result)
@@ -45,4 +40,16 @@ if result:
 else:
     print ("no match found")
 
+url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
+final = url + result[0][1] + ";lang=sk"
+print (final)
+r = s.get(final)
+match = "<select name=\"vybrane_cviceni\".*?</select>"
+result = re.search(match, r.text, re.DOTALL)
+print (result.group())
+b = result.group()
+
+match = "<option value=\"([0-9]+)\">"
+result = re.findall(match, b, re.DOTALL)
+print (result)
 
