@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# project_specific_files
+active_subjects
+attendance
+inactive_subjects
+
