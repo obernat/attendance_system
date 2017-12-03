@@ -5,6 +5,7 @@ from six.moves import cPickle as pickle
 import os
 import time
 import sys
+from sys import platform
 import requests
 sys.path.append("../")
 import is_parser as isp
@@ -17,11 +18,20 @@ class Application(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
+
+        if platform == "darwin":
+            self.right_click = "<Button-2>"
+        else:
+            self.right_click = "<Button-3>"
+
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         self.geometry("600x500")
         self.login_page()
         self.selected = 0
         self.session = requests.Session()
+
+
+
 
     def clear_frame(self):
 
@@ -407,7 +417,7 @@ class Application(Tk):
                 a = name
                 a = Label(self, text= name, anchor="w")
                 a.place(x=30, y=150+(i*20), width=200, height=20)
-                a.bind("<Button-2>", self.popup_student)
+                a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
 
 
@@ -415,7 +425,7 @@ class Application(Tk):
                     g= j
                     g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]])
                     g.place(x=235+(j*25), y=150 + (i * 20), width=18, height=18)
-                    g.bind("<Button-2>", self.popup)
+                    g.bind(self.right_click, self.popup)
                     g.bind("<Enter>", self.on_enter)
 
                 i = i +1
