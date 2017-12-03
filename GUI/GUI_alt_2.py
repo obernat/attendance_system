@@ -280,6 +280,7 @@ class Application(Tk):
 
             back_button = Button(text="Back", command=self.login_page)
             sync_button= Button(text="Sync")
+            tmp_button = Button(text="Start")
 
             if (len(self.active_subjects_list)):
 
@@ -304,6 +305,7 @@ class Application(Tk):
 
             back_button.place(x=250, y=350, width=150, height=25)
             sync_button.place(x=475, y=0, width=120, height=25)
+            tmp_button.place(x=355,y=0, width=120, height=25)
 
         else:
 
