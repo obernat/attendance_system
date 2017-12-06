@@ -10,6 +10,7 @@ def try_login(s, name, password, timeout=86400):
 
     #Creating form sending to login
     payload = {
+    'lang' : 'sk',
     'destination': '/auth',
     'credential_0': name,
     'credential_1': password,
@@ -79,7 +80,7 @@ def get_groups_ids(s, subject_id):
         return -1 #parsing error, no groups
     else:
         result_select = result_select.group()
-        match = "<option value=\"([0-9]+)\">"
+        match = "<option value=\"([0-9]+)\""
         result = re.findall(match, result_select, re.DOTALL)
         if result:
             return 1, result
