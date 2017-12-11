@@ -3,13 +3,13 @@ from tkinter import font as tkfont
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
-import errorHandling as er
 import time
 import sys
 from sys import platform
 import requests
 sys.path.append("../")
 import is_parser as isp
+import error_handler as er
 import datetime
 
 
