@@ -102,7 +102,7 @@ class Application(Tk):
 
         if ret_value < 0:
             er.showError("K dispozícii nie sú žiadne predmety!")
-            self.sync_page()
+            #self.sync_page()
             return
 
         self.active_subjects_list = []
