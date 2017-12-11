@@ -1,8 +1,9 @@
 from tkinter import *
-from tkinter import font  as tkfont
+from tkinter import font as tkfont
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
+import errorHandling as er
 import time
 import sys
 from sys import platform
@@ -85,7 +86,8 @@ class Application(Tk):
         ret_value = isp.try_login(self.session, name, password)
 
         if ret_value < 0:
-            print ("TU VYHODIME EXCEPTION ZE NEPODARILO SA PRIHLASIT (NESPRAVNE MENO/HESLO/INTERNET)")
+            er.showError("Nesprávne prihlasovacie údaje!")
+            self.login_page()
             return
 
         #if self.file_check('active_subjects'):
@@ -94,19 +96,13 @@ class Application(Tk):
         else:
             self.sync_page()
 
-
-
-
-
-
-
-
-
     def load_subjects(self):
 
         ret_value, subjects_list_with_links = isp.get_subjects(self.session)
+
         if ret_value < 0:
-            print ("TU VYHODIME EXCEPTION ZE ZIADNE PREDMETY NEMAME")
+            er.showError("K dispozícii nie sú žiadne predmety!")
+            self.login_page()
             return
 
         self.active_subjects_list = []
