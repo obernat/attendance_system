@@ -41,8 +41,10 @@ def try_login(s, name, password, timeout=86400):
 
 def get_subjects(s):
 
+    result = []
+
     if s == None:
-        return -4 #session not created
+        return -4, result #session not created
 
     #Creating get to teacher page, cookies send automatically
     r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
@@ -51,7 +53,7 @@ def get_subjects(s):
     #r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
 
     if r.status_code != 200:
-        return -3 #error getting the page, maybe page down/no internet access
+        return -3, result #error getting the page, maybe page down/no internet access
 
     #Parsing subjects url
     match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"
@@ -59,7 +61,7 @@ def get_subjects(s):
     if result:
         return 1, result
     else:
-        return -1 #parsing error, no subjects
+        return -1, result #parsing error, no subjects
 
 
 def get_groups_ids(s, subject_id):
