@@ -22,10 +22,14 @@ def try_login(s, name, password, timeout=86400):
     #s = requests.Session()
 
     #Creating post with given payload to log in, cookies saved for future
-    r = s.post("https://test.is.stuba.sk/auth/?lang=sk", data=payload)
+    try:
+    	r = s.post("https://test.is.stuba.sk/auth/?lang=sk", data=payload, timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(e) #Logger
+        return -4 #timeout
 
     if r.status_code != 200:
-        return -3 #error posting on page, maybe page down/no internet access
+        return -3 #error posting on page, bad url?
 
     #Parsing div log
     match = "<div id=\"log\">.*?</div>"
