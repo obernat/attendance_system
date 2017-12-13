@@ -4,7 +4,6 @@ import sys
 import re
 
 def try_login(s, name, password, timeout=86400):
-
     if s == None:
         return -4 #session not created
 
@@ -32,8 +31,13 @@ def try_login(s, name, password, timeout=86400):
         return -3 #error posting on page, bad url?
 
     #Parsing div log
+    #WTF IS THIS SHIT - toto zavisi od sablony...
     match = "<div id=\"log\">.*?</div>"
     result = re.search(match, r.text, re.DOTALL)
+    if not result:
+        match = "<div id=\"prihlasen\">.*?</div>"
+        result = re.search(match, r.text, re.DOTALL)
+
     if result:
         result = str(result.group())
         if (result.find("Prihlásený") != -1 or result.find("Logged in") != -1):
@@ -65,7 +69,7 @@ def get_subjects(s):
     if result:
         return 1, result
     else:
-        return -1, result #parsing error, no subjects
+        return -1  #parsing error, no subjects
 
 
 def get_groups_ids(s, subject_id):
