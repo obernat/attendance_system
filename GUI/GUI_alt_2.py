@@ -3,14 +3,15 @@ from tkinter import font as tkfont
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
+import errorHandling as er
 import time
 import sys
 from sys import platform
 import requests
 sys.path.append("../")
 import is_parser as isp
-import error_handler as er
 import datetime
+import read_card2 as rc
 
 
 class Application(Tk):
@@ -30,6 +31,9 @@ class Application(Tk):
         self.login_page()
         self.selected = 0
         self.session = requests.Session()
+        self.monitored = 0
+
+
 
     def clear_frame(self):
 
@@ -49,21 +53,22 @@ class Application(Tk):
         self.login_button = Button(self, text="Login", command = lambda: self.cross_road_function(self.username_entry.get(),self.password_entry.get()))
         self.remove_button = Button(self, text="Remove files", command = self.remove_files )
 
-        self.title_label.place(relx=0.42, rely=0.42, y=-120, width=120, height=25)
-        self.username_label.place(relx=0.42, x=-60, rely=0.42, y=-65, width=120, height=25)
-        self.password_label.place(relx=0.42, x=-60, rely=0.42, y=-37, width=120, height=25)
-        self.username_entry.place(relx=0.42, x=60, rely=0.42, y=-65, width=120, height=25)
-        self.password_entry.place(relx=0.42, x=60, rely=0.42, y=-37, width=120, height=25)
-        self.checkbox.place(relx=0.42, rely=0.42, width=120, height=25)
-        self.login_button.place(relx=0.42, rely=0.42, y=40, width=120, height=25)
-        self.remove_button.place(relx=0.42, rely=0.42, y=70, width=120, height=25)
+
+        self.title_label.place(x=200, y=80, width=120, height=25)
+        self.username_label.place(x=150, y=125, width=120, height=25)
+        self.password_label.place(x=150, y=150, width=120, height=25)
+        self.username_entry.place(x=255, y=125, width=120, height=25)
+        self.password_entry.place(x=255, y=150, width=120, height=25)
+        self.checkbox.place(x=200, y=175, width=120, height=25)
+        self.login_button.place(x=200, y=210, width=120, height=25)
+        self.remove_button.place(x=200, y=235, width=120, height=25)
 
     def sync_page(self):
 
         self.clear_frame()
 
         self.sync_button = Button(self, text='Sync', command=self.load_subjects)
-        self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
+        self.sync_button.place(x=235, y=150, width=120, height=25)
 
     def file_check(self,file): #TODO - remove
 
@@ -98,7 +103,7 @@ class Application(Tk):
 
         if ret_value < 0:
             er.showError("K dispozícii nie sú žiadne predmety!")
-            #self.sync_page()
+            self.sync_page()
             return
 
         self.active_subjects_list = []
@@ -156,6 +161,21 @@ class Application(Tk):
 
         #self.cross_road_function()
         self.subjects_page(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     def save_subject_arrays(self):
@@ -257,7 +277,7 @@ class Application(Tk):
 
             back_button = Button(text="Back", command=self.login_page)
             sync_button= Button(text="Sync")
-            tmp_button = Button(text="Start")
+            tmp_button = Button(text="Start", command=self.read_card)
 
             if (len(self.active_subjects_list)):
 
@@ -275,14 +295,14 @@ class Application(Tk):
                     d = Button(text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text, 1))
 
-                    a.place(relx=0.375, x=-180, rely=0.20, y=(i * 30), width=120, height=25)
-                    b.place(relx=0.375, x=-60, rely=0.20, y=(i * 30), width=120, height=25)
-                    c.place(relx=0.375, x=+60, rely=0.20, y=(i * 30), width=120, height=25)
-                    d.place(relx=0.375, x=+180, rely=0.20, y=(i * 30), width=120, height=25)
+                    a.place(x=65, y=90 + (i * 30), width=120, height=25)
+                    b.place(x=185, y=90 + (i * 30), width=120, height=25)
+                    c.place(x=305, y=90 + (i * 30), width=120, height=25)
+                    d.place(x=425, y=90 + (i * 30), width=120, height=25)
 
-            back_button.place(relx=0.375, rely=0.63, width=150, height=25)
-            sync_button.place(relx=0.65, x=+38, y=0, width=75, height=25)
-            tmp_button.place(relx=0.65, x=-38, y=0, width=75, height=25)
+            back_button.place(x=250, y=350, width=150, height=25)
+            sync_button.place(x=475, y=0, width=120, height=25)
+            tmp_button.place(x=355,y=0, width=120, height=25)
 
         else:
 
@@ -313,10 +333,10 @@ class Application(Tk):
                     d = Button(tab1, text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text,1))
 
-                    a.place(relx=0.375, x=-180, rely=0.20, y=(i * 30), width=120, height=25)
-                    b.place(relx=0.375, x=-60, rely=0.20, y=(i * 30), width=120, height=25)
-                    c.place(relx=0.375, x=+60, rely=0.20, y=(i * 30), width=120, height=25)
-                    d.place(relx=0.375, x=+180, rely=0.20, y=(i * 30), width=120, height=25)
+                    a.place(x=45, y=90 + (i * 30), width=120, height=25)
+                    b.place(x=165, y=90 + (i * 30), width=120, height=25)
+                    c.place(x=285, y=90 + (i * 30), width=120, height=25)
+                    d.place(x=405, y=90 + (i * 30), width=120, height=25)
 
             if (len(self.inactive_subjects_list)):
 
@@ -328,13 +348,13 @@ class Application(Tk):
                     b = Button(tab2, text="Enable",
                                command=lambda text=self.inactive_subjects_list[i - 1]: self.move_subject(text,2))
 
-                    a.place(relx=0.375, x=-60, rely=0.20, y=(i * 30), width=120, height=25)
-                    b.place(relx=0.375, x=+60, rely=0.20, y=(i * 30), width=120, height=25)
+                    a.place(x=145, y=90 + (i * 30), width=120, height=25)
+                    b.place(x=265, y=90 + (i * 30), width=120, height=25)
 
-            back_button_tab1.place(relx=0.375, rely=0.63, width=150, height=25)
-            back_button_tab2.place(relx=0.375, rely=0.63, width=150, height=25)
-            sync_button_tab1.place(relx=0.65, x=+38, y=0, width=75, height=25)
-            sync_button_tab2.place(relx=0.65, x=+38, y=0, width=75, height=25)
+            back_button_tab1.place(x=200, y=300, width=150, height=25)
+            back_button_tab2.place(x=200, y=300, width=150, height=25)
+            sync_button_tab1.place(x=425, y=0, width=120, height=25)
+            sync_button_tab2.place(x=425, y=0, width=120, height=25)
 
             tabControl.pack(expand=1, fill="both")
 
@@ -377,12 +397,12 @@ class Application(Tk):
         variable.set(group)
 
         w = OptionMenu(self, variable, *OPTIONS)
-        w.place(relx=0.375, x=-100, rely=0.18, width=150, height=25)
+        w.place(x=150, y=80, width=150, height=25)
 
 
 
         button = Button(self, text="Select", command= lambda: self.subject_info_page(subject_name,variable.get()))
-        button.place(relx=0.375, x=100, rely=0.18, width=150, height=25)
+        button.place(x=315, y=80, width=150, height=25)
 
         if group is not "Skupina":
             i = 0
@@ -390,7 +410,7 @@ class Application(Tk):
             for k in range (0,12):
                 t =k
                 t = Label(self, text=str(k+1))
-                t.place(relx=0.35, x=+(k*25), rely=0.26, width=20, height=20)
+                t.place(x=235+(k*25), y=120, width=20, height=20)
             for name in  word_dict[group]:
 
                 a = name
@@ -403,14 +423,14 @@ class Application(Tk):
                 for j in range (0,12):
                     g= j
                     g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]])
-                    g.place(relx=0.35, x=+(k*25), rely=0.26, y=(i * 20), width=18, height=18)
+                    g.place(x=235+(j*25), y=150 + (i * 20), width=18, height=18)
                     g.bind(self.right_click, self.popup)
                     g.bind("<Enter>", self.on_enter)
 
                 i = i +1
 
-        title_label.place(relx=0.375, rely=0.08, width=160, height=25)
-        back_button.place(relx=0.375, rely=0.63, width=150, height=25)
+        title_label.place(x=200, y=40, width=160, height=25)
+        back_button.place(x=220, y=300, width=150, height=25)
 
     def popup(self, event):
         self.popupMenu.post(event.x_root, event.y_root)
@@ -458,6 +478,16 @@ class Application(Tk):
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
         self.subject_info_page(subject_name,group)
+
+    def read_card(self):
+        if(self.monitored==0):
+            self.monitored=1
+            self.read = rc.read_card2()
+            self.cardmonitor = self.read.readCards()
+        else:
+            self.monitored=0
+            self.self.read.stopReadCards(self.cardmonitor)
+
 
 app = Application()
 
