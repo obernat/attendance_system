@@ -468,7 +468,7 @@ class Application(Tk):
             self.cardmonitor = self.read.readCards()
         else:
             self.monitored=0
-            self.self.read.stopReadCards(self.cardmonitor)
+            self.read.stopReadCards(self.cardmonitor)
 
 
 app = Application()
