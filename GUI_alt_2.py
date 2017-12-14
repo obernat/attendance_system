@@ -7,7 +7,6 @@ import time
 import sys
 from sys import platform
 import requests
-sys.path.append("../")
 import is_parser as isp
 import error_handler as er
 import datetime
