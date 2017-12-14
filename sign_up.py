@@ -106,10 +106,25 @@ r = s.post(final, data=payload)
 
 
 
+class Student:
+    def __init__(self, name, cv_string, study_and_group, table_id):
+        self.name = name
+        self.cv_string = cv_string
+        self.study, self.group = self.parse_study_and_group(study_and_group)
+        self.table_id = table_id
 
+    def parse_study_and_group(self, study_and_group):
+        #match = "c([0-9]+)s([0-9]+)k"
+        #result = re.search(match, study_and_group)
+        #if result:
+        #   return 1, str(result.group(1)), str(result.group(2))
+        #else:
+        #    return -1 #parsing error
 
+        study = study_and_group[:study_and_group.find("s")].lstrip("c")
+        group = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
 
-
+        return study, group
 
 
 from lxml.html import etree
@@ -117,22 +132,48 @@ from lxml import html
 print ("------------------------------")
 tree = html.fromstring(r.text.encode())
 #tree.make_links_absolute(final)
+
 table_id = 1
+student_id = 1
+temp_count = 0
+name = addit_info = stud_and_group = ""
+student_list = []
+
 while True:
     table = tree.xpath("//table[@id='tmtab_%d']//tbody" %table_id)
     if not table:
         break;
     for row in table[0].xpath(".//tr"):
         for cell in row.xpath(".//td//small"):
-            print ("TEXT: ",cell.xpath(".//text()"))
+            text = cell.xpath(".//text()")
+            if text:
+                text = text[0]
+                if temp_count == 1:
+                    name = text
+                    temp_count += 1
+                elif temp_count == 2:
+                    addit_info = text
+                    temp_count == 0
+                try:
+                    temp_id = int(text.rstrip("."))
+                except ValueError:
+                    continue
+                if temp_id == student_id:
+                    student_id += 1
+                    temp_count = 1
             result = cell.xpath(".//div//input")
             if result:
-                print (result[0].attrib["id"])
-                print (result[0].attrib["value"])
+                stud_and_group = result[0].attrib["value"]
+                temp_count = 0
+                print ("RESULT:!",name,addit_info,stud_and_group)
+                student_list.append(Student(name, addit_info, stud_and_group, table_id))
+                break #one value is sufficient
     table_id += 1
-    break;
+    student_id = 1
+    #break;
     #sys.exit()
 
-
+for elem in student_list:
+    print (elem.name, elem.study, elem.group)
 
 
