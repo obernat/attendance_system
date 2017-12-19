@@ -272,7 +272,7 @@ class Application(Tk):
                     a = Label(text=self.active_subjects_list[i - 1])
                     b = Button(text="Subject info",
                                command=lambda text=self.active_subjects_list[i - 1]:
-                               self.subject_info_page(text, "Skupina"))
+                               self.subject_info_page(text, "Skupina","Tyzden 1"))
                     c = Button(text="Create record")
                     d = Button(text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text, 1))
@@ -310,7 +310,8 @@ class Application(Tk):
                     d = i * 10 + 2
 
                     a = Label(tab1, text=self.active_subjects_list[i - 1])
-                    b = Button(tab1, text="Subject info", command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina"))
+                    b = Button(tab1, text="Subject info",
+                               command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina", "Tyzden 1"))
                     c = Button(tab1, text="Create record")
                     d = Button(tab1, text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text,1))
@@ -345,10 +346,10 @@ class Application(Tk):
             else:
                 tabControl.select(tab2)
 
-    def subject_info_page(self, subject_name, group):
+    def subject_info_page(self, subject_name, group,week):
 
         self.clear_frame()
-        colors = ["red", "green","yellow","black","gray","yellow"]
+        colors = ["red", "green","yellow","black","gray","yellow","blue"]
         word_dict = self.load_groups()
 
         dochadzka = self.load_attendace()
@@ -362,67 +363,93 @@ class Application(Tk):
         back_button = Button(self, text="Back", command=lambda :self.subjects_page(1))
 
         self.popupMenu = Menu(self, tearoff=0)
-        self.popupMenu.add_command(label="red", command= lambda :self.change_attendance(subject_name,group,0))
-        self.popupMenu.add_command(label="green", command= lambda :self.change_attendance(subject_name,group,1))
-        self.popupMenu.add_command(label="yellow", command= lambda :self.change_attendance(subject_name,group,2))
-        self.popupMenu.add_command(label="black", command= lambda :self.change_attendance(subject_name,group,3))
-        self.popupMenu.add_command(label="gray", command= lambda :self.change_attendance(subject_name,group,4))
+        self.popupMenu.add_command(label="red", command= lambda :self.change_attendance(subject_name,group,week,0))
+        self.popupMenu.add_command(label="green", command= lambda :self.change_attendance(subject_name,group,week,1))
+        self.popupMenu.add_command(label="yellow", command= lambda :self.change_attendance(subject_name,group,week,2))
+        self.popupMenu.add_command(label="black", command= lambda :self.change_attendance(subject_name,group,week,3))
+        self.popupMenu.add_command(label="gray", command= lambda :self.change_attendance(subject_name,group,week,4))
 
         self.popupMenu2 = Menu(self, tearoff=0)
-        self.popupMenu2.add_command(label="Change group", command= lambda: self.change_group(group,subject_name))
+        self.popupMenu2.add_command(label="Change group", command= lambda: self.change_group(group,subject_name,week))
 
         OPTIONS = []
+        OPTIONS.append("Skupina")
         for i in range(1,20):
             OPTIONS.append("Skupina " + str(i))
+
+        week_options = []
+        for i in range(1, 13):
+            week_options.append("Tyzden " + str(i))
 
         variable = StringVar(self)
         variable.set(group)
 
         w = OptionMenu(self, variable, *OPTIONS)
-        w.place(relx=0.375, x=-100, rely=0.18, width=150, height=25)
+        w.place(relx=0.375, x=0, rely=0.18, width=150, height=25)
 
+        week_variable = StringVar(self)
+        week_variable.set(week)
 
+        week_option_menu = OptionMenu(self, week_variable, *week_options)
+        week_option_menu.place(relx=0.375, x=-150, rely=0.18, width=150, height=25)
 
-        button = Button(self, text="Select", command= lambda: self.subject_info_page(subject_name,variable.get()))
-        button.place(relx=0.375, x=100, rely=0.18, width=150, height=25)
+        tmp, week_number = str(week_variable.get()).split(' ')
+        button = Button(self, text="Select", command= lambda: self.subject_info_page(subject_name,variable.get(),week_variable.get()))
+        button.place(relx=0.375, x=150, rely=0.18, width=150, height=25)
 
         if group is not "Skupina":
             i = 0
 
             for k in range (0,12):
-                t =k
-                t = Label(self, text=str(k+1))
-                t.place(relx=0.35, x=+(k*25), rely=0.26, width=20, height=20)
+                if (k == int(week_number)-1):
+                    t =k
+                    t = Label(self, text=str(k+1),bg = "#37d3ff", borderwidth=2, highlightthickness=2,
+                              highlightcolor="#37d3ff",highlightbackground="#37d3ff",)
+                    t.place(relx=0.35, x=+(k*25), rely=0.27, width=21, height=21)
+                else:
+                    t = k
+                    t = Label(self, text=str(k + 1))
+                    t.place(relx=0.35, x=+(k * 25), rely=0.27, width=20, height=20)
+
+
             for name in  word_dict[group]:
 
                 a = name
                 a = Label(self, text= name, anchor="w")
-                a.place(x=30, y=150+(i*20), width=200, height=20)
+                a.place(x=30, y=150+(i*20), width=150, height=20)
                 a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
 
-
                 for j in range (0,12):
-                    g= j
-                    g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]])
-                    g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=18, height=18)
-                    g.bind(self.right_click, self.popup)
-                    g.bind("<Button-1>",lambda event : self.left_click(event,subject_name,group))
-                    g.bind("<Enter>", self.on_enter)
+                    if(j == int(week_number)-1):
+                        g= j
+                        g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]]
+                                  ,borderwidth=2, highlightthickness=2,highlightcolor="#37d3ff",highlightbackground="#37d3ff",)
+
+                        g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=21, height=21)
+                        g.bind(self.right_click, self.popup)
+                        g.bind("<Button-1>",lambda event : self.left_click(event,subject_name,group,week))
+                        g.bind("<Enter>", self.on_enter)
+                    else:
+                        g = j
+                        g = Label(self, text=name + "_" + str(j), bg=colors[dochadzka[name][j]],
+                                  fg=colors[dochadzka[name][j]])
+                        g.place(relx=0.35, x=+(j * 25), rely=0.26, y=+25 + (i * 20), width=18, height=18)
+
 
                 i = i +1
 
         title_label.place(relx=0.270, rely=0.08, width=300, height=25)
         back_button.place(relx=0.375, rely=0.63, width=150, height=25)
 
-    def left_click(self,event,subject_name,group):
+    def left_click(self,event,subject_name,group,week_selected):
 
         name, week = str(self.selected).split('_')
 
         if self.attendance[str(name)][int(week)] == 1:
-            self.change_attendance(subject_name,group,3)
+            self.change_attendance(subject_name,group,week_selected,3)
         else:
-            self.change_attendance(subject_name, group, 1)
+            self.change_attendance(subject_name, group,week_selected, 1)
 
     def popup(self, event):
         self.popupMenu.post(event.x_root, event.y_root)
@@ -436,16 +463,16 @@ class Application(Tk):
     def close_window(self, window):
         window.destroy()
 
-    def move_stundet_to_other_group(self, window, from_group, to_group, subject_name):
+    def move_stundet_to_other_group(self, window, from_group, to_group, subject_name,week_selected):
 
         self.groups[to_group].append(self.selected)
         self.groups[from_group].remove(self.selected)
         self.save_attendace()
-        self.subject_info_page(subject_name, to_group)
+        self.subject_info_page(subject_name, to_group,week_selected)
 
         self.close_window(window)
 
-    def change_group(self, group, subject_name):
+    def change_group(self, group, subject_name,week_selected):
 
         toplevel = Toplevel()
         toplevel.geometry("320x35")
@@ -461,14 +488,14 @@ class Application(Tk):
         w.place(x=5, y=5, width=150, height=25)
 
         button = Button(toplevel, text="Select",
-                        command=lambda: self.move_stundet_to_other_group(toplevel, group, variable.get(), subject_name))
+                        command=lambda: self.move_stundet_to_other_group(toplevel, group, variable.get(), subject_name,week_selected))
         button.place(x=160, y=5, width=150, height=25)
 
-    def change_attendance(self,subject_name,group,a):
+    def change_attendance(self,subject_name,group,week_selected,a):
         name,week = str(self.selected).split('_')
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
-        self.subject_info_page(subject_name,group)
+        self.subject_info_page(subject_name,group,week_selected)
 
     def read_card(self):
         if(self.monitored==0):
