@@ -407,12 +407,22 @@ class Application(Tk):
                     g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]])
                     g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=18, height=18)
                     g.bind(self.right_click, self.popup)
+                    g.bind("<Button-1>",lambda event : self.left_click(event,subject_name,group))
                     g.bind("<Enter>", self.on_enter)
 
                 i = i +1
 
         title_label.place(relx=0.270, rely=0.08, width=300, height=25)
         back_button.place(relx=0.375, rely=0.63, width=150, height=25)
+
+    def left_click(self,event,subject_name,group):
+
+        name, week = str(self.selected).split('_')
+
+        if self.attendance[str(name)][int(week)] == 1:
+            self.change_attendance(subject_name,group,3)
+        else:
+            self.change_attendance(subject_name, group, 1)
 
     def popup(self, event):
         self.popupMenu.post(event.x_root, event.y_root)
@@ -455,7 +465,6 @@ class Application(Tk):
         button.place(x=160, y=5, width=150, height=25)
 
     def change_attendance(self,subject_name,group,a):
-        print(self.selected,a)
         name,week = str(self.selected).split('_')
         self.attendance[str(name)][int(week)]=a
         self.save_attendace()
