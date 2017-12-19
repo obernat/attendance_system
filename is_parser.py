@@ -54,10 +54,9 @@ def try_login(s, name, password, timeout=86400):
 
 def get_subjects(s):
 
-    result = []
 
     if s == None:
-        return -4, result #session not created
+        return -4, None #session not created
 
     #Creating get to teacher page, cookies send automatically
     r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
@@ -66,7 +65,7 @@ def get_subjects(s):
     #r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
 
     if r.status_code != 200:
-        return -3, result #error getting the page, maybe page down/no internet access
+        return -3, None #error getting the page, maybe page down/no internet access
 
     #Parsing subjects url
     match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"
@@ -74,7 +73,7 @@ def get_subjects(s):
     if result:
         return 1, result
     else:
-        return -1  #parsing error, no subjects
+        return -1, None #parsing error, no subjects
 
 
 def get_groups_ids(s, subject_id):
@@ -87,12 +86,12 @@ def get_groups_ids(s, subject_id):
 
     r = s.get(url)
     if r.status_code != 200:
-        return -3 #error getting the page, maybe page down/no internet access
+        return -3, None #error getting the page, maybe page down/no internet access
 
     match = "<select name=\"vybrane_cviceni\".*?</select>"
     result_select = re.search(match, r.text, re.DOTALL)
     if not result_select:
-        return -1 #parsing error, no groups
+        return -1, None #parsing error, no groups
     else:
         result_select = result_select.group()
         match = "<option value=\"([0-9]+)\""
@@ -100,5 +99,5 @@ def get_groups_ids(s, subject_id):
         if result:
             return 1, result
         else:
-            return -1 #parsing error, no groups
+            return -1, None #parsing error, no groups
 
