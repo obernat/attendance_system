@@ -43,10 +43,6 @@ def try_login(s, name, password, timeout=86400):
     #else:
     #    return -2 #parsing error
 
-    print(r.text.find("Nesprávne prihlasovacie meno alebo heslo."))
-
-    print(r.text.find("Prihlasovací formulár nebol korektne vyplnený."))
-
 
     if (r.text.find("Nesprávne prihlasovacie meno alebo heslo.") != -1 or
             r.text.find("Prihlasovací formulár nebol korektne vyplnený.") != -1):
