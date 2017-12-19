@@ -29,7 +29,7 @@ class Application(Tk):
         self.geometry("600x500")
         self.login_page()
         self.selected = 0
-        self.session = requests.Session()
+        #self.session = requests.Session()
         self.monitored = 0
 
     def clear_frame(self):
@@ -40,6 +40,7 @@ class Application(Tk):
     def login_page(self):
 
         self.clear_frame()
+        self.session = requests.Session()
 
         self.title_label = Label(self, text="Login" ,font=self.title_font)
         self.username_label = Label(self, text="Username")
@@ -256,7 +257,7 @@ class Application(Tk):
 
         if not self.inactive_subjects_list:
 
-            back_button = Button(text="Back", command=self.login_page)
+            back_button = Button(text="Logout", command=self.login_page)
             sync_button= Button(text="Sync")
             tmp_button = Button(text="Start", command=self.read_card)
 
