@@ -405,13 +405,13 @@ class Application(Tk):
                 for j in range (0,12):
                     g= j
                     g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]])
-                    g.place(relx=0.35, x=+(k*25), rely=0.26, y=(i * 20), width=18, height=18)
+                    g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=18, height=18)
                     g.bind(self.right_click, self.popup)
                     g.bind("<Enter>", self.on_enter)
 
                 i = i +1
 
-        title_label.place(relx=0.375, rely=0.08, width=160, height=25)
+        title_label.place(relx=0.270, rely=0.08, width=300, height=25)
         back_button.place(relx=0.375, rely=0.63, width=150, height=25)
 
     def popup(self, event):
