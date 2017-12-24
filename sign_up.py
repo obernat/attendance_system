@@ -174,6 +174,6 @@ while True:
     #sys.exit()
 
 for elem in student_list:
-    print (elem.name, elem.study, elem.group)
+    print (elem.name, elem.study, elem.group, elem.table_id)
 
 

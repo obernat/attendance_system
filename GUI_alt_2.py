@@ -98,8 +98,10 @@ class Application(Tk):
 
         ret_value, subjects_list_with_links = isp.get_subjects(self.session)
 
-        if ret_value < 0:
+        if ret_value == -1:
             er.showError("K dispozícii nie sú žiadne predmety!")
+        elif ret_value < -1:
+            er.showError("Nepodarilo sa pripojiť ku sieti!")
             self.sync_page()
             return
 
@@ -112,11 +114,13 @@ class Application(Tk):
         self.inactive_subjects_list = []
         self.inactive_subjects_links_list = []
 
-        groups = dict()
+        #TODO tu vyhodit skupiny a dochadzku, vytvaranie aj davanie do suborov, to sa tu riesit nebude
+
+        groups = {}
         groups["Skupina 1"] = ["Matus", "Tomas", "Dano"]
         groups["Skupina 2"] = ["Matus2", "Tomas2", "Dano2"]
 
-        attendance = dict()
+        attendance = {}
         attendance["Matus"] = [0, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1]
         attendance["Tomas"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 3, 3, 3]
         attendance["Dano"] = [1, 2, 3, 4, 5, 1, 1, 1, 2, 4, 1, 1]
