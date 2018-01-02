@@ -107,25 +107,34 @@ r = s.post(final, data=payload)
 
 
 class Student:
-    def __init__(self, name, cv_string, study_and_group, table_id):
+    def __init__(self, name, cv_string, table_id, attendance):
         self.name = name
         self.cv_string = cv_string
-        self.study, self.group = self.parse_study_and_group(study_and_group)
         self.table_id = table_id
+        self.attendance = attendance
 
-    def parse_study_and_group(self, study_and_group):
-        #match = "c([0-9]+)s([0-9]+)k"
-        #result = re.search(match, study_and_group)
-        #if result:
-        #   return 1, str(result.group(1)), str(result.group(2))
-        #else:
-        #    return -1 #parsing error
 
-        study = study_and_group[:study_and_group.find("s")].lstrip("c")
-        group = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
 
-        return study, group
+def get_week_attendance(week):
+    week = str(week)
+    if week.find("div") > -1:
+        if week.find("reqfields") > -1:
+            return 0 #nezadane
+        elif week.find("checked") > -1:
+            return 1 #zucastnil sa
+        return 4 #neospravedlnena neucast
+    elif week.find("unid=150323") > -1:
+        return 7 #skorsi odchod
+    elif week.find("unid=149249") > -1:
+        return 3 #ospravedlnena neucast
+    elif week.find("150269") > -1:
+        return 6 #pritomny na inom cviceni
+    elif week.find("148793") > -1:
+        return 5 #vyluceny z cvicenia
+    elif week.find("149101") > -1:
+        return 2 #zucastnil sa s neskorym prichodom
 
+    return -1 #nieco velmi zle
 
 from lxml.html import etree
 from lxml import html
@@ -135,15 +144,17 @@ tree = html.fromstring(r.text.encode())
 
 table_id = 1
 student_id = 1
-temp_count = 0
 name = addit_info = stud_and_group = ""
 student_list = []
+
 
 while True:
     table = tree.xpath("//table[@id='tmtab_%d']//tbody" %table_id)
     if not table:
         break;
     for row in table[0].xpath(".//tr"):
+        temp_count = 0
+        attendance = [-1] * 13
         for cell in row.xpath(".//td//small"):
             text = cell.xpath(".//text()")
             if text:
@@ -153,7 +164,7 @@ while True:
                     temp_count += 1
                 elif temp_count == 2:
                     addit_info = text
-                    temp_count == 0
+                    temp_count = 3
                 try:
                     temp_id = int(text.rstrip("."))
                 except ValueError:
@@ -161,19 +172,132 @@ while True:
                 if temp_id == student_id:
                     student_id += 1
                     temp_count = 1
-            result = cell.xpath(".//div//input")
-            if result:
-                stud_and_group = result[0].attrib["value"]
+                    continue
+            if temp_count == 3:
+                print(etree.tostring(cell))
+                attendance[0] = get_week_attendance(etree.tostring(cell))
+                temp_count = 4
+            elif temp_count == 4:
+                print(etree.tostring(cell))
+                attendance[1] = get_week_attendance(etree.tostring(cell))
+                temp_count = 5
+            elif temp_count == 5:
+                attendance[2] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 6
+            elif temp_count == 6:
+                attendance[3] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 7
+            elif temp_count == 7:
+                attendance[4] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 8
+            elif temp_count == 8:
+                attendance[5] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 9
+            elif temp_count == 9:
+                attendance[6] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 10
+            elif temp_count == 10:
+                attendance[7] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 11
+            elif temp_count == 11:
+                attendance[8] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 12
+            elif temp_count == 12:
+                attendance[9] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 13
+            elif temp_count == 13:
+                attendance[10] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 14
+            elif temp_count == 14:
+                attendance[11] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
+                temp_count = 15
+            elif temp_count == 15:
+                attendance[12] = get_week_attendance(etree.tostring(cell))
+                print(etree.tostring(cell))
                 temp_count = 0
-                print ("RESULT:!",name,addit_info,stud_and_group)
-                student_list.append(Student(name, addit_info, stud_and_group, table_id))
-                break #one value is sufficient
+                print(name, attendance)
+                student_list.append(Student(name, addit_info, table_id, attendance))
+                break
+
+
+            #result = cell.xpath(".//div//input")
+            #if result:
+            #    stud_and_group = result[0].attrib["value"]
+            #    temp_count = 0
+            #    print ("RESULT:!",name,addit_info,stud_and_group)
+            #    student_list.append(Student(name, addit_info, stud_and_group, table_id))
+            #    break #one value is sufficient
     table_id += 1
     student_id = 1
     #break;
     #sys.exit()
 
 for elem in student_list:
-    print (elem.name, elem.study, elem.group, elem.table_id)
+    print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sys.exit()
+    #############################################################
+    #for row in table[0].xpath(".//tr"):
+    #    for cell in row.xpath(".//td//small"):
+    #        text = cell.xpath(".//text()")
+    #        if text:
+    #            text = text[0]
+    #            if temp_count == 1:
+    #                name = text
+    #                temp_count += 1
+    #            elif temp_count == 2:
+    #                addit_info = text
+    #                temp_count == 0
+    #            try:
+    #                temp_id = int(text.rstrip("."))
+    #            except ValueError:
+    #                continue
+    #            if temp_id == student_id:
+    #                student_id += 1
+    #                temp_count = 1
+    #        result = cell.xpath(".//div//input")
+    #        if result:
+    #            stud_and_group = result[0].attrib["value"]
+    #            temp_count = 0
+    #            print ("RESULT:!",name,addit_info,stud_and_group)
+    #            student_list.append(Student(name, addit_info, stud_and_group, table_id))
+    #            break #one value is sufficient
+    #table_id += 1
+    #student_id = 1
+    ##break;
+    ##sys.exit()
