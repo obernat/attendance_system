@@ -136,7 +136,7 @@ def get_week_attendance(week):
 
     return -1 #nieco velmi zle
 
-from lxml.html import etree
+#from lxml.html import etree
 from lxml import html
 print ("------------------------------")
 tree = html.fromstring(r.text.encode())
@@ -174,56 +174,56 @@ while True:
                     temp_count = 1
                     continue
             if temp_count == 3:
-                print(etree.tostring(cell))
-                attendance[0] = get_week_attendance(etree.tostring(cell))
+                print(html.etree.tostring(cell))
+                attendance[0] = get_week_attendance(html.etree.tostring(cell))
                 temp_count = 4
             elif temp_count == 4:
-                print(etree.tostring(cell))
-                attendance[1] = get_week_attendance(etree.tostring(cell))
+                print(html.etree.tostring(cell))
+                attendance[1] = get_week_attendance(html.etree.tostring(cell))
                 temp_count = 5
             elif temp_count == 5:
-                attendance[2] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[2] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 6
             elif temp_count == 6:
-                attendance[3] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[3] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 7
             elif temp_count == 7:
-                attendance[4] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[4] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 8
             elif temp_count == 8:
-                attendance[5] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[5] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 9
             elif temp_count == 9:
-                attendance[6] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[6] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 10
             elif temp_count == 10:
-                attendance[7] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[7] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 11
             elif temp_count == 11:
-                attendance[8] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[8] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 12
             elif temp_count == 12:
-                attendance[9] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[9] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 13
             elif temp_count == 13:
-                attendance[10] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[10] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 14
             elif temp_count == 14:
-                attendance[11] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[11] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 15
             elif temp_count == 15:
-                attendance[12] = get_week_attendance(etree.tostring(cell))
-                print(etree.tostring(cell))
+                attendance[12] = get_week_attendance(html.etree.tostring(cell))
+                print(html.etree.tostring(cell))
                 temp_count = 0
                 print(name, attendance)
                 student_list.append(Student(name, addit_info, table_id, attendance))
