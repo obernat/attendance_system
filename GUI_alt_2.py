@@ -27,7 +27,7 @@ class Application(Tk):
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         self.geometry("600x500")
-        self.login_page()
+        self.cross_road_function()
         self.selected = 0
         #self.session = requests.Session()
         self.monitored = 0
@@ -37,7 +37,7 @@ class Application(Tk):
         for child in self.winfo_children():
             child.destroy()
 
-    def login_page(self):
+    def login_page(self, subject):
 
         self.clear_frame()
         self.session = requests.Session()
@@ -47,48 +47,48 @@ class Application(Tk):
         self.password_label = Label(self, text="Password")
         self.username_entry = Entry(self)
         self.password_entry = Entry(self, show="*")
-        self.checkbox = Checkbutton(self, text="Keep me logged in")
-        self.login_button = Button(self, text="Login", command = lambda: self.cross_road_function(self.username_entry.get(),self.password_entry.get()))
-        self.remove_button = Button(self, text="Remove files", command = self.remove_files )
+        self.login_button = Button(self, text="Login",command = lambda: self.check_login(subject,self.username_entry.get(),self.password_entry.get()))
+        self.back_button = Button(self, text="Back", command= self.cross_road_function)
+
 
         self.title_label.place(relx=0.42, rely=0.42, y=-120, width=120, height=25)
         self.username_label.place(relx=0.42, x=-60, rely=0.42, y=-65, width=120, height=25)
         self.password_label.place(relx=0.42, x=-60, rely=0.42, y=-37, width=120, height=25)
         self.username_entry.place(relx=0.42, x=60, rely=0.42, y=-65, width=120, height=25)
         self.password_entry.place(relx=0.42, x=60, rely=0.42, y=-37, width=120, height=25)
-        self.checkbox.place(relx=0.42, rely=0.42, width=120, height=25)
-        self.login_button.place(relx=0.42, rely=0.42, y=40, width=120, height=25)
-        self.remove_button.place(relx=0.42, rely=0.42, y=70, width=120, height=25)
+        self.login_button.place(relx=0.42, rely=0.42, width=120, height=25)
+        self.back_button.place(relx=0.42, rely=0.42, y=40, width=120, height=25)
+
 
     def sync_page(self):
 
         self.clear_frame()
 
-        self.sync_button = Button(self, text='Sync', command=self.load_subjects)
+        self.sync_button = Button(self, text='Sync', command= lambda: self.login_page("All"))
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
 
-    def file_check(self,file): #TODO - remove
 
-        try:
-            open(file, "r")
-            return 1
-        except IOError:
-            return 0
+    def check_login(self, subject,name="none",password = "none", ):
 
-    def remove_files(self):
-
-        os.remove('active_subjects')
-        os.remove('inactive_subjects')
-
-    def cross_road_function(self, name="none", password="none"):
         ret_value = isp.try_login(self.session, name, password)
-
         if ret_value < 0:
             er.showError("Nesprávne prihlasovacie údaje!")
-            self.login_page()
+            self.login_page(subject)
             return
 
-        #if self.file_check('active_subjects'):
+        self.load_subjects()
+        print("Uspesne prihlaseny")
+        print(subject)
+        self.load_subjects()
+
+
+    def cross_road_function(self):
+        #ret_value = isp.try_login(self.session, name, password)
+        #if ret_value < 0:
+        #    er.showError("Nesprávne prihlasovacie údaje!")
+        #    self.login_page()
+        #    return
+
         if os.path.isfile('active_subjects'):
             self.subjects_page(1)
         else:
@@ -261,8 +261,8 @@ class Application(Tk):
 
         if not self.inactive_subjects_list:
 
-            back_button = Button(text="Logout", command=self.login_page)
-            sync_button= Button(text="Sync")
+            logout_button = Button(text="Logout")
+            sync_button= Button(text="Sync All", command= lambda: self.login_page("All"))
             tmp_button = Button(text="Start", command=self.read_card)
 
             if (len(self.active_subjects_list)):
@@ -277,7 +277,8 @@ class Application(Tk):
                     b = Button(text="Subject info",
                                command=lambda text=self.active_subjects_list[i - 1]:
                                self.subject_info_page(text, "Skupina","Tyzden 1"))
-                    c = Button(text="Create record")
+                    c = Button(text="Sync subject", command=lambda text=self.active_subjects_list[i - 1]:
+                               self.login_page(text))
                     d = Button(text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text, 1))
 
@@ -286,7 +287,7 @@ class Application(Tk):
                     c.place(relx=0.375, x=+60, rely=0.20, y=(i * 30), width=120, height=25)
                     d.place(relx=0.375, x=+180, rely=0.20, y=(i * 30), width=120, height=25)
 
-            back_button.place(relx=0.375, rely=0.63, width=150, height=25)
+            logout_button.place(relx=0.65, x=+114, y=0, width=75, height=25)
             sync_button.place(relx=0.65, x=+38, y=0, width=75, height=25)
             tmp_button.place(relx=0.65, x=-38, y=0, width=75, height=25)
 
@@ -299,10 +300,11 @@ class Application(Tk):
 
             tabControl.add(tab1, text='Active')
             tabControl.add(tab2, text='Inactive')
-            back_button_tab1 = Button(tab1, text="Back", command=self.login_page)
-            back_button_tab2 = Button(tab2, text="Back", command=self.login_page)
-            sync_button_tab1 = Button(tab1, text="Sync")
-            sync_button_tab2 = Button(tab2, text="Sync")
+            sync_button_tab1 = Button(tab1, text="Sync All", command= lambda :self.login_page("All"))
+            logout_button_tab1 = Button(tab1,text="Logout")
+            sync_button_tab2 = Button(tab2, text="Sync All", command= lambda : self.login_page("All"))
+            logout_button_tab2 = Button(tab2,text="Logout")
+
 
 
             if (len(self.active_subjects_list)):
@@ -316,7 +318,7 @@ class Application(Tk):
                     a = Label(tab1, text=self.active_subjects_list[i - 1])
                     b = Button(tab1, text="Subject info",
                                command=lambda text=self.active_subjects_list[i - 1]: self.subject_info_page(text,"Skupina", "Tyzden 1"))
-                    c = Button(tab1, text="Create record")
+                    c = Button(tab1, text="Sync subject", command=lambda text=self.active_subjects_list[i - 1]:self.login_page(text))
                     d = Button(tab1, text="Disable",
                                command=lambda text=self.active_subjects_list[i - 1]: self.move_subject(text,1))
 
@@ -338,10 +340,11 @@ class Application(Tk):
                     a.place(relx=0.375, x=-60, rely=0.20, y=(i * 30), width=120, height=25)
                     b.place(relx=0.375, x=+60, rely=0.20, y=(i * 30), width=120, height=25)
 
-            back_button_tab1.place(relx=0.375, rely=0.63, width=150, height=25)
-            back_button_tab2.place(relx=0.375, rely=0.63, width=150, height=25)
             sync_button_tab1.place(relx=0.65, x=+38, y=0, width=75, height=25)
             sync_button_tab2.place(relx=0.65, x=+38, y=0, width=75, height=25)
+            logout_button_tab1.place(relx=0.65, x=+114, y=0, width=75, height=25)
+            logout_button_tab2.place(relx=0.65, x=+114, y=0, width=75, height=25)
+
 
             tabControl.pack(expand=1, fill="both")
 
