@@ -251,3 +251,24 @@ def get_all_students_details(s, subject_id, groups):
 
     for elem in student_list:
         print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
+
+
+    def download_routine(name="none",password = "none"):
+        session = requests.Session()
+
+        #login
+        ret_value = try_login(session, name, password)
+        if ret_value < 0:
+            printf("Nesprávne prihlasovacie údaje!")
+            return
+
+        #download subjects
+        ret_value, subjects_list_with_links = get_subjects(self.session)
+        if ret_value == -1:
+            printf("K dispozícii nie sú žiadne predmety!")
+        elif ret_value < -1:
+            printf("Nepodarilo sa pripojiť ku sieti!")
+            return
+
+        #do it for all subjects
+

@@ -41,6 +41,8 @@ if result:
 else:
     print ("no match found")
 
+print (result[0][1])
+sys.exit()
 #get group id
 url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
 final = url + result[0][1] + ";lang=sk"
