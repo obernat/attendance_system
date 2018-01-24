@@ -507,13 +507,14 @@ class Application(Tk):
     def read_card(self):
         if(self.monitored==0):
             self.monitored=1
-            self.read = rc.read_card2()
+            self.read = rc.read_card2(self)
             self.cardmonitor = self.read.readCards()
         else:
             self.monitored=0
             self.read.stopReadCards(self.cardmonitor)
 
 
-app = Application()
 
-app.mainloop()
+if __name__ == "__main__":
+    app = Application()
+    app.mainloop()
