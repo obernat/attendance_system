@@ -112,6 +112,17 @@ def get_groups_ids(s, subject_id):
         else:
             return -1, None #parsing error, no groups
 
+class Teacher:
+    def __init__(self):
+        self.subjects_list = []
+
+
+class Subject:
+    def __init__(self, name, nonclear_id, student_list):
+        self.name = name
+        self.nid = nonclear_id
+        self.student_list = student_list
+
 
 class Student:
     def __init__(self, name, cv_string, table_id, attendance):
@@ -172,7 +183,7 @@ def get_all_students_data(s, subject_id, groups):
     	r = s.post(url, data=payload, timeout=10)
     except requests.exceptions.RequestException as e:
         print(e) #Logger
-        return -4 #timeout, bad url
+        return -4, None #timeout, bad url
 
 
     #parse students
@@ -256,15 +267,17 @@ def get_all_students_data(s, subject_id, groups):
     for elem in student_list:
         print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
 
+    return 1, student_list
 
 def download_routine(name="none",password = "none"):
     session = requests.Session()
+    teacher = Teacher()
 
     #login
     ret_value = try_login(session, name, password)
     if ret_value < 0:
         print("Nesprávne prihlasovacie údaje!")
-        return
+        return -4, None
 
     #download subjects
     ret_value, subjects_list_with_links = get_subjects(session)
@@ -272,7 +285,7 @@ def download_routine(name="none",password = "none"):
         print("K dispozícii nie sú žiadne predmety!")
     elif ret_value < -1:
         print("Nepodarilo sa pripojiť ku sieti!")
-        return
+        return -3, None
 
     #iterate all subjects
     for name,sub_id in subjects_list_with_links:
@@ -280,10 +293,16 @@ def download_routine(name="none",password = "none"):
         ret_value, group_ids = get_groups_ids(session, sub_id)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať skupiny!")
-            return
+            return -2, None
 
-        get_all_students_data(session, sub_id, group_ids)
+        ret_value, stud_list = get_all_students_data(session, sub_id, group_ids)
+        if ret_value < 0:
+            print("Nepodarilo sa vyparsovať údaje o študentoch")
+            return -1, None
+        teacher.subjects_list.append(Subject(name, sub_id, stud_list))
+
+    return 1, teacher
 
 
-#download_routine("xbernato", sys.argv[1])
-
+#a = download_routine("xbernato", sys.argv[1])
+#print(a.subjects_list[0].student_list[0].name)
