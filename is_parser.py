@@ -304,6 +304,7 @@ def download_routine(name="none",password = "none"):
 
     return 1, teacher
 
+
 def upload_routine(subject_id, name="none",password = "none"):
     session = requests.Session()
     teacher = Teacher()
@@ -314,10 +315,13 @@ def upload_routine(subject_id, name="none",password = "none"):
         print("Nesprávne prihlasovacie údaje!")
         return -4, None
 
+    #get list of ids
+    ret_value, group_ids = get_groups_ids(session, sub_id)
+    if ret_value < 0:
+        print("Nepodarilo sa vyparsovať skupiny!")
+        return -3, None
 
-
-
-
+    #upload students attendance
 
 
 
