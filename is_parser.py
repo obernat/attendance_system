@@ -295,6 +295,7 @@ def download_routine(name="none",password = "none"):
             print("Nepodarilo sa vyparsovať skupiny!")
             return -2, None
 
+        #get students attendance
         ret_value, stud_list = get_all_students_data(session, sub_id, group_ids)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať údaje o študentoch")
@@ -302,6 +303,24 @@ def download_routine(name="none",password = "none"):
         teacher.subjects_list.append(Subject(name, sub_id, stud_list))
 
     return 1, teacher
+
+def upload_routine(name="none",password = "none", subject_id):
+    session = requests.Session()
+    teacher = Teacher()
+
+    #login
+    ret_value = try_login(session, name, password)
+    if ret_value < 0:
+        print("Nesprávne prihlasovacie údaje!")
+        return -4, None
+
+
+
+
+
+
+
+
 
 
 #a = download_routine("xbernato", sys.argv[1])
