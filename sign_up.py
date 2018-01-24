@@ -42,7 +42,6 @@ else:
     print ("no match found")
 
 print (result[0][1])
-sys.exit()
 #get group id
 url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
 final = url + result[0][1] + ";lang=sk"
@@ -108,6 +107,7 @@ r = s.post(final, data=payload)
 
 
 
+
 class Student:
     def __init__(self, name, cv_string, table_id, attendance):
         self.name = name
@@ -125,18 +125,23 @@ def get_week_attendance(week):
         elif week.find("checked") > -1:
             return 1 #zucastnil sa
         return 4 #neospravedlnena neucast
-    elif week.find("unid=150323") > -1:
+    #elif week.find("unid=150323") > -1:
+    elif week.find("unid=188026") > -1:
         return 7 #skorsi odchod
-    elif week.find("unid=149249") > -1:
+    #elif week.find("unid=149249") > -1:
+    elif week.find("unid=188914") > -1:
         return 3 #ospravedlnena neucast
-    elif week.find("150269") > -1:
+    #elif week.find("150269") > -1:
+    elif week.find("187831") > -1:
         return 6 #pritomny na inom cviceni
-    elif week.find("148793") > -1:
+    #elif week.find("148793") > -1:
+    elif week.find("187220") > -1:
         return 5 #vyluceny z cvicenia
-    elif week.find("149101") > -1:
+    #elif week.find("149101") > -1:
+    elif week.find("187261") > -1:
         return 2 #zucastnil sa s neskorym prichodom
 
-    return -1 #nieco velmi zle
+    return -1 #parsing failed
 
 #from lxml.html import etree
 from lxml import html

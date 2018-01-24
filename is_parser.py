@@ -87,7 +87,7 @@ def get_groups_ids(s, subject_id):
     if s == None:
         return -5, None #session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
+    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl" + \
             str(subject_id) + ";lang=sk"
 
     try:
@@ -108,7 +108,6 @@ def get_groups_ids(s, subject_id):
         match = "<option value=\"([0-9]+)\""
         result = re.findall(match, result_select, re.DOTALL)
         if result:
-            print (result)
             return 1, result
         else:
             return -1, None #parsing error, no groups
@@ -130,38 +129,43 @@ def get_week_attendance(week):
         elif week.find("checked") > -1:
             return 1 #zucastnil sa
         return 4 #neospravedlnena neucast
-    elif week.find("unid=150323") > -1:
+    #elif week.find("unid=150323") > -1:
+    elif week.find("unid=188026") > -1:
         return 7 #skorsi odchod
-    elif week.find("unid=149249") > -1:
+    #elif week.find("unid=149249") > -1:
+    elif week.find("unid=188914") > -1:
         return 3 #ospravedlnena neucast
-    elif week.find("150269") > -1:
+    #elif week.find("150269") > -1:
+    elif week.find("187831") > -1:
         return 6 #pritomny na inom cviceni
-    elif week.find("148793") > -1:
+    #elif week.find("148793") > -1:
+    elif week.find("187220") > -1:
         return 5 #vyluceny z cvicenia
-    elif week.find("149101") > -1:
+    #elif week.find("149101") > -1:
+    elif week.find("187261") > -1:
         return 2 #zucastnil sa s neskorym prichodom
 
     return -1 #parsing failed
 
 
-def get_all_students_details(s, subject_id, groups):
+def get_all_students_data(s, subject_id, groups):
 
     if s == None:
         return -5, None #session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
+    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl" + \
             str(subject_id) + ";lang=sk"
 
     payload = {
     "lang" : "sk",
-    "predmet" : "313909",
-    "cviceni" : result[0],
+    "predmet" : str(subject_id[subject_id.find("predmet=")+len("predmet="):]),
+    "cviceni" : groups[0],
     "vybrane_cviceni" : [],
     "vzorek" : "",
     "omezit" : "Obmedziť",
     }
 
-    for i in result:
+    for i in groups:
         payload["vybrane_cviceni"].append(i)
 
     try:
@@ -253,22 +257,33 @@ def get_all_students_details(s, subject_id, groups):
         print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
 
 
-    def download_routine(name="none",password = "none"):
-        session = requests.Session()
+def download_routine(name="none",password = "none"):
+    session = requests.Session()
 
-        #login
-        ret_value = try_login(session, name, password)
+    #login
+    ret_value = try_login(session, name, password)
+    if ret_value < 0:
+        print("Nesprávne prihlasovacie údaje!")
+        return
+
+    #download subjects
+    ret_value, subjects_list_with_links = get_subjects(session)
+    if ret_value == -1:
+        print("K dispozícii nie sú žiadne predmety!")
+    elif ret_value < -1:
+        print("Nepodarilo sa pripojiť ku sieti!")
+        return
+
+    #iterate all subjects
+    for name,sub_id in subjects_list_with_links:
+        #get list of ids
+        ret_value, group_ids = get_groups_ids(session, sub_id)
         if ret_value < 0:
-            printf("Nesprávne prihlasovacie údaje!")
+            print("Nepodarilo sa vyparsovať skupiny!")
             return
 
-        #download subjects
-        ret_value, subjects_list_with_links = get_subjects(self.session)
-        if ret_value == -1:
-            printf("K dispozícii nie sú žiadne predmety!")
-        elif ret_value < -1:
-            printf("Nepodarilo sa pripojiť ku sieti!")
-            return
+        get_all_students_data(session, sub_id, group_ids)
 
-        #do it for all subjects
+
+#download_routine("xbernato", sys.argv[1])
 
