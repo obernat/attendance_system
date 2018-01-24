@@ -304,7 +304,7 @@ def download_routine(name="none",password = "none"):
 
     return 1, teacher
 
-def upload_routine(name="none",password = "none", subject_id):
+def upload_routine(subject_id, name="none",password = "none"):
     session = requests.Session()
     teacher = Teacher()
 
