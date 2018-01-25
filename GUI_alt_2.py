@@ -70,16 +70,16 @@ class Application(Tk):
 
     def check_login(self, subject,name="none",password = "none", ):
 
-        ret_value = isp.try_login(self.session, name, password)
+        ret_value, teacher = isp.download_routine(name, password)
         if ret_value < 0:
             er.showError("Nesprávne prihlasovacie údaje!")
             self.login_page(subject)
             return
 
-        self.load_subjects()
+        self.load_subjects(teacher)
         print("Uspesne prihlaseny")
         print(subject)
-        self.load_subjects()
+        self.load_subjects(teacher)
 
 
     def cross_road_function(self):
@@ -94,39 +94,42 @@ class Application(Tk):
         else:
             self.sync_page()
 
-    def load_subjects(self):
-
-        ret_value, subjects_list_with_links = isp.get_subjects(self.session)
-
-        if ret_value == -1:
-            er.showError("K dispozícii nie sú žiadne predmety!")
-        elif ret_value < -1:
-            er.showError("Nepodarilo sa pripojiť ku sieti!")
-            self.sync_page()
-            return
+    def load_subjects(self, teacher):
 
         self.active_subjects_list = []
-        self.active_subjects_links_list = []
-        for subject in subjects_list_with_links:
-            self.active_subjects_list.append(subject[0])
-            self.active_subjects_links_list.append(subject[1])
+        #self.active_subjects_links_list = []
+        for subject in teacher.subjects_list:
+            self.active_subjects_list.append(subject.name)
+            #self.active_subjects_links_list.append(subject.name)
 
         self.inactive_subjects_list = []
         self.inactive_subjects_links_list = []
 
         #TODO tu vyhodit skupiny a dochadzku, vytvaranie aj davanie do suborov, to sa tu riesit nebude
 
-        groups = {}
-        groups["Skupina 1"] = ["Matus", "Tomas", "Dano"]
-        groups["Skupina 2"] = ["Matus2", "Tomas2", "Dano2"]
 
+        groups = {}
         attendance = {}
-        attendance["Matus"] = [0, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1]
-        attendance["Tomas"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 3, 3, 3]
-        attendance["Dano"] = [1, 2, 3, 4, 5, 1, 1, 1, 2, 4, 1, 1]
-        attendance["Matus2"] = [1, 2, 3, 4, 5, 1, 5, 1, 1, 1, 1, 1]
-        attendance["Tomas2"] = [1, 2, 3, 4, 5, 1, 1, 5, 4, 1, 1, 1]
-        attendance["Dano2"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 2, 3, 1]
+        for subject in teacher.subjects_list:
+            for student in subject.student_list:
+                groups.setdefault(student.cv_string, []).append(student.name)
+                attendance.setdefault(student.name, []).append(student.attendance)
+
+        for key in groups:
+            print(key)
+
+
+        # groups = {}
+        # groups["Skupina 1"] = ["Matus", "Tomas", "Dano"]
+        # groups["Skupina 2"] = ["Matus2", "Tomas2", "Dano2"]
+        #
+        # attendance = {}
+        # attendance["Matus"] = [0, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1]
+        # attendance["Tomas"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 3, 3, 3]
+        # attendance["Dano"] = [1, 2, 3, 4, 5, 1, 1, 1, 2, 4, 1, 1]
+        # attendance["Matus2"] = [1, 2, 3, 4, 5, 1, 5, 1, 1, 1, 1, 1]
+        # attendance["Tomas2"] = [1, 2, 3, 4, 5, 1, 1, 5, 4, 1, 1, 1]
+        # attendance["Dano2"] = [1, 2, 3, 4, 5, 1, 1, 1, 1, 2, 3, 1]
 
         try:
             f = open('attendance', 'wb')
@@ -380,9 +383,9 @@ class Application(Tk):
         self.popupMenu2.add_command(label="Change group", command= lambda: self.change_group(group,subject_name,week))
 
         OPTIONS = []
-        OPTIONS.append("Skupina")
-        for i in range(1,20):
-            OPTIONS.append("Skupina " + str(i))
+        #OPTIONS.append("Skupina")
+        for key in self.groups:
+            OPTIONS.append(key)
 
         week_options = []
         for i in range(1, 13):
@@ -430,7 +433,7 @@ class Application(Tk):
                 for j in range (0,12):
                     if(j == int(week_number)-1):
                         g= j
-                        g = Label(self,text = name+ "_" + str(j),bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]]
+                        g = Label(self,text = name+ "_" + str(j)#,bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]]
                                   ,borderwidth=2, highlightthickness=2,highlightcolor="#37d3ff",highlightbackground="#37d3ff",)
 
                         g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=21, height=21)
@@ -439,8 +442,9 @@ class Application(Tk):
                         g.bind("<Enter>", self.on_enter)
                     else:
                         g = j
-                        g = Label(self, text=name + "_" + str(j), bg=colors[dochadzka[name][j]],
-                                  fg=colors[dochadzka[name][j]])
+                        g = Label(self, text=name + "_" + str(j)#, bg=colors[dochadzka[name][j]],
+                                  #fg=colors[dochadzka[name][j]]
+                        )
                         g.place(relx=0.35, x=+(j * 25), rely=0.26, y=+25 + (i * 20), width=18, height=18)
 
 
