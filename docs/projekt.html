@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$(".show").click(function(){
+			if(this.id=="ulahcenie1"){
+				$("#ulahcenie").toggle();
+				$("#offline").hide();
+				$("#ais").hide();
+				$("#nieco").hide();}
+			if(this.id=="offline1"){
+				$("#offline").toggle();
+				$("#ulahcenie").hide();
+				$("#ais").hide();
+				$("#nieco").hide();}
+			if(this.id=="ais1"){
+				$("#offline").hide();
+				$("#ulahcenie").hide();
+				$("#nieco").hide();
+				$("#ais").toggle();}
+			if(this.id=="nieco1"){
+				$("#offline").hide();
+				$("#ais").hide();
+				$("#ulahcenie").hide();
+				$("#nieco").toggle();}
+		});
+	});
+	</script>
+	<style>
+	body  {
+    background-image: url("images/background.jpg");
+    background-color: #cccccc;
+	background-repeat:no-repeat;
+	background-position: center bottom;
+	display: compact;
+	}
+	</style>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Prezentačný web</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+
+	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+
+	<!-- <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'> -->
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="css/icomoon.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="css/owl.carousel.min.css">
+	<link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+	<link rel="stylesheet" href="css/style.css">
+
+
+	<!-- Modernizr JS -->
+	<script src="js/modernizr-2.6.2.min.js"></script>
+	<!-- FOR IE9 below -->
+	<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+	</head>
+	<body>
+	<header>
+		<div class="container text-center">
+			<div class="fh5co-navbar-brand">
+				<a class="fh5co-logo" href="index.html">Tímový projekt</a>
+			</div>
+			<nav id="fh5co-main-nav" role="navigation">
+				<ul>
+					<li><a href="index.html">Domov</a></li>
+					<li><a href="projekt.html" class="active">O projekte</a></li>
+					<li><a href="about.html">O nás</a></li>
+					<li><a href="zapisy.html">Zápisy</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+
+	<div id="fh5co-featured-work-section">
+		<div class="container-fluid">
+			<div class="heading-section text-center">
+				<h2>O proejkte</h2>
+			</div>
+			<div class="row about text-center">
+				<div class="col-md-10 col-md-offset-1">
+					<p>Náš projekt sa zameriava na riešenie problému efektívneho zapisovania povinnej dochádzky študentov na cvičeniach.
+					Spravovanie dochádzky je činnosť, ktorá momentálne zaberá učiteľom viac času, než je potrebné. Preto sme sa rozhodli 
+					doplniť tento proces o náš systém, ktorý umožňuje za pomerne nízke náklady (na čítačku, ktorá sa pripojí k notebook-u) 
+					ušetriť čas z každej hodiny a to tak, že miesto vyvolávania študentov po mene sa 
+					každý študent na začiatku hodiny priložením svojej ISIC karty zapíše do dochádzky. </p>
+				<br>
+				</div>
+			</div>
+			<div class="heading-section text-center">
+				<h2>Hlavné ciele</h2>
+			</div>
+			<div class="paragraphs">
+				<div class="row row-no-margin">
+					<div class="col-xs-12 col-sm-3 col-no-padding">
+						<img id="ulahcenie1" class="img-rounded thumbnail img-responsive show" src="images/stressed.jpg" width='350px' height='200px'/>
+						<div class="content-heading"><h3>Uľahčenie práce vyučujúcich &nbsp </h3></div>
+							<!-- <p>V súčasnosti musí vyučujúci na začiatku každého cvičenia vyvolávať študentov po mene a zapisovať ich dochádzku do IS-u.
+							Ak nemá možnosť byť pripojený k internetu, musí si dochádzku zapísať a neskôr ju nahodiť do systému. Tento postup zaberá veľa času, ktorý by sa dal využit na vyučovanie.</p> -->
+						</div>
+						<div class="col-xs-12 col-sm-3 col-no-padding">
+						<img id='offline1' class="img-rounded thumbnail img-responsive show" src="images/404.jpg" width='350px' height='200px'/>
+						<div class="content-heading"><h3>Možnosť zaznamenať dochádzku offline &nbsp </h3></div>
+							<!-- <p>V súčasnosti musí vyučujúci na začiatku každého cvičenia vyvolávať študentov po mene a zapisovať ich dochádzku do IS-u.
+							Ak nemá možnosť byť pripojený k internetu, musí si dochádzku zapísať a neskôr ju nahodiť do systému. Tento postup zaberá veľa času, ktorý by sa dal využit na vyučovanie.</p> -->
+						</div>
+						<div class="col-xs-12 col-sm-3 col-no-padding">
+						<img id='ais1' class="img-rounded thumbnail img-responsive show" src="images/is.stuba.sk.png" width='350px' height='200px' />
+						<div class="content-heading"><h3>Synchronizácia so systémom AIS &nbsp </h3></div>
+							<!-- <p>V súčasnosti musí vyučujúci na začiatku každého cvičenia vyvolávať študentov po mene a zapisovať ich dochádzku do IS-u.
+							Ak nemá možnosť byť pripojený k internetu, musí si dochádzku zapísať a neskôr ju nahodiť do systému. Tento postup zaberá veľa času, ktorý by sa dal využit na vyučovanie.</p> -->
+						</div>
+						<div class="col-xs-12 col-sm-3 col-no-padding">
+						<img id='nieco1' class="img-rounded thumbnail img-responsive show" src="images/stressed.jpg" width='350px' height='200px' />
+						<div class="content-heading"><h3>Rýchla a jednoduchá manipulácia &nbsp </h3></div>
+							<!-- <p></p> -->
+						</div>
+				</div>
+				</div>
+			<div class="text-center">
+				<p>Pre viac informácii klikni na obrázok</p>
+			</div>
+			<div class="row about text-center" id="ulahcenie"  style="display:none;">
+				<div class="col-md-10 col-md-offset-1">
+					<p>V súčasnosti musí vyučujúci na začiatku každého cvičenia vyvolávať študentov po mene a zapisovať ich dochádzku do IS-u.
+					Ak nemá možnosť byť pripojený k internetu, musí si dochádzku zapísať a neskôr ju nahodiť do systému. Tento postup zaberá veľa času, ktorý by sa dal využit na vyučovanie. 
+					</p>
+				<br>
+				</div>
+			</div>
+			<div class="row about text-center" id="offline"  style="display:none;">
+				<div class="col-md-10 col-md-offset-1">
+					<p>Ak používateľ nemá prístup k internetu, môže urobiť dochádzku offline a po pripojení k internetu vie jedným kliknutím nahrať dochádzku do systému.</p>
+				<br>
+				</div>
+			</div>
+			<div class="row about text-center" id="ais"  style="display:none;">
+				<div class="col-md-10 col-md-offset-1">
+					<p>Vyučujúci vie zosynchronizovať aplikáciu so systémom AIS. Aplikácia sama pri prvom prihláseni stiahne zoznamy študentov, ktorých vyučujete. Po zaznamenaní dochádzky taktiež zapíše zmeny do systému AIS</p>
+				<br>
+				</div>
+			</div>
+			<div class="row about text-center" id="nieco"  style="display:none;">
+				<div class="col-md-10 col-md-offset-1">
+					<p>Aplikácia je velmi jednoduchá a interaktívna</p>
+				<br>
+				</div>
+			</div>
+		</div>
+	</div><!-- end fh5co-featured-work-section -->
+
+
+
+	<!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Owl carousel -->
+	<script src="js/owl.carousel.min.js"></script>
+	<!-- Stellar -->
+	<script src="js/jquery.stellar.min.js"></script>
+
+	<!-- Main JS (Do not remove) -->
+	<script src="js/main.js"></script>
+
+	</body>
+</html>
+
