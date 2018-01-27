@@ -3,6 +3,7 @@ import requests
 import sys
 import re
 from lxml import html
+import database as db
 
 def try_login(s, name, password, timeout=86400):
     #TODO tu vzdy ratame s tym ze user je online, treba nechat aj moznost ze user bude offline
@@ -111,32 +112,6 @@ def get_groups_ids(s, subject_id):
             return 1, result
         else:
             return -1, None #parsing error, no groups
-
-class Teacher:
-    def __init__(self):
-        self.subjects_list = []
-
-
-class Subject:
-    def __init__(self, name, sid, student_list):
-        self.name = name
-        self.sid = sid
-        self.student_list = student_list
-
-
-class Student:
-    def __init__(self, name, cv_string, table_id, attendance, stud_and_group):
-        self.name = name
-        self.cv_string = cv_string
-        self.table_id = table_id
-        self.attendance = attendance
-        self.study, self.group = self.parse_study_and_group(stud_and_group)
-
-    def parse_study_and_group(self, study_and_group):
-        group = study_and_group[:study_and_group.find("s")].lstrip("c")
-        study = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
-
-        return study, group
 
 
 def get_week_attendance(week):
@@ -268,7 +243,7 @@ def get_all_students_data(s, subject_id, groups):
                 elif temp_count == 15:
                     attendance[12] = get_week_attendance(html.etree.tostring(cell))
                     temp_count = 0
-                    student_list.append(Student(name, addit_info, table_id, attendance, stud_and_group))
+                    student_list.append(db.Student(name, addit_info, table_id, attendance, stud_and_group))
                     break
 
         table_id += 1
@@ -281,7 +256,7 @@ def get_all_students_data(s, subject_id, groups):
 
 def download_routine(name="none",password = "none"):
     session = requests.Session()
-    teacher = Teacher()
+    teacher = db.Teacher()
 
     #login
     ret_value = try_login(session, name, password)
@@ -310,14 +285,13 @@ def download_routine(name="none",password = "none"):
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať údaje o študentoch")
             return -1, None
-        teacher.subjects_list.append(Subject(name, sub_id, stud_list))
+        teacher.subjects_list.append(db.Subject(name, sub_id, stud_list))
 
     return 1, teacher
 
 
 def upload_routine(sub_id, name="none",password = "none"):
     session = requests.Session()
-    teacher = Teacher()
 
     #login
     ret_value = try_login(session, name, password)
