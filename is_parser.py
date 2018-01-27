@@ -74,7 +74,7 @@ def get_subjects(s):
         return -2, None #error getting the page, maybe page down/no internet access
 
     #Parsing subjects url
-    match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"
+    match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl\?predmet=([0-9]+)"
     result = re.findall(match, r.text, re.DOTALL)
     if result:
         return 1, result
@@ -87,7 +87,7 @@ def get_groups_ids(s, subject_id):
     if s == None:
         return -5, None #session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl" + \
+    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
             str(subject_id) + ";lang=sk"
 
     try:
@@ -118,18 +118,25 @@ class Teacher:
 
 
 class Subject:
-    def __init__(self, name, nonclear_id, student_list):
+    def __init__(self, name, sid, student_list):
         self.name = name
-        self.nid = nonclear_id
+        self.sid = sid
         self.student_list = student_list
 
 
 class Student:
-    def __init__(self, name, cv_string, table_id, attendance):
+    def __init__(self, name, cv_string, table_id, attendance, stud_and_group):
         self.name = name
         self.cv_string = cv_string
         self.table_id = table_id
         self.attendance = attendance
+        self.study, self.group = self.parse_study_and_group(stud_and_group)
+
+    def parse_study_and_group(self, study_and_group):
+        group = study_and_group[:study_and_group.find("s")].lstrip("c")
+        study = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
+
+        return study, group
 
 
 def get_week_attendance(week):
@@ -164,12 +171,12 @@ def get_all_students_data(s, subject_id, groups):
     if s == None:
         return -5, None #session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl" + \
+    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
             str(subject_id) + ";lang=sk"
 
     payload = {
     "lang" : "sk",
-    "predmet" : str(subject_id[subject_id.find("predmet=")+len("predmet="):]),
+    "predmet" : str(subject_id),
     "cviceni" : groups[0],
     "vybrane_cviceni" : [],
     "vzorek" : "",
@@ -200,7 +207,7 @@ def get_all_students_data(s, subject_id, groups):
         for row in table[0].xpath(".//tr"): #iterate over all rows(students)
             temp_count = 0
             attendance = [-1] * 13
-            name = addit_info = ""
+            name = addit_info = stud_and_group = ""
             for cell in row.xpath(".//td//small"): #iterate over all cells(one student)
                 text = cell.xpath(".//text()")
                 if text:
@@ -220,6 +227,9 @@ def get_all_students_data(s, subject_id, groups):
                         temp_count = 1
                         continue
                 if temp_count == 3:
+                    result = cell.xpath(".//div//input")
+                    if result:
+                        stud_and_group = result[0].attrib["value"]
                     attendance[0] = get_week_attendance(html.etree.tostring(cell))
                     temp_count = 4
                 elif temp_count == 4:
@@ -258,7 +268,7 @@ def get_all_students_data(s, subject_id, groups):
                 elif temp_count == 15:
                     attendance[12] = get_week_attendance(html.etree.tostring(cell))
                     temp_count = 0
-                    student_list.append(Student(name, addit_info, table_id, attendance))
+                    student_list.append(Student(name, addit_info, table_id, attendance, stud_and_group))
                     break
 
         table_id += 1
@@ -305,7 +315,7 @@ def download_routine(name="none",password = "none"):
     return 1, teacher
 
 
-def upload_routine(subject_id, name="none",password = "none"):
+def upload_routine(sub_id, name="none",password = "none"):
     session = requests.Session()
     teacher = Teacher()
 
@@ -327,5 +337,5 @@ def upload_routine(subject_id, name="none",password = "none"):
 
 
 
-#a = download_routine("xbernato", sys.argv[1])
+#ret, a = download_routine("xbernato", sys.argv[1])
 #print(a.subjects_list[0].student_list[0].name)
