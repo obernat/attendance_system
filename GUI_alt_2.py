@@ -27,6 +27,7 @@ class Application(Tk):
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         self.geometry("600x500")
+        self.minsize(height=500, width=600)
         self.cross_road_function()
         self.selected = 0
         #self.session = requests.Session()
@@ -370,7 +371,8 @@ class Application(Tk):
 
 
         title_label = Label(self, text=subject_name, font=self.title_font)
-        back_button = Button(self, text="Back", command=lambda :self.subjects_page(1))
+        back_button = Button(self, text="Back", command=lambda :[self.subjects_page(1),self.geometry("600x500"),
+        self.minsize(height=500, width=600)])
 
         self.popupMenu = Menu(self, tearoff=0)
         self.popupMenu.add_command(label="red", command= lambda :self.change_attendance(subject_name,group,week,0))
@@ -395,18 +397,18 @@ class Application(Tk):
         variable.set(group)
 
         w = OptionMenu(self, variable, *OPTIONS)
-        w.place(relx=0.375, x=0, rely=0.18, width=150, height=25)
+        w.place(relx=0.375, x=0, rely=0.18, width=350, height=28)
 
         week_variable = StringVar(self)
         week_variable.set(week)
 
         week_option_menu = OptionMenu(self, week_variable, *week_options)
-        week_option_menu.place(relx=0.375, x=-150, rely=0.18, width=150, height=25)
+        week_option_menu.place(relx=0.375, x=-150, rely=0.18, width=150, height=28)
 
         tmp, week_number = str(week_variable.get()).split(' ')
         button = Button(self, text="Select", command= lambda: self.subject_info_page(subject_name,variable.get(),week_variable.get()))
-        button.place(relx=0.375, x=150, rely=0.18, width=150, height=25)
-
+        button.place(relx=0.375, x=350, rely=0.18, width=150, height=25)
+        bot= 0
         if group is not "Skupina":
             i = 0
 
@@ -415,18 +417,18 @@ class Application(Tk):
                     t =k
                     t = Label(self, text=str(k+1),bg = "#37d3ff", borderwidth=2, highlightthickness=2,
                               highlightcolor="#37d3ff",highlightbackground="#37d3ff",)
-                    t.place(relx=0.35, x=+(k*25), rely=0.27, width=21, height=21)
+                    t.place(relx=0.4, x=+(k*25), rely=0.3,y=-22, width=21, height=21)
                 else:
                     t = k
                     t = Label(self, text=str(k + 1))
-                    t.place(relx=0.35, x=+(k * 25), rely=0.27, width=20, height=20)
+                    t.place(relx=0.4, x=+(k * 25), rely=0.3, y=-22, width=20, height=20)
 
 
             for name in  word_dict[group]:
 
                 a = name
                 a = Label(self, text= name, anchor="w")
-                a.place(x=30, y=150+(i*20), width=150, height=20)
+                a.place(relx=0.375, x=-150, rely=0.3, y=+(i*20), width=150, height=20)
                 a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
 
@@ -436,7 +438,7 @@ class Application(Tk):
                         g = Label(self,text = name+ "_" + str(j)#,bg = colors[dochadzka[name][j]], fg = colors[dochadzka[name][j]]
                                   ,borderwidth=2, highlightthickness=2,highlightcolor="#37d3ff",highlightbackground="#37d3ff",)
 
-                        g.place(relx=0.35, x=+(j*25), rely=0.26, y=+25+(i * 20), width=21, height=21)
+                        g.place(relx=0.4, x=+(j*25), rely=0.3, y=+(i * 20), width=21, height=21)
                         g.bind(self.right_click, self.popup)
                         g.bind("<Button-1>",lambda event : self.left_click(event,subject_name,group,week))
                         g.bind("<Enter>", self.on_enter)
@@ -445,13 +447,15 @@ class Application(Tk):
                         g = Label(self, text=name + "_" + str(j)#, bg=colors[dochadzka[name][j]],
                                   #fg=colors[dochadzka[name][j]]
                         )
-                        g.place(relx=0.35, x=+(j * 25), rely=0.26, y=+25 + (i * 20), width=18, height=18)
+                        g.place(relx=0.4, x=+(j * 25), rely=0.3, y=+ (i * 20), width=18, height=18)
 
+                bot = len(word_dict[group])
+                i = i + 1
 
-                i = i +1
+        title_label.place(relx=0.385, rely=0.08, width=300, height=25)
+        back_button.place(relx=0.375, x=85, rely=0.25, y=+(25*(bot)), width=150, height=25)
 
-        title_label.place(relx=0.270, rely=0.08, width=300, height=25)
-        back_button.place(relx=0.375, rely=0.63, width=150, height=25)
+        self.minsize(height=(250+(bot*25)), width=1000)
 
     def left_click(self,event,subject_name,group,week_selected):
 
