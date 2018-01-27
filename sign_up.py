@@ -109,12 +109,18 @@ r = s.post(final, data=payload)
 
 
 class Student:
-    def __init__(self, name, cv_string, table_id, attendance):
+    def __init__(self, name, cv_string, table_id, attendance, stud_and_group):
         self.name = name
         self.cv_string = cv_string
         self.table_id = table_id
         self.attendance = attendance
+        self.study, self.group = self.parse_study_and_group(stud_and_group)
 
+    def parse_study_and_group(self, study_and_group):
+        group = study_and_group[:study_and_group.find("s")].lstrip("c")
+        study = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
+
+        return study, group
 
 
 def get_week_attendance(week):
@@ -181,6 +187,11 @@ while True:
                     temp_count = 1
                     continue
             if temp_count == 3:
+                result = cell.xpath(".//div//input")
+                if result:
+                    stud_and_group = result[0].attrib["value"]
+                    print(stud_and_group)
+
                 print(html.etree.tostring(cell))
                 attendance[0] = get_week_attendance(html.etree.tostring(cell))
                 temp_count = 4
@@ -233,7 +244,7 @@ while True:
                 print(html.etree.tostring(cell))
                 temp_count = 0
                 print(name, attendance)
-                student_list.append(Student(name, addit_info, table_id, attendance))
+                student_list.append(Student(name, addit_info, table_id, attendance, stud_and_group))
                 break
 
 
@@ -250,22 +261,55 @@ while True:
     #sys.exit()
 
 for elem in student_list:
-    print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
+    print (elem.name, elem.cv_string, elem.table_id, elem.attendance, elem.study, elem.group)
+
+
+
+
+
+url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
+url += "?predmet=313909;" #predmet
+url += "studium=" + str(student_list[0].study) + ";"
+url += "podrobne=" + str(student_list[0].group) + ";"
+url += "misto_vyuky=0;"
+url += "vybrane_cviceni=" + str(student_list[0].group)
+
+print (url)
 
 
 
 
 
 
+payload = {
+"lang" : "sk",
+"predmet" : "313909",
+"cviceni" : str(student_list[0].group),
+"vybrane_cviceni" : str(student_list[0].group),
+"podrobne" : str(student_list[0].group),
+"studium" : str(student_list[0].study),
+"misto_vyuky" : "0",
+"dochazka1" : "0",
+"dochazka2" : "1",
+"dochazka3" : "2",
+"dochazka4" : "4",
+"dochazka5" : "0",
+"dochazka6" : "0",
+"dochazka7" : "0",
+"dochazka8" : "0",
+"dochazka9" : "0",
+"dochazka10" : "0",
+"dochazka11" : "0",
+"dochazka12" : "0",
+"dochazka13" : "6",
+"ulozit_podrobne" : "Uložiť",
+}
 
 
+print (payload)
 
 
-
-
-
-
-
+r = s.post(url, data=payload)
 
 
 
