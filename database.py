@@ -4,10 +4,11 @@ class Teacher:
 
 
 class Subject:
-    def __init__(self, name, sid, student_list):
+    def __init__(self, name, sid, student_list,is_active =1):
         self.name = name
         self.sid = sid
         self.student_list = student_list
+        self.is_active = is_active
 
 
 class Student:
