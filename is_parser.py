@@ -114,6 +114,33 @@ def get_groups_ids(s, subject_id):
             return -1, None #parsing error, no groups
 
 
+#def get_week_attendance(week):
+#    week = str(week)
+#    if week.find("div") > -1:
+#        if week.find("reqfields") > -1:
+#            return 0 #nezadane
+#        elif week.find("checked") > -1:
+#            return 1 #zucastnil sa
+#        return 4 #neospravedlnena neucast
+#    #elif week.find("unid=150323") > -1:
+#    elif week.find("unid=188026") > -1:
+#        return 7 #skorsi odchod
+#    #elif week.find("unid=149249") > -1:
+#    elif week.find("unid=188914") > -1:
+#        return 3 #ospravedlnena neucast
+#    #elif week.find("150269") > -1:
+#    elif week.find("187831") > -1:
+#        return 6 #pritomny na inom cviceni
+#    #elif week.find("148793") > -1:
+#    elif week.find("187220") > -1:
+#        return 5 #vyluceny z cvicenia
+#    #elif week.find("149101") > -1:
+#    elif week.find("187261") > -1:
+#        return 2 #zucastnil sa s neskorym prichodom
+#
+#    return -1 #parsing failed
+
+
 def get_week_attendance(week):
     week = str(week)
     if week.find("div") > -1:
@@ -122,24 +149,18 @@ def get_week_attendance(week):
         elif week.find("checked") > -1:
             return 1 #zucastnil sa
         return 4 #neospravedlnena neucast
-    #elif week.find("unid=150323") > -1:
-    elif week.find("unid=188026") > -1:
+    elif week.find("unid=188026") > -1 or week.find("unid=150323") > -1:
         return 7 #skorsi odchod
-    #elif week.find("unid=149249") > -1:
-    elif week.find("unid=188914") > -1:
+    elif week.find("unid=188914") > -1 or week.find("unid=149249") > -1:
         return 3 #ospravedlnena neucast
-    #elif week.find("150269") > -1:
-    elif week.find("187831") > -1:
+    elif week.find("187831") > -1 or week.find("150269") > -1:
         return 6 #pritomny na inom cviceni
-    #elif week.find("148793") > -1:
-    elif week.find("187220") > -1:
+    elif week.find("187220") > -1 or week.find("148793") > -1:
         return 5 #vyluceny z cvicenia
-    #elif week.find("149101") > -1:
-    elif week.find("187261") > -1:
+    elif week.find("187261") > -1 or week.find("149101") > -1:
         return 2 #zucastnil sa s neskorym prichodom
 
     return -1 #parsing failed
-
 
 def get_all_students_data(s, subject_id, groups):
 
