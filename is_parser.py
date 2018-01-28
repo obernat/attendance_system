@@ -311,26 +311,59 @@ def download_routine(name="none",password = "none"):
     return 1, teacher
 
 
-def upload_routine(sub_id, name="none",password = "none"):
+def upload_routine(subject, name="none",password = "none"):
     session = requests.Session()
 
     #login
     ret_value = try_login(session, name, password)
     if ret_value < 0:
         print("Nesprávne prihlasovacie údaje!")
-        return -4, None
+        return -2,
 
-    #get list of ids
-    ret_value, group_ids = get_groups_ids(session, sub_id)
-    if ret_value < 0:
-        print("Nepodarilo sa vyparsovať skupiny!")
-        return -3, None
+    #upload students attendance for each student
+    for student in subject.student_list:
+        url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
+        url += "?predmet="+ str(subject.sid) + ";" #predmet
+        url += "studium=" + str(student.study) + ";"
+        url += "podrobne=" + str(student.group) + ";"
+        url += "misto_vyuky=0;"
+        url += "vybrane_cviceni=" + str(student.group)
 
-    #upload students attendance
+        payload = {
+        "lang" : "sk",
+        "predmet" : str(subject.sid),
+        "cviceni" : str(student.group),
+        "vybrane_cviceni" : str(student.group),
+        "podrobne" : str(student.group),
+        "studium" : str(student.study),
+        "misto_vyuky" : "0",
+        "dochazka1" : str(student.attendance[0]),
+        "dochazka2" : str(student.attendance[1]),
+        "dochazka3" : str(student.attendance[2]),
+        "dochazka4" : str(student.attendance[3]),
+        "dochazka5" : str(student.attendance[4]),
+        "dochazka6" : str(student.attendance[5]),
+        "dochazka7" : str(student.attendance[6]),
+        "dochazka8" : str(student.attendance[7]),
+        "dochazka9" : str(student.attendance[8]),
+        "dochazka10" : str(student.attendance[9]),
+        "dochazka11" : str(student.attendance[10]),
+        "dochazka12" : str(student.attendance[11]),
+        "dochazka13" : str(student.attendance[12]),
+        "ulozit_podrobne" : "Uložiť",
+        }
 
+        try:
+            r = session.post(url, data=payload, timeout=10)
+        except requests.exceptions.RequestException as e:
+            print(e) #Logger
+            return -1 #timeout, bad url
 
+        print ("Student " + student.name + " synced.")
 
+    return 1
 
 
 #ret, a = download_routine("xbernato", sys.argv[1])
 #print(a.subjects_list[0].student_list[0].name)
+#upload_routine(a.subjects_list[0], "xbernato", sys.argv[1])
