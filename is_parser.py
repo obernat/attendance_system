@@ -5,6 +5,20 @@ import re
 from lxml import html
 import database as db
 
+
+def try_connection():
+    s = requests.Session()
+    try:
+        r = s.get("https://test.is.stuba.sk", timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(e) #Logger
+        return -1 #timeout, bad url
+
+    return 1
+
+print(try_connection())
+
+
 def try_login(s, name, password, timeout=86400):
     #TODO tu vzdy ratame s tym ze user je online, treba nechat aj moznost ze user bude offline
     #vtedy bude treba riesit aj vypisy... toto este treba cele premysliet :(
