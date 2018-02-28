@@ -6,17 +6,8 @@ from lxml import html
 import database as db
 
 
-def try_connection():
-    s = requests.Session()
-    try:
-        r = s.get("https://test.is.stuba.sk", timeout=10)
-    except requests.exceptions.RequestException as e:
-        print(e) #Logger
-        return -1 #timeout, bad url
+##################################################PRIVATE FUNCTIONS
 
-    return 1
-
-print(try_connection())
 
 
 def try_login(s, name, password, timeout=86400):
@@ -288,6 +279,19 @@ def get_all_students_data(s, subject_id, groups):
         print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
 
     return 1, student_list
+
+
+##################################################PUBLIC FUNCTIONS
+
+def try_connection():
+    s = requests.Session()
+    try:
+        r = s.get("https://test.is.stuba.sk", timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(e) #Logger
+        return -1 #timeout, bad url
+
+    return 1
 
 def download_routine(name="none",password = "none"):
     session = requests.Session()
