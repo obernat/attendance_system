@@ -105,5 +105,5 @@ active_subjects
 attendance
 inactive_subjects
 teacher
-.jpg
-.png
+**/*.jpg
+**/*.png
