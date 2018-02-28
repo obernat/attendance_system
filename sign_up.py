@@ -14,7 +14,8 @@ password = sys.argv[1]
 payload = {
 "lang" : "sk",
 'destination': '/auth',
-'credential_0': 'xbernato',
+#'credential_0': 'xbernato',
+'credential_0': 'xjokay',
 'credential_1': password,
 'credential_2': '86400',
 'login': 'Prihlásenie'
@@ -28,8 +29,8 @@ r = s.post("https://test.is.stuba.sk/auth/?lang=sk", data=payload)
 
 #Creating get to teacher page
 r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
-#print(r.text)
-
+print(r.text)
+sys.exit() #TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 #Parsing subjects url
 match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl(\?predmet=[0-9]+)"

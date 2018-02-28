@@ -104,4 +104,6 @@ ENV/
 active_subjects
 attendance
 inactive_subjects
-
+teacher
+.jpg
+.png
