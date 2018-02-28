@@ -119,32 +119,6 @@ def get_groups_ids(s, subject_id):
             return -1, None #parsing error, no groups
 
 
-#def get_week_attendance(week):
-#    week = str(week)
-#    if week.find("div") > -1:
-#        if week.find("reqfields") > -1:
-#            return 0 #nezadane
-#        elif week.find("checked") > -1:
-#            return 1 #zucastnil sa
-#        return 4 #neospravedlnena neucast
-#    #elif week.find("unid=150323") > -1:
-#    elif week.find("unid=188026") > -1:
-#        return 7 #skorsi odchod
-#    #elif week.find("unid=149249") > -1:
-#    elif week.find("unid=188914") > -1:
-#        return 3 #ospravedlnena neucast
-#    #elif week.find("150269") > -1:
-#    elif week.find("187831") > -1:
-#        return 6 #pritomny na inom cviceni
-#    #elif week.find("148793") > -1:
-#    elif week.find("187220") > -1:
-#        return 5 #vyluceny z cvicenia
-#    #elif week.find("149101") > -1:
-#    elif week.find("187261") > -1:
-#        return 2 #zucastnil sa s neskorym prichodom
-#
-#    return -1 #parsing failed
-
 
 def get_week_attendance(week):
     week = str(week)
@@ -280,6 +254,54 @@ def get_all_students_data(s, subject_id, groups):
 
     return 1, student_list
 
+
+def merge_IS_attendance_with_local(IS_student_list, local_student_list):
+    #iterate over local student list
+    for local_student in local_student_list:
+        for IS_student in IS_student_list:
+            if IS_student.name != local_student.name:
+                continue
+            #iterate over IS attendance, if there is some attendance record(>0), apply it
+            #we dont care about its value, if is the same as ours, applying change nothing
+            #if not, we have to apply, IS has higher priority
+            for i in range(0,13):
+                if IS_student.attendance[i] > 0:
+                    local_student.attendance[i] = IS_student.attendance[i]
+
+
+def download_subject_attendance(s, subject):
+
+    if s == None:
+        return -5 #session not created
+
+    #download subjects
+    ret_value, subjects_list_with_links = get_subjects(session)
+    if ret_value == -1:
+        print("K dispozícii nie sú žiadne predmety!")
+    elif ret_value < -1:
+        print("Nepodarilo sa pripojiť ku sieti!")
+        return -4
+
+    #iterate all subjects and find given
+    for name,sub_id in subjects_list_with_links:
+        if name != subject.name:
+            continue
+        #get list of ids
+        ret_value, group_ids = get_groups_ids(session, sub_id)
+        if ret_value < 0:
+            print("Nepodarilo sa vyparsovať skupiny!")
+            return -3
+
+        #get students attendance
+        ret_value, stud_list = get_all_students_data(session, sub_id, group_ids)
+        if ret_value < 0:
+            print("Nepodarilo sa vyparsovať údaje o študentoch")
+            return -2
+
+        #compare attendance from AIS with local, merge
+        merge_IS_attendance_with_local(student_list, subject.student_list)
+
+    return 1
 
 ##################################################PUBLIC FUNCTIONS
 
