@@ -11,8 +11,6 @@ import database as db
 
 
 def try_login(s, name, password, timeout=86400):
-    #TODO tu vzdy ratame s tym ze user je online, treba nechat aj moznost ze user bude offline
-    #vtedy bude treba riesit aj vypisy... toto este treba cele premysliet :(
     if s == None:
         return -4 #session not created
 
@@ -176,7 +174,12 @@ def get_all_students_data(s, subject_id, groups):
     student_list = []
 
     while True: #iterate over all tables
-        table = tree.xpath("//table[@id='tmtab_%d']//tbody" %table_id)
+        if r.text.find("tmtab_1") != -1:
+            table = tree.xpath("//table[@id='tmtab_%d']//tbody" %table_id)
+        elif r.text.find("table_1") != -1:
+            table = tree.xpath("//table[@id='table_%d']//tbody" %table_id)
+        else:
+            return -3, None #html with tables was modified
         if not table:
             break;
         for row in table[0].xpath(".//tr"): #iterate over all rows(students)
@@ -202,9 +205,6 @@ def get_all_students_data(s, subject_id, groups):
                         temp_count = 1
                         continue
                 if temp_count == 3:
-                    result = cell.xpath(".//div//input")
-                    if result:
-                        stud_and_group = result[0].attrib["value"]
                     attendance[0] = get_week_attendance(html.etree.tostring(cell))
                     temp_count = 4
                 elif temp_count == 4:
@@ -242,6 +242,13 @@ def get_all_students_data(s, subject_id, groups):
                     temp_count = 15
                 elif temp_count == 15:
                     attendance[12] = get_week_attendance(html.etree.tostring(cell))
+                    temp_count = 16
+                elif temp_count == 16:
+                    result = cell.xpath(".//a")
+                    if not result:
+                        return -2, None #html table was modified
+                    stud_and_group = result[0].attrib["href"]
+
                     temp_count = 0
                     student_list.append(db.Student(name, addit_info, table_id, attendance, stud_and_group))
                     break
@@ -249,6 +256,7 @@ def get_all_students_data(s, subject_id, groups):
         table_id += 1
         student_id = 1
 
+    print ("---------------------------------------------------------")
     for elem in student_list:
         print (elem.name, elem.cv_string, elem.table_id, elem.attendance)
 
@@ -269,9 +277,9 @@ def merge_IS_attendance_with_local(IS_student_list, local_student_list):
                     local_student.attendance[i] = IS_student.attendance[i]
 
 
-def download_subject_attendance(s, subject):
+def download_subject_attendance(session, subject):
 
-    if s == None:
+    if session == None:
         return -5 #session not created
 
     #download subjects
@@ -299,7 +307,7 @@ def download_subject_attendance(s, subject):
             return -2
 
         #compare attendance from AIS with local, merge
-        merge_IS_attendance_with_local(student_list, subject.student_list)
+        merge_IS_attendance_with_local(stud_list, subject.student_list)
 
     return 1
 
@@ -358,7 +366,14 @@ def upload_routine(subject, name="none",password = "none"):
     ret_value = try_login(session, name, password)
     if ret_value < 0:
         print("Nesprávne prihlasovacie údaje!")
+        return -3,
+
+    #merge attendance with IS
+    ret_value = download_subject_attendance(session, subject)
+    if ret_value < 0:
+        print("Synchronizácia údajov bola neúspešná!")
         return -2,
+
 
     #upload students attendance for each student
     for student in subject.student_list:
@@ -405,5 +420,18 @@ def upload_routine(subject, name="none",password = "none"):
 
 
 #ret, a = download_routine("xbernato", sys.argv[1])
+#print(a.subjects_list[0].name)
 #print(a.subjects_list[0].student_list[0].name)
+#print(a.subjects_list[0].student_list[0].study)
+#print(a.subjects_list[0].student_list[0].group)
+#a.subjects_list[0].student_list[0].attendance[0] = 3
+#a.subjects_list[0].student_list[3].attendance[0] = 6
+#a.subjects_list[0].student_list[3].attendance[1] = 6
+#a.subjects_list[0].student_list[0].attendance[1] = 3
+#a.subjects_list[0].student_list[0].attendance[2] = 3
+#a.subjects_list[0].student_list[0].attendance[3] = 3
+#a.subjects_list[0].student_list[0].attendance[4] = 3
+#a.subjects_list[0].student_list[0].attendance[5] = 3
+#a.subjects_list[0].student_list[0].attendance[6] = 3
+#a.subjects_list[0].student_list[0].attendance[7] = 3
 #upload_routine(a.subjects_list[0], "xbernato", sys.argv[1])
