@@ -4,7 +4,7 @@ class Teacher:
 
 
 class Subject:
-    def __init__(self, name, sid, student_list,is_active =1):
+    def __init__(self, name, sid, student_list, is_active=1):
         self.name = name
         self.sid = sid
         self.student_list = student_list
@@ -21,6 +21,13 @@ class Student:
 
     def parse_study_and_group(self, study_and_group):
         group = study_and_group[:study_and_group.find("s")].lstrip("c")
-        study = study_and_group[study_and_group.find("s")+1:study_and_group.find("k")]
+        study = study_and_group[study_and_group.find(
+            "s") + 1:study_and_group.find("k")]
 
         return study, group
+
+
+class Person:
+    def __init__(self, name, isic):
+        self.name = name
+        self.isic = isic
