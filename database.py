@@ -1,3 +1,6 @@
+import re
+
+
 class Teacher:
     def __init__(self):
         self.subjects_list = []
@@ -6,6 +9,7 @@ class Teacher:
 class Subject:
     def __init__(self, name, sid, student_list, is_active=1):
         self.name = name
+        #self.name = name.replace("&nbsp;"," ")
         self.sid = sid
         self.student_list = student_list
         self.is_active = is_active
@@ -20,11 +24,29 @@ class Student:
         self.study, self.group = self.parse_study_and_group(stud_and_group)
 
     def parse_study_and_group(self, study_and_group):
-        group = study_and_group[:study_and_group.find("s")].lstrip("c")
-        study = study_and_group[study_and_group.find(
-            "s") + 1:study_and_group.find("k")]
+        match = "podrobne=([0-9]+);"
+        result = re.search(match, study_and_group, re.DOTALL)
+        if result:
+            group = result.group(1)
+        else:
+            group = ""
+
+        match = "studium=([0-9]+);"
+        result = re.search(match, study_and_group, re.DOTALL)
+        if result:
+            study = result.group(1)
+        else:
+            study = ""
 
         return study, group
+
+    # parse ONLY from attendance format cXXXXsXXXXk
+    # def parse_study_and_group(self, study_and_group):
+    #    group = study_and_group[:study_and_group.find("s")].lstrip("c")
+    #    study = study_and_group[study_and_group.find(
+    #        "s") + 1:study_and_group.find("k")]
+    #
+    #    return study, group
 
 
 class Person:
