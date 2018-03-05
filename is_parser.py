@@ -60,6 +60,7 @@ def try_login(s, name, password, timeout=86400):
 
 
 def get_subjects(s):
+    #download only subjects administrating by user!
 
     if s is None:
         return -4, None  # session not created
@@ -80,10 +81,18 @@ def get_subjects(s):
         return -2, None  # error getting the page, maybe page down/no internet access
 
     # Parsing subjects url
+    #download only administratint subjects
     match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl\?predmet=([0-9]+)"
-    result = re.findall(match, r.text, re.DOTALL)
+    result = re.finditer(match, r.text, re.DOTALL)
+    list_of_subjects_with_ids = []
     if result:
-        return 1, result
+        for m in result:
+            if m.group(0).find("alt=\"Administratíva\"") > -1:
+                list_of_subjects_with_ids.append(tuple(m.groups()))
+        if len(list_of_subjects_with_ids) == 0:
+            return -1, None #parsing error, no administrating subjects
+        print (list_of_subjects_with_ids)
+        return 1, list_of_subjects_with_ids
     else:
         return -1, None  # parsing error, no subjects
 
@@ -306,7 +315,7 @@ def download_subject_attendance(session, subject):
     # download subjects
     ret_value, subjects_list_with_links = get_subjects(session)
     if ret_value == -1:
-        print("K dispozícii nie sú žiadne predmety!")
+        print("K dispozícii nie sú žiadne predmety s administrátorskými právami!")
     elif ret_value < -1:
         print("Nepodarilo sa pripojiť ku sieti!")
         return -4
@@ -360,7 +369,7 @@ def download_routine(name="none", password="none"):
     # download subjects
     ret_value, subjects_list_with_links = get_subjects(session)
     if ret_value == -1:
-        print("K dispozícii nie sú žiadne predmety!")
+        print("K dispozícii nie sú žiadne predmety s administrátorskými právami!")
     elif ret_value < -1:
         print("Nepodarilo sa pripojiť ku sieti!")
         return -3, None
