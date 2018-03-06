@@ -111,83 +111,17 @@ class Application(Tk):
 
         self.clear_frame()
 
+        self.sync_label= Label(
+            self, text="Žiadne internetové pripojenie")
         self.sync_button = Button(
-            self, text='Sync', command=lambda: self.login_page("All"))
+            self, text='Reload', command=lambda: self.cross_road_function())
+        self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
-
-    def login_download(self, subject, name="none", password="none", ):
-
-        ret_value, teacher = isp.download_routine(name, password)
-        if ret_value < 0:
-            er.showError("Nesprávne prihlasovacie údaje!")
-            self.login_page(subject)
-            return
-        self.save_teacher(teacher)
-        self.cross_road_function()
 
     # TODO opravit aby to fungovalo s viacerymi predmetmi
     # TODO opravit kde sa posielaju objekty a kde mena
     # TODO upratat ten bordel
 
-    def login_upload(self, subject_name, name="none", password="none"):
-
-        teacher = self.load_teacher()
-        # for student in teacher.subjects_list[0].student_list:
-        #     print(student.name, student.attendance )
-
-        ret_value = isp.upload_routine(
-            teacher.subjects_list[0], name, password)
-        if ret_value < 0:
-            er.showError("FAIL UPLOAD")
-            self.login_page(subject_name, 0)
-            return
-        self.subjects_page(1)
-
-    def cross_road_function(self):
-
-        if os.path.isfile('teacher'):
-            self.subjects_page(1)
-        else:
-            self.sync_page()
-
-    def save_teacher(self, teacher):
-
-        try:
-            f = open('teacher', 'wb')
-            save = {
-                'teacher': teacher,
-            }
-            pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
-            f.close()
-        except Exception as e:
-            print('Unable to pickle teacher object:', e)
-
-    def load_teacher(self):
-
-        try:
-            with open('teacher', 'rb') as f:
-                data = pickle.load(f)
-
-                teacher = data['teacher']
-
-            return teacher
-        except Exception as e:
-            print('Unable to read data from teacher:', e)
-
-    def move_subject(self, subject_name, tab_number):
-        teacher = self.load_teacher()
-        new_subjects_list = []
-        for subject in teacher.subjects_list:
-            if subject.name == subject_name:
-                if subject.is_active:
-                    subject.is_active = 0
-                else:
-                    subject.is_active = 1
-            new_subjects_list.append(subject)
-        teacher.subjects_list = new_subjects_list
-        self.save_teacher(teacher)
-
-        self.subjects_page(tab_number)
 
     def subjects_page(self, tab_number):
         self.clear_frame()
@@ -485,6 +419,80 @@ class Application(Tk):
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
 
+    def cross_road_function(self):
+
+            if os.path.isfile('teacher'):
+                self.subjects_page(1)
+            else:
+                if isp.try_connection() == 1:
+                    self.login_page("All")
+                else:
+                    self.sync_page()
+
+
+    def login_upload(self, subject_name, name="none", password="none"):
+
+        teacher = self.load_teacher()
+        # for student in teacher.subjects_list[0].student_list:
+        #     print(student.name, student.attendance )
+
+        ret_value = isp.upload_routine(
+            teacher.subjects_list[0], name, password)
+        if ret_value < 0:
+            er.showError("FAIL UPLOAD")
+            self.login_page(subject_name, 0)
+            return
+        self.subjects_page(1)
+
+    def login_download(self, subject, name="none", password="none", ):
+
+        ret_value, teacher = isp.download_routine(name, password)
+        if ret_value < 0:
+            er.showError("Nesprávne prihlasovacie údaje!")
+            self.login_page(subject)
+            return
+        self.save_teacher(teacher)
+        self.cross_road_function()
+
+    def save_teacher(self, teacher):
+
+        try:
+            f = open('teacher', 'wb')
+            save = {
+                'teacher': teacher,
+            }
+            pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
+            f.close()
+        except Exception as e:
+            print('Unable to pickle teacher object:', e)
+
+    def load_teacher(self):
+
+        try:
+            with open('teacher', 'rb') as f:
+                data = pickle.load(f)
+
+                teacher = data['teacher']
+
+            return teacher
+        except Exception as e:
+            print('Unable to read data from teacher:', e)
+
+    def move_subject(self, subject_name, tab_number):
+        teacher = self.load_teacher()
+        new_subjects_list = []
+        for subject in teacher.subjects_list:
+            if subject.name == subject_name:
+                if subject.is_active:
+                    subject.is_active = 0
+                else:
+                    subject.is_active = 1
+            new_subjects_list.append(subject)
+        teacher.subjects_list = new_subjects_list
+        self.save_teacher(teacher)
+
+        self.subjects_page(tab_number)
+
     def left_click(self, event, subject_name, group, week_selected):
 
         name, week = str(self.selected).split('_')
@@ -507,13 +515,7 @@ class Application(Tk):
         window.destroy()
 
     # TODO Upravit to
-    def move_stundet_to_other_group(
-            self,
-            window,
-            from_group,
-            to_group,
-            subject_name,
-            week_selected):
+    def switch_student(self,window,from_group,to_group,subject_name,week_selected):
 
         self.groups[to_group].append(self.selected)
         self.groups[from_group].remove(self.selected)
@@ -540,7 +542,7 @@ class Application(Tk):
         button = Button(
             toplevel,
             text="Select",
-            command=lambda: self.move_stundet_to_other_group(
+            command=lambda: self.switch_student(
                 toplevel,
                 group,
                 variable.get(),
