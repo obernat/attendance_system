@@ -3,14 +3,15 @@ from tkinter import font as tkfont
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
-import time
 import sys
 from sys import platform
 import requests
 import is_parser as isp
+import data_parser as dp
 import error_handler as er
 import datetime
-
+from threaded_tasks import DownloadThread, UploadThread
+import queue
 
 # import read_card2 as rc
 
@@ -43,7 +44,7 @@ class Application(Tk):
         for child in self.winfo_children():
             child.destroy()
 
-    def login_page(self, subject, download=1):
+    def login_page(self, download=1):
 
         self.clear_frame()
         self.session = requests.Session()
@@ -53,14 +54,15 @@ class Application(Tk):
         self.password_label = Label(self, text="Password")
         self.username_entry = Entry(self)
         self.password_entry = Entry(self, show="*")
+        # TODO Pridat thready ked je download a upload
         if download:
             self.login_button = Button(
-                self, text="Login", command=lambda: self.login_download(
-                    subject, self.username_entry.get(), self.password_entry.get()))
+                self, text="Login", command=lambda: self.download_data(
+                    self.username_entry.get(), self.password_entry.get()))
         else:
             self.login_button = Button(
-                self, text="Login", command=lambda: self.login_upload(
-                    subject, self.username_entry.get(), self.password_entry.get()))
+                self, text="Login", command=lambda: self.upload_data(
+                    self.username_entry.get(), self.password_entry.get()))
 
         self.back_button = Button(
             self, text="Back", command=self.cross_road_function)
@@ -107,7 +109,34 @@ class Application(Tk):
             width=120,
             height=25)
 
-    def sync_page(self):
+    def download_page(self):
+        self.clear_frame()
+        self.prog_bar = ttk.Progressbar(
+            self, orient="horizontal",
+            mode="determinate"
+        )
+        self.sync_label = Label(self, text="Downloading data...")
+
+        self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
+        self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
+        self.prog_bar.start()
+
+    def upload_page(self):
+        self.clear_frame()
+
+        self.prog_bar = ttk.Progressbar(
+            self, orient="horizontal",
+            mode="determinate"
+        )
+        self.sync_label = Label\
+            (self,
+             text="Upload data...")
+
+        self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
+        self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
+        self.prog_bar.start()
+
+    def no_connection_page(self):
 
         self.clear_frame()
 
@@ -122,19 +151,10 @@ class Application(Tk):
     # TODO opravit kde sa posielaju objekty a kde mena
     # TODO upratat ten bordel
 
-
     def subjects_page(self, tab_number):
         self.clear_frame()
-        teacher = self.load_teacher()
 
-        active_subjects_list = []
-        inactive_subjects_list = []
-
-        for subject in teacher.subjects_list:
-            if subject.is_active:
-                active_subjects_list.append(subject)
-            else:
-                inactive_subjects_list.append(subject)
+        active_subjects_list, inactive_subjects_list = dp.subjects_lists()
 
         if not inactive_subjects_list:
 
@@ -154,7 +174,7 @@ class Application(Tk):
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.subject_info_page(text, "Skupina", "Tyzden 1"))
                     c = Button(text="Sync subject",
-                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(text, 0))
+                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(0))
 
                     d = Button(text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
@@ -199,7 +219,7 @@ class Application(Tk):
                                                                                                             "Skupina",
                                                                                                             "Tyzden 1"))
                     c = Button(tab1, text="Sync subject",
-                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(text, 0))
+                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(0))
                     d = Button(tab1, text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
@@ -420,66 +440,44 @@ class Application(Tk):
         self.minsize(height=(250 + (bot * 25)), width=1000)
 
     def cross_road_function(self):
-
-            if os.path.isfile('teacher'):
-                self.subjects_page(1)
+        """
+        Function decide witch page will displayed first
+        """
+        if os.path.isfile('teacher'):
+            self.subjects_page(1) #Data is downloaded - display page with subjest
+        else:
+            if isp.try_connection() == 1:
+                self.login_page() #Connection is OK but we have not data - display login page and download data
             else:
-                if isp.try_connection() == 1:
-                    self.login_page("All")
-                else:
-                    self.sync_page()
+                self.no_connection_page() #Connection is KO - display page with warnninb
 
+    def upload_data(self, name="none", password="none"):
 
-    def login_upload(self, subject_name, name="none", password="none"):
+        self.upload_page()
+        self.queue = queue.Queue()
+        UploadThread(self.queue, name, password).start()
+        self.after(100, self.process_queue)
 
-        teacher = self.load_teacher()
-        # for student in teacher.subjects_list[0].student_list:
-        #     print(student.name, student.attendance )
+    def download_data(self, name="none", password="none", ):
 
-        ret_value = isp.upload_routine(
-            teacher.subjects_list[0], name, password)
-        if ret_value < 0:
-            er.showError("FAIL UPLOAD")
-            self.login_page(subject_name, 0)
-            return
-        self.subjects_page(1)
+        self.download_page()
+        self.queue = queue.Queue()
+        DownloadThread(self.queue, name, password).start()
+        self.after(100, self.process_queue)
 
-    def login_download(self, subject, name="none", password="none", ):
-
-        ret_value, teacher = isp.download_routine(name, password)
-        if ret_value < 0:
-            er.showError("Nesprávne prihlasovacie údaje!")
-            self.login_page(subject)
-            return
-        self.save_teacher(teacher)
-        self.cross_road_function()
-
-    def save_teacher(self, teacher):
-
+    def process_queue(self):
         try:
-            f = open('teacher', 'wb')
-            save = {
-                'teacher': teacher,
-            }
-            pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
-            f.close()
-        except Exception as e:
-            print('Unable to pickle teacher object:', e)
+            msg = self.queue.get(0)
+            if(msg == "Download finished"):
+                self.cross_road_function()
+            if(msg == "Upload finished"):
+                self.subjects_page(1)
 
-    def load_teacher(self):
-
-        try:
-            with open('teacher', 'rb') as f:
-                data = pickle.load(f)
-
-                teacher = data['teacher']
-
-            return teacher
-        except Exception as e:
-            print('Unable to read data from teacher:', e)
+        except queue.Empty:
+            self.after(100, self.process_queue)
 
     def move_subject(self, subject_name, tab_number):
-        teacher = self.load_teacher()
+        teacher = dp.load_data()
         new_subjects_list = []
         for subject in teacher.subjects_list:
             if subject.name == subject_name:
@@ -489,8 +487,7 @@ class Application(Tk):
                     subject.is_active = 1
             new_subjects_list.append(subject)
         teacher.subjects_list = new_subjects_list
-        self.save_teacher(teacher)
-
+        dp.save_data(teacher)
         self.subjects_page(tab_number)
 
     def left_click(self, event, subject_name, group, week_selected):
@@ -551,7 +548,7 @@ class Application(Tk):
         button.place(x=160, y=5, width=150, height=25)
 
     def change_attendance(self, subject_name, group, week_selected, a):
-        teacher = self.load_teacher()
+        teacher = dp.load_data()
         name, week = str(self.selected).split('_')
         self.attendance[name][0][int(week)] = a
 
@@ -559,7 +556,7 @@ class Application(Tk):
             for student in subject.student_list:
                 if student.name == name:
                     student.attendance = self.attendance[name][0]
-        self.save_teacher(teacher)
+        dp.save_data(teacher)
         self.subject_info_page(subject_name, group, week_selected)
 
     def read_card(self):

@@ -400,13 +400,13 @@ def upload_routine(subject, name="none", password="none"):
     ret_value = try_login(session, name, password)
     if ret_value < 0:
         print("Nesprávne prihlasovacie údaje!")
-        return -3,
+        return -3
 
     # merge attendance with IS
     ret_value = download_subject_attendance(session, subject)
     if ret_value < 0:
         print("Synchronizácia údajov bola neúspešná!")
-        return -2,
+        return -2
 
     # upload students attendance for each student
     for student in subject.student_list:
