@@ -22,6 +22,7 @@ class Application(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
+        #platforms have different bind for rightclick
         if platform == "darwin":
             self.right_click = "<Button-2>"
         else:
@@ -36,36 +37,34 @@ class Application(Tk):
         self.minsize(height=500, width=600)
         self.cross_road_function()
         self.selected = 0
-        # self.session = requests.Session()
         self.monitored = 0
 
-    def clear_frame(self):
+# PAGES GUI -------------------------------------------------
 
-        for child in self.winfo_children():
-            child.destroy()
-
-    def login_page(self, download=1):
-
+    def login_page(self, download=0, upload=0):
+        """
+        Page with login formular
+        :param download - when is set up on 1 is called download function
+        :param upload - when is set up on 1 is called upload function
+        """
         self.clear_frame()
-        self.session = requests.Session()
 
         self.title_label = Label(self, text="Login", font=self.title_font)
         self.username_label = Label(self, text="Username")
         self.password_label = Label(self, text="Password")
         self.username_entry = Entry(self)
         self.password_entry = Entry(self, show="*")
-        # TODO Pridat thready ked je download a upload
+        self.back_button = Button(
+            self, text="Back", command=self.cross_road_function)
+
         if download:
             self.login_button = Button(
                 self, text="Login", command=lambda: self.download_data(
                     self.username_entry.get(), self.password_entry.get()))
-        else:
+        if upload:
             self.login_button = Button(
                 self, text="Login", command=lambda: self.upload_data(
                     self.username_entry.get(), self.password_entry.get()))
-
-        self.back_button = Button(
-            self, text="Back", command=self.cross_road_function)
 
         self.title_label.place(
             relx=0.42,
@@ -101,7 +100,11 @@ class Application(Tk):
             y=-37,
             width=120,
             height=25)
-        self.login_button.place(relx=0.42, rely=0.42, width=120, height=25)
+        self.login_button.place(
+            relx=0.42,
+            rely=0.42,
+            width=120,
+            height=25)
         self.back_button.place(
             relx=0.42,
             rely=0.42,
@@ -109,52 +112,48 @@ class Application(Tk):
             width=120,
             height=25)
 
-    def download_page(self):
+    def downloading_page(self):
+        """
+        Download_page display progress bar while data is downloading
+        """
         self.clear_frame()
-        self.prog_bar = ttk.Progressbar(
-            self, orient="horizontal",
-            mode="determinate"
-        )
+        self.prog_bar = ttk.Progressbar(self, orient="horizontal",mode="determinate")
         self.sync_label = Label(self, text="Downloading data...")
 
         self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.prog_bar.start()
 
-    def upload_page(self):
+    def uploading_page(self):
+        """
+        Upload_page display progress bar while data is uploading
+        """
         self.clear_frame()
-
-        self.prog_bar = ttk.Progressbar(
-            self, orient="horizontal",
-            mode="determinate"
-        )
-        self.sync_label = Label\
-            (self,
-             text="Upload data...")
+        self.prog_bar = ttk.Progressbar(self, orient="horizontal",mode="determinate" )
+        self.sync_label = Label(self,text="Upload data...")
 
         self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.prog_bar.start()
 
     def no_connection_page(self):
-
+        """
+        No_connection_page display only report and reload button
+        """
         self.clear_frame()
 
         self.sync_label= Label(
             self, text="Žiadne internetové pripojenie")
         self.sync_button = Button(
             self, text='Reload', command=lambda: self.cross_road_function())
+
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
-
-    # TODO opravit aby to fungovalo s viacerymi predmetmi
-    # TODO opravit kde sa posielaju objekty a kde mena
-    # TODO upratat ten bordel
 
     def subjects_page(self, tab_number):
         self.clear_frame()
 
-        active_subjects_list, inactive_subjects_list = dp.subjects_lists()
+        active_subjects_list, inactive_subjects_list = dp.get_subjects_lists()
 
         if not inactive_subjects_list:
 
@@ -174,7 +173,7 @@ class Application(Tk):
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.subject_info_page(text, "Skupina", "Tyzden 1"))
                     c = Button(text="Sync subject",
-                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(0))
+                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
 
                     d = Button(text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
@@ -219,7 +218,7 @@ class Application(Tk):
                                                                                                             "Skupina",
                                                                                                             "Tyzden 1"))
                     c = Button(tab1, text="Sync subject",
-                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(0))
+                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
                     d = Button(tab1, text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
@@ -262,8 +261,8 @@ class Application(Tk):
                 tabControl.select(tab2)
 
     def subject_info_page(self, subject_name, group, week):
-
         self.clear_frame()
+
         colors = [
             "red",
             "green",
@@ -273,24 +272,10 @@ class Application(Tk):
             "yellow",
             "blue",
             'brown']
+        self.attendance = dp.get_attendence()
+        self.groups = dp.get_groups()
+
         start_button = Button(text="Start", command=self.read_card)
-
-        self.attendance = []
-        self.groups = []
-
-        teacher = self.load_teacher()
-        groups = {}
-        attendance = {}
-        for subject in teacher.subjects_list:
-            for student in subject.student_list:
-                groups.setdefault(student.cv_string, []).append(student.name)
-                attendance.setdefault(
-                    student.name, []).append(
-                    student.attendance)
-
-        self.attendance = attendance
-        self.groups = groups
-
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
@@ -328,7 +313,6 @@ class Application(Tk):
                 week))
 
         OPTIONS = []
-        # OPTIONS.append("Skupina")
         for key in self.groups:
             OPTIONS.append(key)
 
@@ -439,6 +423,15 @@ class Application(Tk):
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
 
+# FUNCTIONS GUI -------------------------------------------------
+
+    def clear_frame(self):
+        """
+        Function clear frame, is called on every function which shows tkinter objects
+        """
+        for child in self.winfo_children():
+            child.destroy()
+
     def cross_road_function(self):
         """
         Function decide witch page will displayed first
@@ -447,25 +440,38 @@ class Application(Tk):
             self.subjects_page(1) #Data is downloaded - display page with subjest
         else:
             if isp.try_connection() == 1:
-                self.login_page() #Connection is OK but we have not data - display login page and download data
+                self.login_page(download=1) #Connection is OK but we have not data - display login page and download data
             else:
-                self.no_connection_page() #Connection is KO - display page with warnninb
+                self.no_connection_page() #Connection is KO - display page with warnning
 
     def upload_data(self, name="none", password="none"):
-
-        self.upload_page()
+        """
+        Function create thread for uploading data and call upload_page
+        :param name:  login to IS
+        :param password: password to IS
+        :return: nothing
+        """
+        self.uploading_page()
         self.queue = queue.Queue()
         UploadThread(self.queue, name, password).start()
         self.after(100, self.process_queue)
 
     def download_data(self, name="none", password="none", ):
-
-        self.download_page()
+        """
+        Function create thread for dowloading data and call download_page
+        :param name: name to IS
+        :param password:  password to IS
+        :return: nothing
+        """
+        self.downloading_page()
         self.queue = queue.Queue()
         DownloadThread(self.queue, name, password).start()
         self.after(100, self.process_queue)
 
     def process_queue(self):
+        """
+        Function checking when thread ends and then call right page
+        """
         try:
             msg = self.queue.get(0)
             if(msg == "Download finished"):
