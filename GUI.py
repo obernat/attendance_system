@@ -33,7 +33,7 @@ class Application(Tk):
             size=18,
             weight="bold",
             slant="italic")
-        self.geometry("600x500")
+        self.geometry("700x500")
         self.minsize(height=500, width=600)
         self.cross_road_function()
         self.selected = 0
@@ -165,11 +165,12 @@ class Application(Tk):
                 for i in range(1, len(active_subjects_list) + 1):
                     a = i
                     b = i * 10
-                    c = i * 10 + 1
-                    d = i * 10 + 2
+                    c = i * 10+1
+                    d = i * 10+2
+                    e = i * 10+3
 
                     a = Label(text=active_subjects_list[i - 1].name)
-                    b = Button(text="Subject info",
+                    b = Button(text="Attendance",
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.subject_info_page(text, "Skupina", "Tyzden 1"))
                     c = Button(text="Sync subject",
@@ -177,14 +178,19 @@ class Application(Tk):
 
                     d = Button(text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
+                    e = Button(text="Database",
+                               command=lambda text=active_subjects_list[i - 1].name:
+                               self.database_page(text, "Skupina"))
 
-                    a.place(relx=0.375, x=-180, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                    a.place(relx=0.375, x=-240, rely=0.20,
+                            y=(i * 30), width=180, height=25)
                     b.place(relx=0.375, x=-60, rely=0.20,
                             y=(i * 30), width=120, height=25)
                     c.place(relx=0.375, x=+60, rely=0.20,
                             y=(i * 30), width=120, height=25)
-                    d.place(relx=0.375, x=+180, rely=0.20,
+                    d.place(relx=0.375, x=+300, rely=0.20,
+                            y=(i * 30), width=120, height=25)
+                    e.place(relx=0.375, x=+180, rely=0.20,
                             y=(i * 30), width=120, height=25)
 
             logout_button.place(relx=0.65, x=+114, y=0, width=75, height=25)
@@ -260,6 +266,64 @@ class Application(Tk):
             else:
                 tabControl.select(tab2)
 
+    def database_page(self,subject_name, group):
+        self.clear_frame()
+        self.groups = dp.get_groups()
+
+        title_label = Label(self, text=subject_name, font=self.title_font)
+
+        groups_options_tmp = []
+        for key in self.groups:
+            groups_options_tmp.append(key)
+
+        groups_variable = StringVar(self)
+        groups_variable.set(group)
+
+        groups_options= OptionMenu(self, groups_variable, *groups_options_tmp)
+        select_button = Button(
+            self,
+            text="Select",
+            command=lambda: self.database_page(subject_name,groups_variable.get()))
+        if group is not "Skupina":
+            i = 0
+            for name in self.groups[group]:
+                if i % 2 == 1:
+                    a = name
+                    a = Label(self, text=name, anchor="w")
+                    a.place(relx=0.375, x=-50, rely=0.3,
+                            y=+(i * 20), width=150, height=20)
+                    b = i
+                    b = Label(self, text='-------------------', anchor="w")
+                    b.place(relx=0.375, x=100, rely=0.3,
+                            y=+(i * 20), width=150, height=20)
+
+
+                else:
+                    a = name
+                    a = Label(self, text=name, anchor="w",
+                        bg="#ecf2f8",
+                        borderwidth=2,
+                        highlightthickness=2,
+                        highlightcolor="#ecf2f8",
+                        highlightbackground="#ecf2f8")
+                    a.place(relx=0.375, x=-50, rely=0.3,
+                            y=+(i * 20), width=150, height=20)
+                    b = i
+                    b = Label(self, text='-------------------', anchor="w",
+                        bg="#ecf2f8",
+                        borderwidth=2,
+                        highlightthickness=2,
+                        highlightcolor="#ecf2f8",
+                        highlightbackground="#ecf2f8")
+                    b.place(relx=0.375, x=100, rely=0.3,
+                            y=+(i * 20), width=150, height=20)
+                i += 1
+
+        select_button.place(relx=0.375, x=200, rely=0.18, width=150, height=25)
+        groups_options.place(relx=0.375, x=-150, rely=0.18, width=350, height=28)
+        title_label.place(relx=0.385, rely=0.08, width=300, height=25)
+
+
     def subject_info_page(self, subject_name, group, week):
         self.clear_frame()
 
@@ -275,14 +339,14 @@ class Application(Tk):
         self.attendance = dp.get_attendence()
         self.groups = dp.get_groups()
 
-        start_button = Button(text="Start", command=self.read_card)
+        start_button = Button(text="tmp_start", command=self.read_card)
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
             text="Back",
             command=lambda: [
                 self.subjects_page(1),
-                self.geometry("600x500"),
+                self.geometry("700x500"),
                 self.minsize(
                     height=500,
                     width=600)])
@@ -419,7 +483,7 @@ class Application(Tk):
         title_label.place(relx=0.385, rely=0.08, width=300, height=25)
         back_button.place(relx=0.375, x=85, rely=0.25, y=+
                           (25 * (bot)), width=150, height=25)
-        start_button.place(x=0, y=0, width=75, height=25)
+        start_button.place(x=0, y=0, width=100, height=25)
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
 

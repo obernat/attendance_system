@@ -52,3 +52,6 @@ def get_groups():
         for student in subject.student_list:
             groups.setdefault(student.cv_string, []).append(student.name)
     return groups
+
+def get_students_with_isic_number():
+    pass
