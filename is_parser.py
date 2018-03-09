@@ -81,16 +81,19 @@ def get_subjects(s):
         return -2, None  # error getting the page, maybe page down/no internet access
 
     # Parsing subjects url
-    #download only administratint subjects
+    #download only administrating subjects
     match = "title=\"Sylabus predmetu\">(.*?)<.*?index.pl\?predmet=([0-9]+)"
     result = re.finditer(match, r.text, re.DOTALL)
     list_of_subjects_with_ids = []
     if result:
         for m in result:
             if m.group(0).find("alt=\"Administratíva\"") > -1:
-                list_of_subjects_with_ids.append(tuple(m.groups()))
+                #replace nbsp with space
+                list_of_subjects_with_ids.append(tuple((m.group(1).replace("&nbsp;"," "),m.group(2))))
         if len(list_of_subjects_with_ids) == 0:
             return -1, None #parsing error, no administrating subjects
+
+
         print (list_of_subjects_with_ids)
         return 1, list_of_subjects_with_ids
     else:
@@ -370,6 +373,7 @@ def download_routine(name="none", password="none"):
     ret_value, subjects_list_with_links = get_subjects(session)
     if ret_value == -1:
         print("K dispozícii nie sú žiadne predmety s administrátorskými právami!")
+        return -3, None
     elif ret_value < -1:
         print("Nepodarilo sa pripojiť ku sieti!")
         return -3, None
@@ -455,10 +459,10 @@ def upload_routine(subject, name="none", password="none"):
 #ret, a = download_routine("xbernato", sys.argv[1])
 #import database_handler as dbh
 #dbh.create_database_of_students(a)
-# print(a.subjects_list[0].name)
-# print(a.subjects_list[0].student_list[0].name)
-# print(a.subjects_list[0].student_list[0].study)
-# print(a.subjects_list[0].student_list[0].group)
+#print(a.subjects_list[0].name)
+#print(a.subjects_list[0].student_list[0].name)
+#print(a.subjects_list[0].student_list[0].study)
+#print(a.subjects_list[0].student_list[0].group)
 #a.subjects_list[0].student_list[0].attendance[0] = 3
 #a.subjects_list[0].student_list[3].attendance[0] = 6
 #a.subjects_list[0].student_list[3].attendance[1] = 6
