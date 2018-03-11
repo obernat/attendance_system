@@ -35,7 +35,9 @@ r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
 ########################################################################################
 from selenium import webdriver
 
-browser = webdriver.Firefox()
+profile = webdriver.FirefoxProfile('/home/ondrej/.mozilla/firefox/azo5kg9b.default')
+
+browser = webdriver.Firefox(profile)
 
 
 
