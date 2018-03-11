@@ -29,7 +29,47 @@ r = s.post("https://test.is.stuba.sk/auth/?lang=sk", data=payload)
 
 #Creating get to teacher page
 r = s.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk") #what is _m?
-print(r.text)
+
+
+
+########################################################################################
+from selenium import webdriver
+
+browser = webdriver.Firefox()
+
+
+
+from requests.utils import dict_from_cookiejar
+cookies = dict_from_cookiejar(s.cookies) # s is your session object
+
+browser.get("https://test.is.stuba.sk/")
+for key, value in cookies.items():
+        browser.add_cookie({'name': key, 'value': value})
+
+browser.get("https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk")
+
+
+
+
+browser.find_element_by_id("loginButton").click()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sys.exit() #TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 #Parsing subjects url
