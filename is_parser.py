@@ -464,7 +464,7 @@ def upload_routine(subject, name="none", password="none"):
 #print(a.subjects_list[0].student_list[0].study)
 #print(a.subjects_list[0].student_list[0].group)
 #a.subjects_list[0].student_list[0].attendance[0] = 3
-#a.subjects_list[0].student_list[3].attendance[0] = 6
+#a.subjects_list[0].student_list[0].attendance[1] = 3
 #a.subjects_list[0].student_list[3].attendance[1] = 6
 #a.subjects_list[0].student_list[0].attendance[1] = 3
 #a.subjects_list[0].student_list[0].attendance[2] = 3
@@ -474,3 +474,6 @@ def upload_routine(subject, name="none", password="none"):
 #a.subjects_list[0].student_list[0].attendance[6] = 3
 #a.subjects_list[0].student_list[0].attendance[7] = 3
 #upload_routine(a.subjects_list[0], "xbernato", sys.argv[1])
+#print("-------------")
+#print(a.subjects_list[0].student_list[0].attendance[0])
+#print(a.subjects_list[0].student_list[0].attendance[1])
