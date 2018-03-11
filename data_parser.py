@@ -53,5 +53,5 @@ def get_groups():
             groups.setdefault(student.cv_string, []).append(student.name)
     return groups
 
-def get_students_with_isic_number():
-    pass
+def get_teacher():
+    return load_data();

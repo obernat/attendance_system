@@ -12,6 +12,7 @@ import error_handler as er
 import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
+import database_handler as dh
 
 # import read_card2 as rc
 
@@ -38,6 +39,7 @@ class Application(Tk):
         self.cross_road_function()
         self.selected = 0
         self.monitored = 0
+
 
 # PAGES GUI -------------------------------------------------
 
@@ -157,7 +159,7 @@ class Application(Tk):
 
         if not inactive_subjects_list:
 
-            logout_button = Button(text="Logout")
+            database_button= Button(text="Database",command=lambda: self.database_page(0))
             sync_button = Button(text="Sync All")
 
             if (len(active_subjects_list)):
@@ -178,23 +180,19 @@ class Application(Tk):
 
                     d = Button(text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
-                    e = Button(text="Database",
-                               command=lambda text=active_subjects_list[i - 1].name:
-                               self.database_page(text, "Skupina"))
 
-                    a.place(relx=0.375, x=-240, rely=0.20,
+
+                    a.place(relx=0.375, x=-210, rely=0.20,
                             y=(i * 30), width=180, height=25)
-                    b.place(relx=0.375, x=-60, rely=0.20,
+                    b.place(relx=0.375, x=-30, rely=0.20,
                             y=(i * 30), width=120, height=25)
-                    c.place(relx=0.375, x=+60, rely=0.20,
+                    c.place(relx=0.375, x=+90, rely=0.20,
                             y=(i * 30), width=120, height=25)
-                    d.place(relx=0.375, x=+300, rely=0.20,
-                            y=(i * 30), width=120, height=25)
-                    e.place(relx=0.375, x=+180, rely=0.20,
+                    d.place(relx=0.375, x=+210, rely=0.20,
                             y=(i * 30), width=120, height=25)
 
-            logout_button.place(relx=0.65, x=+114, y=0, width=75, height=25)
-            sync_button.place(relx=0.65, x=+38, y=0, width=75, height=25)
+            database_button.place(relx=0.83, x= +10,rely=0.00, width=100, height=25)
+            sync_button.place(relx=0.83,x= -70, rely=0.00, width=75, height=25)
 
         else:
 
@@ -206,9 +204,9 @@ class Application(Tk):
             tabControl.add(tab1, text='Active')
             tabControl.add(tab2, text='Inactive')
             sync_button_tab1 = Button(tab1, text="Sync All")
-            logout_button_tab1 = Button(tab1, text="Logout")
+            database_button_tab1 = Button(tab1,text="Database", command=lambda: self.database_page(0))
             sync_button_tab2 = Button(tab2, text="Sync All")
-            logout_button_tab2 = Button(tab2, text="Logout")
+            database_button_tab2 = Button(tab2,text="Database", command=lambda: self.database_page(0))
 
             if (len(active_subjects_list)):
 
@@ -254,10 +252,10 @@ class Application(Tk):
 
             sync_button_tab1.place(relx=0.65, x=+38, y=0, width=75, height=25)
             sync_button_tab2.place(relx=0.65, x=+38, y=0, width=75, height=25)
-            logout_button_tab1.place(
-                relx=0.65, x=+114, y=0, width=75, height=25)
-            logout_button_tab2.place(
-                relx=0.65, x=+114, y=0, width=75, height=25)
+            database_button_tab1.place(
+                relx=0.65, x=+114, y=0, width=100, height=25)
+            database_button_tab2.place(
+                relx=0.65, x=+114, y=0, width=100, height=25)
 
             tabControl.pack(expand=1, fill="both")
 
@@ -266,63 +264,85 @@ class Application(Tk):
             else:
                 tabControl.select(tab2)
 
-    def database_page(self,subject_name, group):
+    def database_page(self,page_number):
         self.clear_frame()
-        self.groups = dp.get_groups()
+        self.minsize(height=700, width=1150) # set page size
 
-        title_label = Label(self, text=subject_name, font=self.title_font)
+        title_label = Label( self, text="Databáza študentov", font=self.title_font)
+        read_button = Button(text="Read cards")
+        back_button = Button(self, text="Back", command=lambda: [
+                self.subjects_page(1),
+                self.geometry("700x500"),
+                self.minsize(height=500,width=600)])
 
-        groups_options_tmp = []
-        for key in self.groups:
-            groups_options_tmp.append(key)
+        i, students_dict = dh.create_database_of_students(dp.get_teacher())
+        num_students_in_column = 30
+        num_of_columns = 3
 
-        groups_variable = StringVar(self)
-        groups_variable.set(group)
+        if len(students_dict)%(3*num_students_in_column) == 0:   # num of student is the exactly same as one page allow
+            num_of_pages = (len(students_dict)//(3*num_students_in_column))
+        else:  # else we need create one page more
+            num_of_pages = (len(students_dict)//(3*num_students_in_column))+1
 
-        groups_options= OptionMenu(self, groups_variable, *groups_options_tmp)
-        select_button = Button(
-            self,
-            text="Select",
-            command=lambda: self.database_page(subject_name,groups_variable.get()))
-        if group is not "Skupina":
-            i = 0
-            for name in self.groups[group]:
-                if i % 2 == 1:
+        # when we have more student as one page allow we need create 'pages switcher'
+        if num_of_pages > 1:
+            next = (page_number + 1) % num_of_pages
+            prev = (page_number - 1 + num_of_pages) % num_of_pages
+            page_label = Label(self, text=page_number + 1, font=self.title_font)
+            next_button = Button(text="Next", command=lambda: self.database_page(next))
+            prev_button = Button(text="Prev", command=lambda: self.database_page(prev))
+            page_label.place(relx=0.385, x=140, rely=0.95, width=15, height=25)
+            prev_button.place(relx=0.385, x=17, rely=0.95, width=100, height=25)
+            next_button.place(relx=0.385, x=170, rely=0.95, width=100, height=25)
+
+        row = 0
+        j = 0
+        column = 0
+
+        for name in students_dict:
+            j +=1
+            # range of names and numbers that have to be displayed
+            if(j > (page_number*num_of_columns*num_students_in_column)) \
+                    and j <= (page_number*num_of_columns*num_students_in_column)+num_of_columns*num_students_in_column:
+
+                if row == num_students_in_column:
+                    column += 1
+                    row = 0
+
+                if row % 2 == 1:
                     a = name
-                    a = Label(self, text=name, anchor="w")
-                    a.place(relx=0.375, x=-50, rely=0.3,
-                            y=+(i * 20), width=150, height=20)
-                    b = i
-                    b = Label(self, text='-------------------', anchor="w")
-                    b.place(relx=0.375, x=100, rely=0.3,
-                            y=+(i * 20), width=150, height=20)
+                    a = Label( self, text=name, anchor="w")
+                    a.place(relx=0.375, x=-370+(column*350), rely=0.3,
+                            y=-150+(row * 20), width=170, height=20)
+                    b = row
+                    b = Label( self, text=students_dict[name], anchor="w")
+                    b.place(relx=0.375, x=-200+(column*350), rely=0.3,
+                            y=-150+(row * 20), width=150, height=20)
 
-
-                else:
+                else:  # only different color of rows
                     a = name
-                    a = Label(self, text=name, anchor="w",
-                        bg="#ecf2f8",
-                        borderwidth=2,
-                        highlightthickness=2,
-                        highlightcolor="#ecf2f8",
-                        highlightbackground="#ecf2f8")
-                    a.place(relx=0.375, x=-50, rely=0.3,
-                            y=+(i * 20), width=150, height=20)
-                    b = i
-                    b = Label(self, text='-------------------', anchor="w",
-                        bg="#ecf2f8",
-                        borderwidth=2,
-                        highlightthickness=2,
-                        highlightcolor="#ecf2f8",
-                        highlightbackground="#ecf2f8")
-                    b.place(relx=0.375, x=100, rely=0.3,
-                            y=+(i * 20), width=150, height=20)
-                i += 1
+                    a = Label( self, text=name, anchor="w",
+                              bg="#ecf2f8",
+                              borderwidth=2,
+                              highlightthickness=2,
+                              highlightcolor="#ecf2f8",
+                              highlightbackground="#ecf2f8")
+                    a.place(relx=0.375, x=-370+(column*350), rely=0.3,
+                            y=-150+(row * 20), width=170, height=20)
+                    b = row
+                    b = Label( self, text=students_dict[name], anchor="w",
+                              bg="#ecf2f8",
+                              borderwidth=2,
+                              highlightthickness=2,
+                              highlightcolor="#ecf2f8",
+                              highlightbackground="#ecf2f8")
+                    b.place(relx=0.375, x=-200+(column*350), rely=0.3,
+                            y=-150+(row * 20), width=150, height=20)
+                row += 1
 
-        select_button.place(relx=0.375, x=200, rely=0.18, width=150, height=25)
-        groups_options.place(relx=0.375, x=-150, rely=0.18, width=350, height=28)
-        title_label.place(relx=0.385, rely=0.08, width=300, height=25)
-
+        title_label.place(relx=0.385, rely=0.01, width=300, height=25)
+        read_button.place(relx=0.90, rely=0.01, width=100, height=25)
+        back_button.place(relx=0.90, rely=0.95, width=100, height=25)
 
     def subject_info_page(self, subject_name, group, week):
         self.clear_frame()
