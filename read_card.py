@@ -38,6 +38,7 @@ print (data)
 
 hex_id = int_array_to_hex_separated_string(data)
 chip_id = int("".join(item for item in list(reversed(hex_id.split(':')))), 16)
+print (hex_id)
 print (chip_id)
 
 

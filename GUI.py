@@ -13,8 +13,8 @@ import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
 import database_handler as dh
-
-# import read_card2 as rc
+import read_card2 as rc
+import read_card3 as rc3
 
 
 class Application(Tk):
@@ -39,7 +39,8 @@ class Application(Tk):
         self.cross_road_function()
         self.selected = 0
         self.monitored = 0
-
+        self.monitoredDatabase = 0
+        nikdy, self.students_dict = dh.create_database_of_students(dp.get_teacher())
 
 # PAGES GUI -------------------------------------------------
 
@@ -267,22 +268,21 @@ class Application(Tk):
     def database_page(self,page_number):
         self.clear_frame()
         self.minsize(height=700, width=1150) # set page size
-
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
-        read_button = Button(text="Read cards")
+        read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
         back_button = Button(self, text="Back", command=lambda: [
                 self.subjects_page(1),
                 self.geometry("700x500"),
                 self.minsize(height=500,width=600)])
 
-        i, students_dict = dh.create_database_of_students(dp.get_teacher())
+
         num_students_in_column = 30
         num_of_columns = 3
 
-        if len(students_dict)%(3*num_students_in_column) == 0:   # num of student is the exactly same as one page allow
-            num_of_pages = (len(students_dict)//(3*num_students_in_column))
+        if len(self.students_dict)%(3*num_students_in_column) == 0:   # num of student is the exactly same as one page allow
+            num_of_pages = (len(self.students_dict)//(3*num_students_in_column))
         else:  # else we need create one page more
-            num_of_pages = (len(students_dict)//(3*num_students_in_column))+1
+            num_of_pages = (len(self.students_dict)//(3*num_students_in_column))+1
 
         # when we have more student as one page allow we need create 'pages switcher'
         if num_of_pages > 1:
@@ -299,7 +299,7 @@ class Application(Tk):
         j = 0
         column = 0
 
-        for name in students_dict:
+        for name in self.students_dict:
             j +=1
             # range of names and numbers that have to be displayed
             if(j > (page_number*num_of_columns*num_students_in_column)) \
@@ -315,7 +315,7 @@ class Application(Tk):
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label( self, text=students_dict[name], anchor="w")
+                    b = Label( self, text=self.students_dict[name], anchor="w")
                     b.place(relx=0.375, x=-200+(column*350), rely=0.3,
                             y=-150+(row * 20), width=150, height=20)
 
@@ -330,7 +330,7 @@ class Application(Tk):
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label( self, text=students_dict[name], anchor="w",
+                    b = Label( self, text=self.students_dict[name], anchor="w",
                               bg="#ecf2f8",
                               borderwidth=2,
                               highlightthickness=2,
@@ -657,6 +657,16 @@ class Application(Tk):
         else:
             self.monitored = 0
             self.read.stopReadCards(self.cardmonitor)
+
+    def read_card_to_database(self, page_number):
+        if (self.monitoredDatabase == 0):
+            self.monitoredDatabase = 1
+            self.read = rc3.read_card2(self, page_number)
+            self.cardmonitor = self.read.readCards()
+        else:
+            self.monitored = 0
+            self.read.stopReadCards(self.cardmonitor)
+
 
 
 if __name__ == "__main__":
