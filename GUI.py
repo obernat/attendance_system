@@ -271,6 +271,7 @@ class Application(Tk):
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
         read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
+        add_students_button = Button(text="Add new students")
         back_button = Button(self, text="Back", command=lambda: [
                 self.subjects_page(1),
                 self.geometry("700x500"),
@@ -347,6 +348,8 @@ class Application(Tk):
 ####################################
         title_label.place(relx=0.385, rely=0.01, width=300, height=25)
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
+        add_students_button.place(relx=0.90, x = -150, rely=0.01, width=150, height=25)
+
         back_button.place(relx=0.90, rely=0.95, width=100, height=25)
 
     def subject_info_page(self, subject_name, group, week):
