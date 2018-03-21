@@ -12,7 +12,7 @@ class read_card2(CardObserver):
     def change_attendance_card(self, guj, subject_name, group, week_selected, a, name, week):
         guj.attendance[str(name)][int(week)] = a
         guj.save_attendace()
-        guj.subject_info_page(subject_name, group, week_selected)
+        guj.attendance_page(subject_name, group, week_selected)
 
     def int_array_to_hex_separated_string(self, arr):
         return "".join("{:02x}:".format(item) for item in arr)[:-1]

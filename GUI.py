@@ -176,7 +176,7 @@ class Application(Tk):
                     a = Label(text=active_subjects_list[i - 1].name)
                     b = Button(text="Attendance",
                                command=lambda text=active_subjects_list[i - 1].name:
-                               self.subject_info_page(text, "Skupina", "Tyzden 1"))
+                               self.attendance_page(text, "Skupina", "Tyzden 1"))
                     c = Button(text="Sync subject",
                                command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
 
@@ -220,7 +220,7 @@ class Application(Tk):
 
                     a = Label(tab1, text=active_subjects_list[i - 1].name)
                     b = Button(tab1, text="Subject info",
-                               command=lambda text=active_subjects_list[i - 1].name: self.subject_info_page(text,
+                               command=lambda text=active_subjects_list[i - 1].name: self.attendance_page(text,
                                                                                                             "Skupina",
                                                                                                             "Tyzden 1"))
                     c = Button(tab1, text="Sync subject",
@@ -268,6 +268,7 @@ class Application(Tk):
 
     def database_page(self,page_number):
         self.clear_frame()
+
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
         read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
@@ -316,10 +317,13 @@ class Application(Tk):
                 if row % 2 == 1:
                     a = name
                     a = Label( self, text=name, anchor="w")
+                    a.bind(self.right_click, self.popup_edit_db_page)
+                    a.bind("<Enter>", self.on_enter)
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label( self, text=self.students_dict[name], anchor="w")
+                    b = Label(self, text=self.students_dict[name],anchor="w")
+
                     b.place(relx=0.375, x=-200+(column*350), rely=0.3,
                             y=-150+(row * 20), width=150, height=20)
 
@@ -331,15 +335,19 @@ class Application(Tk):
                               highlightthickness=2,
                               highlightcolor="#ecf2f8",
                               highlightbackground="#ecf2f8")
+                    a.bind(self.right_click, self.popup_edit_db_page)
+                    a.bind("<Enter>", self.on_enter)
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label( self, text=self.students_dict[name], anchor="w",
+                    b = Label( self ,text=self.students_dict[name],
+                              anchor="w",
                               bg="#ecf2f8",
                               borderwidth=2,
                               highlightthickness=2,
                               highlightcolor="#ecf2f8",
                               highlightbackground="#ecf2f8")
+
                     b.place(relx=0.375, x=-200+(column*350), rely=0.3,
                             y=-150+(row * 20), width=150, height=20)
                 row += 1
@@ -352,7 +360,7 @@ class Application(Tk):
 
         back_button.place(relx=0.90, rely=0.95, width=100, height=25)
 
-    def subject_info_page(self, subject_name, group, week):
+    def attendance_page(self, subject_name, group, week):
         self.clear_frame()
 
         colors = [
@@ -433,7 +441,7 @@ class Application(Tk):
         button = Button(
             self,
             text="Select",
-            command=lambda: self.subject_info_page(
+            command=lambda: self.attendance_page(
                 subject_name,
                 variable.get(),
                 week_variable.get()))
@@ -603,6 +611,24 @@ class Application(Tk):
     def popup_student(self, event):
         self.popupMenu2.post(event.x_root, event.y_root)
 
+    def popup_edit_db_page(self, event):
+        popup_edit_menu = Menu(self, tearoff=0)
+        popup_edit_menu.add_command(label="Edit number",
+                                    command=lambda: self.popup_edit_db_page_2(event.widget['text']))
+        popup_edit_menu.post(event.x_root, event.y_root)
+
+    def popup_edit_db_page_2(self, name):
+        toplevel = Toplevel()
+        toplevel.geometry("320x35")
+        number_entry = Entry(toplevel)
+        button = Button(toplevel, text="Edit number", command=lambda: self.rewrite_student_number(name, number_entry.get()))
+        number_entry.place(x=5, y=5, width=150, height=25)
+        button.place(x=160, y=5, width=150, height=25)
+
+    def rewrite_student_number(self, name, number):
+        self.students_dict[str(name)] = number
+        self.database_page(0)
+
     def on_enter(self, event):
         self.selected = event.widget['text']
 
@@ -615,7 +641,7 @@ class Application(Tk):
         self.groups[to_group].append(self.selected)
         self.groups[from_group].remove(self.selected)
         self.save_attendace()
-        self.subject_info_page(subject_name, to_group, week_selected)
+        self.attendance_page(subject_name, to_group, week_selected)
 
         self.close_window(window)
 
@@ -655,7 +681,8 @@ class Application(Tk):
                 if student.name == name:
                     student.attendance = self.attendance[name][0]
         dp.save_data(teacher)
-        self.subject_info_page(subject_name, group, week_selected)
+        self.attendance_page(subject_name, group, week_selected)
+
 
     def read_card(self):
         if (self.monitored == 0):
