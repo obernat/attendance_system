@@ -13,9 +13,9 @@ import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
 import database_handler as dh
-#import read_card2 as rc
-#import read_card3 as rc3
-#import ISIC.getName as gN
+import read_card2 as rc
+import read_card3 as rc3
+import ISIC.getName as gN
 
 
 class Application(Tk):
@@ -352,7 +352,7 @@ class Application(Tk):
                             y=-150+(row * 20), width=150, height=20)
                 row += 1
 ####################################
-        #gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
+        gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
 ####################################
         title_label.place(relx=0.385, rely=0.01, width=300, height=25)
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
