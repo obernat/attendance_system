@@ -104,6 +104,7 @@ ENV/
 active_subjects
 attendance
 inactive_subjects
+student_dict
 teacher
 **/*.jpg
 **/*.png
