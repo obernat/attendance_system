@@ -13,9 +13,9 @@ import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
 import database_handler as dh
-import read_card2 as rc
-import read_card3 as rc3
-import ISIC.getName as gN
+#import read_card2 as rc
+#import read_card3 as rc3
+#import ISIC.getName as gN
 
 
 class Application(Tk):
@@ -352,7 +352,7 @@ class Application(Tk):
                             y=-150+(row * 20), width=150, height=20)
                 row += 1
 ####################################
-        gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
+        #gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
 ####################################
         title_label.place(relx=0.385, rely=0.01, width=300, height=25)
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
@@ -373,9 +373,12 @@ class Application(Tk):
             "blue",
             'brown']
         self.attendance = dp.get_attendence()
-        self.groups = dp.get_groups()
+        self.groups = dp.get_groups(subject_name)
 
-        start_button = Button(text="tmp_start", command=self.read_card)
+        if group is "Skupina":
+            group = list(self.groups)[0]
+
+        start_button = Button(text="Start read", command=self.read_card)
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
@@ -387,65 +390,60 @@ class Application(Tk):
                     height=500,
                     width=600)])
 
-        self.popupMenu = Menu(self, tearoff=0)
-        self.popupMenu.add_command(
+        self.popup_attendance_menu = Menu(self, tearoff=0)
+        self.popup_attendance_menu.add_command(
             label="red", command=lambda: self.change_attendance(
                 subject_name, group, week, 0))
-        self.popupMenu.add_command(
+        self.popup_attendance_menu.add_command(
             label="green", command=lambda: self.change_attendance(
                 subject_name, group, week, 1))
-        self.popupMenu.add_command(
+        self.popup_attendance_menu.add_command(
             label="yellow", command=lambda: self.change_attendance(
                 subject_name, group, week, 2))
-        self.popupMenu.add_command(
+        self.popup_attendance_menu.add_command(
             label="black", command=lambda: self.change_attendance(
                 subject_name, group, week, 3))
-        self.popupMenu.add_command(
+        self.popup_attendance_menu.add_command(
             label="gray", command=lambda: self.change_attendance(
                 subject_name, group, week, 4))
 
-        self.popupMenu2 = Menu(self, tearoff=0)
-        self.popupMenu2.add_command(
+        self.popup_change_group_menu = Menu(self, tearoff=0)
+        self.popup_change_group_menu.add_command(
             label="Change group",
             command=lambda: self.change_group(
                 group,
                 subject_name,
                 week))
 
-        OPTIONS = []
+        group_options = []
         for key in self.groups:
-            OPTIONS.append(key)
+            group_options.append(key)
 
         week_options = []
         for i in range(1, 13):
             week_options.append("Tyzden " + str(i))
 
-        variable = StringVar(self)
-        variable.set(group)
+        group_variable = StringVar(self)
+        group_variable.set(group)
 
-        w = OptionMenu(self, variable, *OPTIONS)
+        w = OptionMenu(self, group_variable, *group_options)
         w.place(relx=0.375, x=0, rely=0.18, width=350, height=28)
 
         week_variable = StringVar(self)
         week_variable.set(week)
 
         week_option_menu = OptionMenu(self, week_variable, *week_options)
-        week_option_menu.place(
-            relx=0.375,
-            x=-150,
-            rely=0.18,
-            width=150,
-            height=28)
+        week_option_menu.place(relx=0.375, x=-150, rely=0.18, width=150, height=28)
 
         tmp, week_number = str(week_variable.get()).split(' ')
-        button = Button(
+        select_button = Button(
             self,
             text="Select",
             command=lambda: self.attendance_page(
                 subject_name,
-                variable.get(),
+                group_variable.get(),
                 week_variable.get()))
-        button.place(relx=0.375, x=350, rely=0.18, width=150, height=25)
+
         bot = 0
         if group is not "Skupina":
             i = 0
@@ -516,6 +514,7 @@ class Application(Tk):
                 bot = len(self.groups[group])
                 i = i + 1
 
+        select_button.place(relx=0.375, x=350, rely=0.18, width=150, height=25)
         title_label.place(relx=0.385, rely=0.08, width=300, height=25)
         back_button.place(relx=0.375, x=85, rely=0.25, y=+
                           (25 * (bot)), width=150, height=25)
@@ -606,10 +605,10 @@ class Application(Tk):
             self.change_attendance(subject_name, group, week_selected, 1)
 
     def popup(self, event):
-        self.popupMenu.post(event.x_root, event.y_root)
+        self.popup_attendance_menu.post(event.x_root, event.y_root)
 
     def popup_student(self, event):
-        self.popupMenu2.post(event.x_root, event.y_root)
+        self.popup_change_group_menu.post(event.x_root, event.y_root)
 
     def popup_edit_db_page(self, event):
         popup_edit_menu = Menu(self, tearoff=0)

@@ -44,13 +44,14 @@ def get_attendence():
             attendance.setdefault(student.name, []).append(student.attendance)
     return attendance
 
-def get_groups():
+def get_groups(subject_name):
 
     teacher = load_data()
     groups = {}
     for subject in teacher.subjects_list:
-        for student in subject.student_list:
-            groups.setdefault(student.cv_string, []).append(student.name)
+        if subject.name == subject_name:
+            for student in subject.student_list:
+                groups.setdefault(student.cv_string, []).append(student.name)
     return groups
 
 def get_teacher():
