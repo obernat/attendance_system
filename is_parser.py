@@ -458,7 +458,7 @@ def upload_routine(subject, name="none", password="none"):
 
 #ret, a = download_routine("xbernato", sys.argv[1])
 #import database_handler as dbh
-#dbh.create_database_of_students(a)
+#dbh.create_students_database(a)
 #print(a.subjects_list[0].name)
 #print(a.subjects_list[0].student_list[0].name)
 #print(a.subjects_list[0].student_list[0].study)

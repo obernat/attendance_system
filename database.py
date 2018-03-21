@@ -53,3 +53,8 @@ class Student:
     #by a dictionary returned by function "create_database_of_students
     #in a database_handler.p, where key is a name (avoid duplicit names)
     #and value is ISIC ID (could be swapper in further release)
+class Person:
+    def __init__(self, name, ISIC):
+        self.full_name = name
+        self.ISIC = ISIC
+        self.just_name = name.split(",")[0]
