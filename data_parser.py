@@ -1,7 +1,7 @@
 from six.moves import cPickle as pickle
 
 
-def save_data(teacher):
+def save_teacher(teacher):
     try:
         f = open('teacher', 'wb')
         save = {
@@ -12,7 +12,18 @@ def save_data(teacher):
     except Exception as e:
          print('Unable to pickle teacher object:', e)
 
-def load_data():
+def save_student_dict(student_dict):
+    try:
+        f = open('student_dict', 'wb')
+        save = {
+            'student_dict': student_dict,
+        }
+        pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
+        f.close()
+    except Exception as e:
+         print('Unable to pickle student_dict object:', e)
+
+def load_teacher():
     try:
         with open('teacher', 'rb') as f:
             data = pickle.load(f)
@@ -21,8 +32,17 @@ def load_data():
     except Exception as e:
         print('Unable to read data from teacher:', e)
 
+def load_student_dict():
+    try:
+        with open('student_dict', 'rb') as f:
+            data = pickle.load(f)
+            student_dict = data['student_dict']
+        return student_dict
+    except Exception as e:
+        print('Unable to read data from teacher:', e)
+
 def get_subjects_lists():
-    teacher = load_data()
+    teacher = load_teacher()
     active_subjects_list= []
     inactive_subjects_list = []
 
@@ -37,7 +57,7 @@ def get_subjects_lists():
 
 def get_attendence():
 
-    teacher = load_data()
+    teacher = load_teacher()
     attendance = {}
     for subject in teacher.subjects_list:
         for student in subject.student_list:
@@ -46,7 +66,7 @@ def get_attendence():
 
 def get_groups(subject_name):
 
-    teacher = load_data()
+    teacher = load_teacher()
     groups = {}
     for subject in teacher.subjects_list:
         if subject.name == subject_name:
@@ -55,4 +75,4 @@ def get_groups(subject_name):
     return groups
 
 def get_teacher():
-    return load_data();
+    return load_teacher();

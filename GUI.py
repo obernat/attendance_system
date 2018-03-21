@@ -13,9 +13,9 @@ import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
 import database_handler as dh
-import read_card2 as rc
-import read_card3 as rc3
-import ISIC.getName as gN
+#import read_card2 as rc
+#import read_card3 as rc3
+#import ISIC.getName as gN
 
 
 class Application(Tk):
@@ -41,7 +41,10 @@ class Application(Tk):
         self.selected = 0
         self.monitored = 0
         self.monitoredDatabase = 0
-        nikdy, self.students_dict = dh.create_database_of_students(dp.get_teacher())
+        if os.path.isfile('student_dict'):
+            self.students_dict = dp.load_student_dict()
+        else:
+            nikdy, self.students_dict = dh.create_database_of_students(dp.get_teacher())
 
 # PAGES GUI -------------------------------------------------
 
@@ -352,7 +355,7 @@ class Application(Tk):
                             y=-150+(row * 20), width=150, height=20)
                 row += 1
 ####################################
-        gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
+        #gN.closestMatch(nameList) ########tu pridavam mena studentov do listu a volam matcher funkciu - len kvoli testovaniu to uz si uprav
 ####################################
         title_label.place(relx=0.385, rely=0.01, width=300, height=25)
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
@@ -582,7 +585,7 @@ class Application(Tk):
             self.after(100, self.process_queue)
 
     def move_subject(self, subject_name, tab_number):
-        teacher = dp.load_data()
+        teacher = dp.load_teacher()
         new_subjects_list = []
         for subject in teacher.subjects_list:
             if subject.name == subject_name:
@@ -592,7 +595,7 @@ class Application(Tk):
                     subject.is_active = 1
             new_subjects_list.append(subject)
         teacher.subjects_list = new_subjects_list
-        dp.save_data(teacher)
+        dp.save_teacher(teacher)
         self.subjects_page(tab_number)
 
     def left_click(self, event, subject_name, group, week_selected):
@@ -626,6 +629,7 @@ class Application(Tk):
 
     def rewrite_student_number(self, name, number):
         self.students_dict[str(name)] = number
+        dp.save_student_dict(self.students_dict)
         self.database_page(0)
 
     def on_enter(self, event):
@@ -671,7 +675,7 @@ class Application(Tk):
         button.place(x=160, y=5, width=150, height=25)
 
     def change_attendance(self, subject_name, group, week_selected, a):
-        teacher = dp.load_data()
+        teacher = dp.load_teacher()
         name, week = str(self.selected).split('_')
         self.attendance[name][0][int(week)] = a
 
@@ -679,7 +683,7 @@ class Application(Tk):
             for student in subject.student_list:
                 if student.name == name:
                     student.attendance = self.attendance[name][0]
-        dp.save_data(teacher)
+        dp.save_teacher(teacher)
         self.attendance_page(subject_name, group, week_selected)
 
 

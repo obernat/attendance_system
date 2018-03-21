@@ -26,7 +26,7 @@ class DownloadThread(threading.Thread):
             er.showError("Nesprávne prihlasovacie údaje!")
 
         else:
-            dp.save_data(teacher)
+            dp.save_teacher(teacher)
             self.queue.put("Download finished")
 
 
@@ -42,7 +42,7 @@ class UploadThread(threading.Thread):
         self.password = password
 
     def run(self):
-        teacher = dp.load_data()
+        teacher = dp.load_teacher()
 
         ret_value = isp.upload_routine(
             teacher.subjects_list[0], self.name, self.password)
