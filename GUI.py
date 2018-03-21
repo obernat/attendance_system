@@ -173,7 +173,7 @@ class Application(Tk):
                     d = i * 10+2
                     e = i * 10+3
 
-                    a = Label(text=active_subjects_list[i - 1].name)
+                    a = Label(text=active_subjects_list[i - 1].name , anchor = 'w')
                     b = Button(text="Attendance",
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.attendance_page(text, "Skupina", "Tyzden 1"))
@@ -184,8 +184,8 @@ class Application(Tk):
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
 
-                    a.place(relx=0.375, x=-210, rely=0.20,
-                            y=(i * 30), width=180, height=25)
+                    a.place(relx=0.375, x=-250, rely=0.20,
+                            y=(i * 30), width=210, height=25)
                     b.place(relx=0.375, x=-30, rely=0.20,
                             y=(i * 30), width=120, height=25)
                     c.place(relx=0.375, x=+90, rely=0.20,
@@ -218,7 +218,7 @@ class Application(Tk):
                     c = i * 10 + 1
                     d = i * 10 + 2
 
-                    a = Label(tab1, text=active_subjects_list[i - 1].name)
+                    a = Label(tab1, text=active_subjects_list[i - 1].name, anchor= 'w')
                     b = Button(tab1, text="Subject info",
                                command=lambda text=active_subjects_list[i - 1].name: self.attendance_page(text,
                                                                                                             "Skupina",
@@ -228,8 +228,8 @@ class Application(Tk):
                     d = Button(tab1, text="Disable",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
-                    a.place(relx=0.375, x=-180, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                    a.place(relx=0.375, x=-230, rely=0.20,
+                            y=(i * 30), width=190, height=25)
                     b.place(relx=0.375, x=-60, rely=0.20,
                             y=(i * 30), width=120, height=25)
                     c.place(relx=0.375, x=+60, rely=0.20,
@@ -243,12 +243,12 @@ class Application(Tk):
                     a = i
                     b = i * 10
 
-                    a = Label(tab2, text=inactive_subjects_list[i - 1].name)
+                    a = Label(tab2, text=inactive_subjects_list[i - 1].name, anchor= 'w')
                     b = Button(tab2, text="Enable",
                                command=lambda text=inactive_subjects_list[i - 1].name: self.move_subject(text, 2))
 
-                    a.place(relx=0.375, x=-60, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                    a.place(relx=0.375, x=-150, rely=0.20,
+                            y=(i * 30), width=210, height=25)
                     b.place(relx=0.375, x=+60, rely=0.20,
                             y=(i * 30), width=120, height=25)
 
@@ -378,7 +378,7 @@ class Application(Tk):
         if group is "Skupina":
             group = list(self.groups)[0]
 
-        start_button = Button(text="Start read", command=self.read_card)
+        start_button = Button(text="Read cards", command=self.read_card)
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
@@ -427,13 +427,13 @@ class Application(Tk):
         group_variable.set(group)
 
         w = OptionMenu(self, group_variable, *group_options)
-        w.place(relx=0.375, x=0, rely=0.18, width=350, height=28)
+        w.place(relx=0.375, x=-50, rely=0.18, width=350, height=28)
 
         week_variable = StringVar(self)
         week_variable.set(week)
 
         week_option_menu = OptionMenu(self, week_variable, *week_options)
-        week_option_menu.place(relx=0.375, x=-150, rely=0.18, width=150, height=28)
+        week_option_menu.place(relx=0.375, x=-200, rely=0.18, width=150, height=28)
 
         tmp, week_number = str(week_variable.get()).split(' ')
         select_button = Button(
@@ -514,8 +514,8 @@ class Application(Tk):
                 bot = len(self.groups[group])
                 i = i + 1
 
-        select_button.place(relx=0.375, x=350, rely=0.18, width=150, height=25)
-        title_label.place(relx=0.385, rely=0.08, width=300, height=25)
+        select_button.place(relx=0.375, x=300, rely=0.18, width=150, height=25)
+        title_label.place(relx=0.375, x= -250, rely=0.18, y = -75, width=800, height=25)
         back_button.place(relx=0.375, x=85, rely=0.25, y=+
                           (25 * (bot)), width=150, height=25)
         start_button.place(x=0, y=0, width=100, height=25)
