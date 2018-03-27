@@ -42,9 +42,11 @@ class Application(Tk):
         self.monitored = 0
         self.monitoredDatabase = 0
         if os.path.isfile('student_dict'):
-            self.students_dict = dp.load_student_dict()
+            self.students_list = dp.load_student_dict()
         else:
-            nikdy, self.students_dict = dh.create_database_of_students(dp.get_teacher())
+            nikdy, self.students_list = dh.create_students_database(dp.get_teacher())
+            print(len(self.students_list))
+
         self.teacher = dp.load_teacher()
 
 # PAGES GUI -------------------------------------------------
@@ -286,10 +288,10 @@ class Application(Tk):
         num_students_in_column = 30
         num_of_columns = 3
 
-        if len(self.students_dict)%(3*num_students_in_column) == 0:   # num of student is the exactly same as one page allow
-            num_of_pages = (len(self.students_dict)//(3*num_students_in_column))
+        if len(self.students_list)%(3*num_students_in_column) == 0:   # num of student is the exactly same as one page allow
+            num_of_pages = (len(self.students_list) // (3 * num_students_in_column))
         else:  # else we need create one page more
-            num_of_pages = (len(self.students_dict)//(3*num_students_in_column))+1
+            num_of_pages = (len(self.students_list) // (3 * num_students_in_column)) + 1
 
         # when we have more student as one page allow we need create 'pages switcher'
         if num_of_pages > 1:
@@ -307,9 +309,9 @@ class Application(Tk):
         column = 0
         nameList = []
 
-        for name in self.students_dict:
+        for student in self.students_list:
             j +=1
-            nameList.append(name)
+            nameList.append(student.full_name)
             # range of names and numbers that have to be displayed
             if(j > (page_number*num_of_columns*num_students_in_column)) \
                     and j <= (page_number*num_of_columns*num_students_in_column)+num_of_columns*num_students_in_column:
@@ -319,21 +321,21 @@ class Application(Tk):
                     row = 0
 
                 if row % 2 == 1:
-                    a = name
-                    a = Label( self, text=name, anchor="w")
+                    a = student.full_name
+                    a = Label( self, text=student.full_name, anchor="w")
                     a.bind(self.right_click, self.popup_edit_db_page)
                     a.bind("<Enter>", self.on_enter)
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label(self, text=self.students_dict[name],anchor="w")
+                    b = Label(self, text=student.ISIC, anchor="w")
 
                     b.place(relx=0.375, x=-200+(column*350), rely=0.3,
                             y=-150+(row * 20), width=150, height=20)
 
                 else:  # only different color of rows
-                    a = name
-                    a = Label( self, text=name, anchor="w",
+                    a = student.full_name
+                    a = Label( self, text=student.full_name, anchor="w",
                               bg="#ecf2f8",
                               borderwidth=2,
                               highlightthickness=2,
@@ -344,7 +346,7 @@ class Application(Tk):
                     a.place(relx=0.375, x=-370+(column*350), rely=0.3,
                             y=-150+(row * 20), width=170, height=20)
                     b = row
-                    b = Label( self ,text=self.students_dict[name],
+                    b = Label(self, text=student.ISIC,
                               anchor="w",
                               bg="#ecf2f8",
                               borderwidth=2,
@@ -628,8 +630,10 @@ class Application(Tk):
         button.place(x=160, y=5, width=150, height=25)
 
     def rewrite_student_number(self, name, number):
-        self.students_dict[str(name)] = number
-        dp.save_student_dict(self.students_dict)
+        for student in self.students_list:
+            if student.full_name == name:
+                    student.ISIC = number
+        dp.save_student_dict(self.students_list)
         self.database_page(0)
 
     def on_enter(self, event):
@@ -638,7 +642,6 @@ class Application(Tk):
     def close_window(self, window):
         window.destroy()
 
-    # TODO Upravit to
     def switch_student(self,window,to_group,subject_name,week_selected):
 
         for subject in self.teacher.subjects_list:
