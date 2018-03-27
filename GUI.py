@@ -602,7 +602,7 @@ class Application(Tk):
 
         name, week = str(self.selected).split('_')
 
-        if self.attendance[str(name)][int(week)] == 1:
+        if self.attendance[str(name)][0][int(week)] == 1:
             self.change_attendance(subject_name, group, week_selected, 3)
         else:
             self.change_attendance(subject_name, group, week_selected, 1)
