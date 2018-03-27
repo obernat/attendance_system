@@ -45,6 +45,7 @@ class Application(Tk):
             self.students_dict = dp.load_student_dict()
         else:
             nikdy, self.students_dict = dh.create_database_of_students(dp.get_teacher())
+        self.teacher = dp.load_teacher()
 
 # PAGES GUI -------------------------------------------------
 
@@ -414,7 +415,6 @@ class Application(Tk):
         self.popup_change_group_menu.add_command(
             label="Change group",
             command=lambda: self.change_group(
-                group,
                 subject_name,
                 week))
 
@@ -639,23 +639,26 @@ class Application(Tk):
         window.destroy()
 
     # TODO Upravit to
-    def switch_student(self,window,from_group,to_group,subject_name,week_selected):
+    def switch_student(self,window,to_group,subject_name,week_selected):
 
-        self.groups[to_group].append(self.selected)
-        self.groups[from_group].remove(self.selected)
-        self.save_attendace()
+        for subject in self.teacher.subjects_list:
+            if subject.name == subject_name:
+                for student in subject.student_list:
+                    if student.name  == self.selected:
+                        student.cv_string = to_group
+
+        dp.save_teacher(self.teacher)
         self.attendance_page(subject_name, to_group, week_selected)
 
         self.close_window(window)
 
-    def change_group(self, group, subject_name, week_selected):
-
+    def change_group(self, subject_name, week_selected):
         toplevel = Toplevel()
         toplevel.geometry("320x35")
         OPTIONS = []
 
-        for i in range(1, 20):
-            OPTIONS.append("Skupina " + str(i))
+        for group_tmp in self.groups:
+            OPTIONS.append(group_tmp)
 
         variable = StringVar(self)
         variable.set(OPTIONS[0])
@@ -668,22 +671,20 @@ class Application(Tk):
             text="Select",
             command=lambda: self.switch_student(
                 toplevel,
-                group,
                 variable.get(),
                 subject_name,
                 week_selected))
         button.place(x=160, y=5, width=150, height=25)
 
     def change_attendance(self, subject_name, group, week_selected, a):
-        teacher = dp.load_teacher()
         name, week = str(self.selected).split('_')
         self.attendance[name][0][int(week)] = a
 
-        for subject in teacher.subjects_list:
+        for subject in self.teacher.subjects_list:
             for student in subject.student_list:
                 if student.name == name:
                     student.attendance = self.attendance[name][0]
-        dp.save_teacher(teacher)
+        dp.save_teacher(self.teacher)
         self.attendance_page(subject_name, group, week_selected)
 
 

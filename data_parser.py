@@ -75,4 +75,4 @@ def get_groups(subject_name):
     return groups
 
 def get_teacher():
-    return load_teacher();
+    return load_teacher()
