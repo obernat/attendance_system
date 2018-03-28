@@ -35,10 +35,10 @@ def processImage(image, index):
     cv2.imwrite("img" + str(index) + ".jpg", gray)
     temp = "img" + str(index) + ".jpg"
 
-    #name = p.image_to_string(Image.open("ISIC/" + temp), lang='slk')
+    name = p.image_to_string(Image.open("ISIC/images" + temp), lang='slk')
 
     #momentalne len na jediny funkcny obrazok, inak vyuzit riadok vyssie, kde vysklada nazov - asi lepsie spravit este jeden file na ukladanie obrazkov
-    name = p.image_to_string(Image.open("ISIC/fejk.png"), lang='slk')
+    #name = p.image_to_string(Image.open("ISIC/fejk.png"), lang='slk')
 
     return name
 
@@ -73,3 +73,10 @@ def closestMatch(studentList):
         print(matches)
 
         index += 1
+
+
+def get_name_from_image(image, studentList):
+
+    name = processImage(image, 0)
+    matches = process.extractOne(name, studentList)
+    return matches

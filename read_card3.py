@@ -6,6 +6,7 @@ from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.util import toHexString
 import glob
 import os
+import ISIC.getName as gN
 
 SELECT = [0xFF, 0xCA, 0x00, 0x00, 0x00]
 class read_card2(CardObserver):
@@ -17,6 +18,9 @@ class read_card2(CardObserver):
         self.observer = ConsoleCardConnectionObserver()
         self.gui = gui
         self.page_number = page_number
+        self.student_names = []
+        for student in self.gui.students_list:
+            self.student_names.append(student.full_name)
 
     def update(self, observable, actions):
         (addedcards, removedcards) = actions
@@ -28,12 +32,16 @@ class read_card2(CardObserver):
             hex_id = self.int_array_to_hex_separated_string(response)
             chip_id = int("".join(item for item in list(reversed(hex_id.split(':')))), 16)
             print("+Inserted: pokus")
+            print(len(self.gui.students_list))
             list_of_files = glob.glob('ISIC/images/*')  # * means all if need specific format then *.csv
             latest_file = max(list_of_files, key=os.path.getctime)
-            print(latest_file)
-            if(1):
-                self.gui.students_dict['Baka Tomáš, Bc.']=chip_id
-                self.gui.database_page(self.page_number)
+            student_name=gN.get_name_from_image(latest_file, self.student_names)
+            for student in self.gui.students_list:
+                if student.full_name==student_name:
+                    student.ISIC=chip_id
+                    self.gui.database_page(self.page_number)
+            else:
+                print("nieco")
         for card in removedcards:
             print("-Removed: ", toHexString(card.atr))
 
