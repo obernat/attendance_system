@@ -13,8 +13,8 @@ import datetime
 from threaded_tasks import DownloadThread, UploadThread
 import queue
 import database_handler as dh
-#import read_card2 as rc
-#import read_card3 as rc3
+import read_card2 as rc
+import read_card3 as rc3
 #import ISIC.getName as gN
 
 
@@ -44,7 +44,7 @@ class Application(Tk):
         if os.path.isfile('student_dict'):
             self.students_list = dp.load_student_dict()
         else:
-            nikdy, self.students_list = dh.create_students_database(dp.get_teacher())
+            _, self.students_list = dh.create_students_database(dp.get_teacher())
             print(len(self.students_list))
 
         self.teacher = dp.load_teacher()
