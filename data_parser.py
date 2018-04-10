@@ -72,6 +72,7 @@ def get_groups(subject_name):
         if subject.name == subject_name:
             for student in subject.student_list:
                 groups.setdefault(student.cv_string, []).append(student.name)
+
     return groups
 
 def get_teacher():

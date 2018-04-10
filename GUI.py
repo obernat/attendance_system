@@ -15,7 +15,7 @@ import queue
 import database_handler as dh
 import read_card2 as rc
 import read_card3 as rc3
-#import ISIC.getName as gN
+import ISIC.getName as gN
 
 
 class Application(Tk):
@@ -466,12 +466,12 @@ class Application(Tk):
                         highlightcolor="#37d3ff",
                         highlightbackground="#37d3ff",
                     )
-                    t.place(relx=0.4, x=+(k * 25), rely=0.3,
+                    t.place(relx=0.4, x=+(k * 27), rely=0.3,
                             y=-22, width=21, height=21)
                 else:
                     t = k
                     t = Label(self, text=str(k + 1))
-                    t.place(relx=0.4, x=+(k * 25), rely=0.3,
+                    t.place(relx=0.4, x=+(k * 27), rely=0.3,
                             y=-22, width=20, height=20)
 
             for name in self.groups[group]:
@@ -479,7 +479,7 @@ class Application(Tk):
                 a = name
                 a = Label(self, text=name, anchor="w")
                 a.place(relx=0.375, x=-150, rely=0.3,
-                        y=+(i * 20), width=150, height=20)
+                        y=+(i * 23), width=150, height=20)
                 a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
 
@@ -496,8 +496,8 @@ class Application(Tk):
                                   highlightbackground="#37d3ff",
                                   )
 
-                        g.place(relx=0.4, x=+(j * 25), rely=0.3,
-                                y=+(i * 20), width=21, height=21)
+                        g.place(relx=0.4, x=+(j * 27), rely=0.3,
+                                y=+(i * 23), width=21, height=21)
                         g.bind(self.right_click, self.popup)
                         g.bind(
                             "<Button-1>",
@@ -513,8 +513,8 @@ class Application(Tk):
                                   text=name + "_" + str(j),
                                   bg=colors[self.attendance[name][0][j]],
                                   fg=colors[self.attendance[name][0][j]])
-                        g.place(relx=0.4, x=+(j * 25), rely=0.3,
-                                y=+ (i * 20), width=18, height=18)
+                        g.place(relx=0.4, x=+(j * 27), rely=0.3,
+                                y=+ (i * 23), width=18, height=18)
 
                 bot = len(self.groups[group])
                 i = i + 1
