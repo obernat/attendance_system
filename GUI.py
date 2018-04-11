@@ -755,7 +755,7 @@ class Application(Tk):
         if (self.monitored == 0):
             self.monitored = 1
             self.attendance_page(subject_name, group, week)
-            self.read = rc.read_card2(self)
+            self.read = rc.read_card2(self, subject_name, group, week)
             self.cardmonitor = self.read.readCards()
         else:
             self.monitored = 0
