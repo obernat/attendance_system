@@ -18,6 +18,7 @@ import read_card3 as rc3
 import ISIC.getName as gN
 
 
+
 class Application(Tk):
     # GUI Application
 
@@ -41,11 +42,11 @@ class Application(Tk):
         self.selected = 0
         self.monitored = 0
         self.monitoredDatabase = 0
+
         if os.path.isfile('student_dict'):
             self.students_list = dp.load_student_dict()
         else:
             _, self.students_list = dh.create_students_database(dp.get_teacher())
-            print(len(self.students_list))
 
         self.teacher = dp.load_teacher()
 
@@ -134,6 +135,8 @@ class Application(Tk):
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.prog_bar.start()
 
+        _, self.students_list = dh.create_students_database(dp.get_teacher())
+
     def uploading_page(self):
         """
         Upload_page display progress bar while data is uploading
@@ -168,7 +171,6 @@ class Application(Tk):
         if not inactive_subjects_list:
 
             database_button= Button(text="Database",command=lambda: self.database_page(0))
-            sync_button = Button(text="Sync All")
 
             if (len(active_subjects_list)):
 
@@ -200,7 +202,6 @@ class Application(Tk):
                             y=(i * 30), width=120, height=25)
 
             database_button.place(relx=0.83, x= +10,rely=0.00, width=100, height=25)
-            sync_button.place(relx=0.83,x= -70, rely=0.00, width=75, height=25)
 
         else:
 
@@ -211,9 +212,7 @@ class Application(Tk):
 
             tabControl.add(tab1, text='Active')
             tabControl.add(tab2, text='Inactive')
-            sync_button_tab1 = Button(tab1, text="Sync All")
             database_button_tab1 = Button(tab1,text="Database", command=lambda: self.database_page(0))
-            sync_button_tab2 = Button(tab2, text="Sync All")
             database_button_tab2 = Button(tab2,text="Database", command=lambda: self.database_page(0))
 
             if (len(active_subjects_list)):
@@ -258,8 +257,6 @@ class Application(Tk):
                     b.place(relx=0.375, x=+60, rely=0.20,
                             y=(i * 30), width=120, height=25)
 
-            sync_button_tab1.place(relx=0.65, x=+38, y=0, width=75, height=25)
-            sync_button_tab2.place(relx=0.65, x=+38, y=0, width=75, height=25)
             database_button_tab1.place(
                 relx=0.65, x=+114, y=0, width=100, height=25)
             database_button_tab2.place(
@@ -374,12 +371,12 @@ class Application(Tk):
 
         colors = [
             "gray",
-            "brown",
-            "red",
-            "yellow",
-            "blue",
-            "black",
             "green",
+            "blue",
+            "yellow",
+            "red",
+            "black",
+            "brown",
             "orange",
             ]
 
@@ -410,25 +407,25 @@ class Application(Tk):
                 subject_name, group, week, 0))
         self.popup_attendance_menu.add_command(
             label="Skorší odchod", command=lambda: self.change_attendance(
-                subject_name, group, week, 1))
+                subject_name, group, week, 7))
         self.popup_attendance_menu.add_command(
-            label="Neospravedlnená účasť", command=lambda: self.change_attendance(
-                subject_name, group, week, 2))
+            label="Neospravedlnená neúčasť", command=lambda: self.change_attendance(
+                subject_name, group, week, 4))
         self.popup_attendance_menu.add_command(
             label="Ospravedlnená účasť", command=lambda: self.change_attendance(
                 subject_name, group, week, 3))
         self.popup_attendance_menu.add_command(
             label="Prítomný na inom cvičení", command=lambda: self.change_attendance(
-                subject_name, group, week, 4))
+                subject_name, group, week, 6))
         self.popup_attendance_menu.add_command(
             label="Vylúčenie z cvičenia", command=lambda: self.change_attendance(
                 subject_name, group, week, 5))
         self.popup_attendance_menu.add_command(
             label="Zúčastnil sa", command=lambda: self.change_attendance(
-                subject_name, group, week, 6))
+                subject_name, group, week, 1))
         self.popup_attendance_menu.add_command(
             label="Zúčastnil sa s neskorým príchodom", command=lambda: self.change_attendance(
-                subject_name, group, week, 7))
+                subject_name, group, week, 2))
 
         self.popup_change_group_menu = Menu(self, tearoff=0)
         self.popup_change_group_menu.add_command(
@@ -548,19 +545,19 @@ class Application(Tk):
         legend_label_1_color.place(x=3, y=-3 + (25 * (bot)),rely=0.18, width=10, height=10)
         legend_label_2 = Label(self, text="Skorší odchod",anchor= 'w')
         legend_label_2.place(x=15, y=10 + (25 * (bot)),rely=0.18, width=200, height=15)
-        legend_label_2_color = Label(self, text="c", bg=colors[1], fg=colors[1])
+        legend_label_2_color = Label(self, text="c", bg=colors[7], fg=colors[7])
         legend_label_2_color.place(x=3, y=12 + (25 * (bot)),rely=0.18, width=10, height=10)
-        legend_label_3 = Label(self, text="Neospravedlnená účasť",anchor= 'w')
+        legend_label_3 = Label(self, text="Neospravedlnená neúčasť",anchor= 'w')
         legend_label_3.place(x=15, y=25 + (25 * (bot)),rely=0.18, width=200, height=15)
-        legend_label_3_color = Label(self, text="c", bg=colors[2], fg=colors[2])
+        legend_label_3_color = Label(self, text="c", bg=colors[4], fg=colors[4])
         legend_label_3_color.place(x=3, y=27 + (25 * (bot)),rely=0.18, width=10, height=10)
-        legend_label_4 = Label(self, text="Ospravedlnená účasť",anchor= 'w')
+        legend_label_4 = Label(self, text="Ospravedlnená neúčasť",anchor= 'w')
         legend_label_4.place(x=15, y=40 + (25 * (bot)),rely=0.18, width=200, height=15)
         legend_label_4_color = Label(self, text="c", bg=colors[3], fg=colors[3])
         legend_label_4_color.place(x=3, y=42 + (25 * (bot)),rely=0.18, width=10, height=10)
         legend_label_5 = Label(self, text="Prítomný na inom cvičení",anchor= 'w')
         legend_label_5.place(x=15, y=55 + (25 * (bot)),rely=0.18, width=250, height=15)
-        legend_label_5_color = Label(self, text="c", bg=colors[4], fg=colors[4])
+        legend_label_5_color = Label(self, text="c", bg=colors[6], fg=colors[6])
         legend_label_5_color.place(x=3, y=57 + (25 * (bot)),rely=0.18, width=10, height=10)
         legend_label_6 = Label(self, text="Vylúčenie z cvičenia",anchor= 'w')
         legend_label_6.place(x=15, y=70 + (25 * (bot)),rely=0.18, width=250, height=15)
@@ -568,11 +565,11 @@ class Application(Tk):
         legend_label_6_color.place(x=3, y=72 + (25 * (bot)),rely=0.18, width=10, height=10)
         legend_label_7= Label(self, text="Zúčastnil sa",anchor= 'w')
         legend_label_7.place(x=15, y=85 + (25 * (bot)),rely=0.18, width=250, height=15)
-        legend_label_7_color = Label(self, text="c", bg=colors[6], fg=colors[6])
+        legend_label_7_color = Label(self, text="c", bg=colors[1], fg=colors[1])
         legend_label_7_color.place(x=3, y=87 + (25 * (bot)),rely=0.18, width=10, height=10)
         legend_label_8 = Label(self, text="Zúčastnil sa s neskorým príchodom",anchor= 'w')
         legend_label_8.place(x=15, y=100 + (25 * (bot)),rely=0.18, width=250, height=15)
-        legend_label_8_color = Label(self, text="c", bg=colors[7], fg=colors[7])
+        legend_label_8_color = Label(self, text="c", bg=colors[2], fg=colors[2])
         legend_label_8_color.place(x=3, y=102 + (25 * (bot)),rely=0.18, width=10, height=10)
 
 
@@ -655,10 +652,10 @@ class Application(Tk):
 
         name, week = str(self.selected).split('_')
 
-        if self.attendance[str(name)][0][int(week)] == 6:
-            self.change_attendance(subject_name, group, week_selected, 2)
+        if self.attendance[str(name)][0][int(week)] == 1:
+            self.change_attendance(subject_name, group, week_selected, 4)
         else:
-            self.change_attendance(subject_name, group, week_selected, 6)
+            self.change_attendance(subject_name, group, week_selected, 1)
 
     def popup(self, event):
         self.popup_attendance_menu.post(event.x_root, event.y_root)
@@ -770,7 +767,7 @@ class Application(Tk):
             self.read = rc3.read_card2(self, page_number)
             self.cardmonitor = self.read.readCards()
         else:
-            self.monitored = 0
+            self.monitoredDatabase = 0
             self.database_page(page_number)
             self.read.stopReadCards(self.cardmonitor)
 

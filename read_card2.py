@@ -4,6 +4,7 @@ from time import sleep
 from smartcard.CardConnectionObserver import ConsoleCardConnectionObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.util import toHexString
+import  error_handler as er
 
 
 SELECT = [0xFF, 0xCA, 0x00, 0x00, 0x00]
@@ -30,15 +31,23 @@ class read_card2(CardObserver):
             chip_id = int("".join(item for item in list(reversed(hex_id.split(':')))), 16)
             print("+Inserted: ")
             print(chip_id)
+
+            student_name = ""
+
             for student in self.gui.students_list:
                 if student.ISIC==chip_id:
                     student_name=student.full_name
             #student_name = 'Baka Tomáš, Bc.'
-            print(student_name)
+            #print(student_name)
             print(self.subject)
             _, number_of_week = self.week.split(' ')
-            self.gui.change_attendance_from_card(self.subject, self.group, int(number_of_week)-1, 1, student_name, self.week)
-            self.cards.add(chip_id)
+
+            if student_name == "":
+                er.showError("Neexistuje par meno - isic")
+
+            else:
+                self.gui.change_attendance_from_card(self.subject, self.group, int(number_of_week)-1, 6, student_name, self.week)
+                self.cards.add(chip_id)
         for card in removedcards:
             print("-Removed: ", toHexString(card.atr))
 
