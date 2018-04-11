@@ -370,14 +370,16 @@ class Application(Tk):
         self.clear_frame()
 
         colors = [
-            "red",
-            "green",
-            "yellow",
-            "black",
             "gray",
+            "brown",
+            "red",
             "yellow",
             "blue",
-            'brown']
+            "black",
+            "green",
+            "orange",
+            ]
+
         self.attendance = dp.get_attendence()
         self.groups = dp.get_groups(subject_name)
 
@@ -398,20 +400,29 @@ class Application(Tk):
 
         self.popup_attendance_menu = Menu(self, tearoff=0)
         self.popup_attendance_menu.add_command(
-            label="red", command=lambda: self.change_attendance(
+            label="Prázdne", command=lambda: self.change_attendance(
                 subject_name, group, week, 0))
         self.popup_attendance_menu.add_command(
-            label="green", command=lambda: self.change_attendance(
+            label="Skorší odchod", command=lambda: self.change_attendance(
                 subject_name, group, week, 1))
         self.popup_attendance_menu.add_command(
-            label="yellow", command=lambda: self.change_attendance(
+            label="Neospravedlnená účasť", command=lambda: self.change_attendance(
                 subject_name, group, week, 2))
         self.popup_attendance_menu.add_command(
-            label="black", command=lambda: self.change_attendance(
+            label="Ospravedlnená účasť", command=lambda: self.change_attendance(
                 subject_name, group, week, 3))
         self.popup_attendance_menu.add_command(
-            label="gray", command=lambda: self.change_attendance(
+            label="Prítomný na inom cvičení", command=lambda: self.change_attendance(
                 subject_name, group, week, 4))
+        self.popup_attendance_menu.add_command(
+            label="Vylúčenie z cvičenia", command=lambda: self.change_attendance(
+                subject_name, group, week, 5))
+        self.popup_attendance_menu.add_command(
+            label="Zúčastnil sa", command=lambda: self.change_attendance(
+                subject_name, group, week, 6))
+        self.popup_attendance_menu.add_command(
+            label="Zúčastnil sa s neskorým príchodom", command=lambda: self.change_attendance(
+                subject_name, group, week, 7))
 
         self.popup_change_group_menu = Menu(self, tearoff=0)
         self.popup_change_group_menu.add_command(
@@ -501,7 +512,7 @@ class Application(Tk):
                         g.bind(self.right_click, self.popup)
                         g.bind(
                             "<Button-1>",
-                            lambda event: self.left_click(
+                            lambda event: self.attendance_left_click(
                                 event,
                                 subject_name,
                                 group,
@@ -524,6 +535,41 @@ class Application(Tk):
         back_button.place(relx=0.375, x=85, rely=0.25, y=+
                           (25 * (bot)), width=150, height=25)
         start_button.place(x=0, y=0, width=100, height=25)
+
+        #legend
+        legend_label_1 = Label(self, text="Prázdne",anchor= 'w')
+        legend_label_1.place(x=750, rely=0.25, y=-50 + (25 * (bot)), width=250, height=15)
+        legend_label_1_color = Label(self, text="c", bg= colors[0],fg = colors[0])
+        legend_label_1_color.place(x=738, rely=0.25, y=-48 + (25 * (bot)), width=10, height=10)
+        legend_label_2 = Label(self, text="Skorší odchod",anchor= 'w')
+        legend_label_2.place(x=750, rely=0.25, y=-35 + (25 * (bot)), width=250, height=15)
+        legend_label_2_color = Label(self, text="c", bg=colors[1], fg=colors[1])
+        legend_label_2_color.place(x=738, rely=0.25, y=-33 + (25 * (bot)), width=10, height=10)
+        legend_label_3 = Label(self, text="Neospravedlnená účasť",anchor= 'w')
+        legend_label_3.place(x=750, rely=0.25, y=-20 + (25 * (bot)), width=250, height=15)
+        legend_label_3_color = Label(self, text="c", bg=colors[2], fg=colors[2])
+        legend_label_3_color.place(x=738, rely=0.25, y=-18 + (25 * (bot)), width=10, height=10)
+        legend_label_4 = Label(self, text="Ospravedlnená účasť",anchor= 'w')
+        legend_label_4.place(x=750, rely=0.25, y=-5 + (25 * (bot)), width=250, height=15)
+        legend_label_4_color = Label(self, text="c", bg=colors[3], fg=colors[3])
+        legend_label_4_color.place(x=738, rely=0.25, y=-3 + (25 * (bot)), width=10, height=10)
+        legend_label_5 = Label(self, text="Prítomný na inom cvičení",anchor= 'w')
+        legend_label_5.place(x=750, rely=0.25, y=10 + (25 * (bot)), width=250, height=15)
+        legend_label_5_color = Label(self, text="c", bg=colors[4], fg=colors[4])
+        legend_label_5_color.place(x=738, rely=0.25, y=12 + (25 * (bot)), width=10, height=10)
+        legend_label_6 = Label(self, text="Vylúčenie z cvičenia",anchor= 'w')
+        legend_label_6.place(x=750, rely=0.25, y=25 + (25 * (bot)), width=250, height=15)
+        legend_label_6_color = Label(self, text="c", bg=colors[5], fg=colors[5])
+        legend_label_6_color.place(x=738, rely=0.25, y=27+ (25 * (bot)), width=10, height=10)
+        legend_label_7= Label(self, text="Zúčastnil sa",anchor= 'w')
+        legend_label_7.place(x=750, rely=0.25, y=40 + (25 * (bot)), width=250, height=15)
+        legend_label_7_color = Label(self, text="c", bg=colors[6], fg=colors[6])
+        legend_label_7_color.place(x=738, rely=0.25, y=42 + (25 * (bot)), width=10, height=10)
+        legend_label_8 = Label(self, text="Zúčastnil sa s neskorým príchodom",anchor= 'w')
+        legend_label_8.place(x=750, rely=0.25, y=55 + (25 * (bot)), width=250, height=15)
+        legend_label_8_color = Label(self, text="c", bg=colors[7], fg=colors[7])
+        legend_label_8_color.place(x=738, rely=0.25, y=57 + (25 * (bot)), width=10, height=10)
+
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
 
@@ -600,14 +646,14 @@ class Application(Tk):
         dp.save_teacher(teacher)
         self.subjects_page(tab_number)
 
-    def left_click(self, event, subject_name, group, week_selected):
+    def attendance_left_click(self, event, subject_name, group, week_selected):
 
         name, week = str(self.selected).split('_')
 
-        if self.attendance[str(name)][0][int(week)] == 1:
-            self.change_attendance(subject_name, group, week_selected, 3)
+        if self.attendance[str(name)][0][int(week)] == 6:
+            self.change_attendance(subject_name, group, week_selected, 2)
         else:
-            self.change_attendance(subject_name, group, week_selected, 1)
+            self.change_attendance(subject_name, group, week_selected, 6)
 
     def popup(self, event):
         self.popup_attendance_menu.post(event.x_root, event.y_root)
