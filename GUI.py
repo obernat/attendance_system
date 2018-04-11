@@ -274,7 +274,7 @@ class Application(Tk):
 
     def database_page(self,page_number):
         self.clear_frame()
-
+        dp.save_student_dict(self.students_list)
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
         if self.monitoredDatabase == 0:
@@ -392,6 +392,7 @@ class Application(Tk):
             start_button = Button(text="Read cards", command=lambda: self.read_card(subject_name, group, week))
         else:
             start_button = Button(text="Reading",bg = 'green', command=lambda: self.read_card(subject_name, group, week))
+
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
@@ -729,10 +730,10 @@ class Application(Tk):
                 week_selected))
         button.place(x=160, y=5, width=150, height=25)
 
-    def change_attendance(self, subject_name, group, week_selected, a):
+    def change_attendance(self, subject_name, group, week_selected, choice):
         name, week = str(self.selected).split('_')
-        self.attendance[name][0][int(week)] = a
-
+        self.attendance[name][0][int(week)] = choice
+        print(week)
         for subject in self.teacher.subjects_list:
             for student in subject.student_list:
                 if student.name == name:
@@ -740,8 +741,17 @@ class Application(Tk):
         dp.save_teacher(self.teacher)
         self.attendance_page(subject_name, group, week_selected)
 
+    def change_attendance_from_card(self, subject_name, group, week_selected, choice, name, week):
+        self.attendance[name][0][int(week_selected)] = choice
+        print(week_selected)
+        for subject in self.teacher.subjects_list:
+            for student in subject.student_list:
+                if student.name == name:
+                    student.attendance = self.attendance[name][0]
+        dp.save_teacher(self.teacher)
+        self.attendance_page(subject_name, group, week)
 
-    def read_card(self,subject_name, group, week):
+    def read_card(self, subject_name, group, week):
         if (self.monitored == 0):
             self.monitored = 1
             self.attendance_page(subject_name, group, week)

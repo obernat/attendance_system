@@ -32,10 +32,10 @@ def processImage(image, index):
     #aplikujem 'rodo'
     gray = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY)[1]
 
-    cv2.imwrite("img" + str(index) + ".jpg", gray)
-    temp = "img" + str(index) + ".jpg"
+    cv2.imwrite("img" + str(index) + ".png", gray)
+    temp = "img" + str(index) + ".png"
 
-    name = p.image_to_string(Image.open("ISIC/images" + temp), lang='slk')
+    name = p.image_to_string(Image.open(temp), lang='slk')
 
     #momentalne len na jediny funkcny obrazok, inak vyuzit riadok vyssie, kde vysklada nazov - asi lepsie spravit este jeden file na ukladanie obrazkov
     #name = p.image_to_string(Image.open("ISIC/fejk.png"), lang='slk')
@@ -59,6 +59,7 @@ def closestMatch(studentList):
         justNames.append(nameStudent)
 
     for image in imageList:
+
         name = processImage(image, index)
 
         #treba pip install fuzzywuzzy
@@ -75,8 +76,13 @@ def closestMatch(studentList):
         index += 1
 
 
-def get_name_from_image(image, studentList):
+def get_name_from_image(path, studentList):
 
+    image = cv2.imread(path)
     name = processImage(image, 0)
     matches = process.extractOne(name, studentList)
-    return matches
+
+    print("Closest match to " + name + " is: ")
+    print(matches)
+
+    return matches[0]

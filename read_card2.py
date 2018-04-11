@@ -9,17 +9,15 @@ from smartcard.util import toHexString
 SELECT = [0xFF, 0xCA, 0x00, 0x00, 0x00]
 class read_card2(CardObserver):
 
-    def change_attendance_card(self, guj, subject_name, group, week_selected, a, name, week):
-        guj.attendance[str(name)][int(week)] = a
-        guj.save_attendace()
-        guj.attendance_page(subject_name, group, week_selected)
-
     def int_array_to_hex_separated_string(self, arr):
         return "".join("{:02x}:".format(item) for item in arr)[:-1]
 
-    def __init__(self, gui):
+    def __init__(self, gui, subject, group, week):
         self.observer = ConsoleCardConnectionObserver()
         self.gui = gui
+        self.subject = subject
+        self.group = group
+        self.week = week
 
     def update(self, observable, actions):
         (addedcards, removedcards) = actions
@@ -32,7 +30,14 @@ class read_card2(CardObserver):
             chip_id = int("".join(item for item in list(reversed(hex_id.split(':')))), 16)
             print("+Inserted: ")
             print(chip_id)
-            self.change_attendance_card(self.gui, "Operačné systémy", "Skupina 1", "Tyzden 1", 1, "Tomas", 0)
+            for student in self.gui.students_list:
+                if student.ISIC==chip_id:
+                    student_name=student.full_name
+            #student_name = 'Baka Tomáš, Bc.'
+            print(student_name)
+            print(self.subject)
+            _, number_of_week = self.week.split(' ')
+            self.gui.change_attendance_from_card(self.subject, self.group, int(number_of_week)-1, 1, student_name, self.week)
             self.cards.add(chip_id)
         for card in removedcards:
             print("-Removed: ", toHexString(card.atr))
