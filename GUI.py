@@ -277,7 +277,10 @@ class Application(Tk):
 
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
-        read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
+        if self.monitoredDatabase == 0:
+            read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
+        else:
+            read_button = Button(text="Reading",bg= 'green', command=lambda: self.read_card_to_database(page_number))
         add_students_button = Button(text="Add new students")
         back_button = Button(self, text="Back", command=lambda: [
                 self.subjects_page(1),
@@ -385,8 +388,10 @@ class Application(Tk):
 
         if group is "Skupina":
             group = list(self.groups)[0]
-
-        start_button = Button(text="Read cards", command=self.read_card)
+        if self.monitored == 0:
+            start_button = Button(text="Read cards", command=lambda: self.read_card(subject_name, group, week))
+        else:
+            start_button = Button(text="Reading",bg = 'green', command=lambda: self.read_card(subject_name, group, week))
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
@@ -538,7 +543,7 @@ class Application(Tk):
 
         #legend
         legend_label_1 = Label(self, text="Prázdne",anchor= 'w')
-        legend_label_1.place(x=750, rely=0.25, y=-50 + (25 * (bot)), width=250, height=15)
+        legend_label_1.place(x=750,rely=0.25, y=-50 + (25 * (bot)), width=250, height=15)
         legend_label_1_color = Label(self, text="c", bg= colors[0],fg = colors[0])
         legend_label_1_color.place(x=738, rely=0.25, y=-48 + (25 * (bot)), width=10, height=10)
         legend_label_2 = Label(self, text="Skorší odchod",anchor= 'w')
@@ -737,22 +742,27 @@ class Application(Tk):
         self.attendance_page(subject_name, group, week_selected)
 
 
-    def read_card(self):
+    def read_card(self,subject_name, group, week):
         if (self.monitored == 0):
             self.monitored = 1
+            self.attendance_page(subject_name, group, week)
             self.read = rc.read_card2(self)
             self.cardmonitor = self.read.readCards()
         else:
             self.monitored = 0
+            self.attendance_page(subject_name, group, week)
             self.read.stopReadCards(self.cardmonitor)
+
 
     def read_card_to_database(self, page_number):
         if (self.monitoredDatabase == 0):
             self.monitoredDatabase = 1
+            self.database_page(page_number)
             self.read = rc3.read_card2(self, page_number)
             self.cardmonitor = self.read.readCards()
         else:
             self.monitored = 0
+            self.database_page(page_number)
             self.read.stopReadCards(self.cardmonitor)
 
 
