@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import font as tkfont
+from tkinter import font as tkfont, messagebox
 from tkinter import ttk
 from six.moves import cPickle as pickle
 import os
@@ -16,6 +16,8 @@ import database_handler as dh
 import read_card2 as rc
 import read_card3 as rc3
 import ISIC.getName as gN
+import datetime
+import shutil
 
 
 
@@ -164,6 +166,30 @@ class Application(Tk):
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
 
+    def move_old_teacher(self):
+
+        self.clear_frame()
+
+        sure = messagebox.askquestion("Presunut", "Naozaj chcete subor presunut do historie?", icon='warning')
+
+        if sure == 'no':
+            messagebox.showinfo("Nepresunute", "Subor nebol presunuty do historie.")
+            self.subjects_page(0)
+
+        else:
+            messagebox.showinfo("Uspesne presunute", "Subor bol uspesne presunuty do historie.")
+
+            now = datetime.datetime.now()
+
+            if not os.path.exists('history'):
+                os.makedirs('history')
+            src = 'teacher'
+            dst = 'history'
+            shutil.move(src, dst)
+
+            self.login_page(download=1)
+
+
     def subjects_page(self, tab_number):
         self.clear_frame()
 
@@ -172,7 +198,7 @@ class Application(Tk):
         if not inactive_subjects_list:
 
             database_button= Button(text="Databáza",command=lambda: self.database_page(0))
-            new_period_button= Button(text="Začiatok nového obdobia")
+            new_period_button= Button(text="Začiatok nového obdobia", command=lambda: self.move_old_teacher())
 
 
             if (len(active_subjects_list)):
@@ -217,10 +243,10 @@ class Application(Tk):
             tabControl.add(tab1, text='Aktívne')
             tabControl.add(tab2, text='Neaktívne')
             database_button_tab1 = Button(tab1,text="Databáza", command=lambda: self.database_page(0))
-            new_period_tab1 = Button(tab1,text="Začiatok nového obdobia")
+            new_period_tab1 = Button(tab1,text="Začiatok nového obdobia", command=lambda: self.move_old_teacher())
 
             database_button_tab2 = Button(tab2,text="Databáza", command=lambda: self.database_page(0))
-            new_period_tab2 = Button(tab2,text="Začiatok nového obdobia")
+            new_period_tab2 = Button(tab2,text="Začiatok nového obdobia", command=lambda: self.move_old_teacher())
 
 
             if (len(active_subjects_list)):
@@ -280,6 +306,8 @@ class Application(Tk):
                 tabControl.select(tab1)
             else:
                 tabControl.select(tab2)
+
+
 
     def database_page(self,page_number):
         self.clear_frame()
