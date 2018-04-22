@@ -487,19 +487,19 @@ class Application(Tk):
                         highlightcolor="#37d3ff",
                         highlightbackground="#37d3ff",
                     )
-                    t.place(relx=0.4, x=+(k * 27), rely=0.3,
+                    t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
                             y=-22, width=21, height=21)
                 else:
                     t = k
                     t = Label(self, text=str(k + 1))
-                    t.place(relx=0.4, x=+(k * 27), rely=0.3,
+                    t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
                             y=-22, width=20, height=20)
 
             for name in self.groups[group]:
 
                 a = name
                 a = Label(self, text=name, anchor="w")
-                a.place(relx=0.375, x=-150, rely=0.3,
+                a.place(relx=0.375, x=-100, rely=0.3,
                         y=+(i * 23), width=150, height=20)
                 a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
@@ -517,7 +517,7 @@ class Application(Tk):
                                   highlightbackground="#37d3ff",
                                   )
 
-                        g.place(relx=0.4, x=+(j * 27), rely=0.3,
+                        g.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
                                 y=+(i * 23), width=21, height=21)
                         g.bind(self.right_click, self.popup)
                         g.bind(
@@ -534,7 +534,7 @@ class Application(Tk):
                                   text=name + "_" + str(j),
                                   bg=colors[self.attendance[name][0][j]],
                                   fg=colors[self.attendance[name][0][j]])
-                        g.place(relx=0.4, x=+(j * 27), rely=0.3,
+                        g.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
                                 y=+ (i * 23), width=18, height=18)
 
                 bot = len(self.groups[group])
