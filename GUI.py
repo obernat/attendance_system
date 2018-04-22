@@ -42,6 +42,7 @@ class Application(Tk):
         self.selected = 0
         self.monitored = 0
         self.monitoredDatabase = 0
+        self.title("Dochádzkový systém")
 
         if os.path.isfile('student_dict'):
             self.students_list = dp.load_student_dict()
@@ -60,21 +61,21 @@ class Application(Tk):
         """
         self.clear_frame()
 
-        self.title_label = Label(self, text="Login", font=self.title_font)
-        self.username_label = Label(self, text="Username")
-        self.password_label = Label(self, text="Password")
+        self.title_label = Label(self, text="Prihlásenie", font=self.title_font)
+        self.username_label = Label(self, text="Meno")
+        self.password_label = Label(self, text="Heslo")
         self.username_entry = Entry(self)
         self.password_entry = Entry(self, show="*")
         self.back_button = Button(
-            self, text="Back", command=self.cross_road_function)
+            self, text="Späť", command=self.cross_road_function)
 
         if download:
             self.login_button = Button(
-                self, text="Login", command=lambda: self.download_data(
+                self, text="Prihlasiť", command=lambda: self.download_data(
                     self.username_entry.get(), self.password_entry.get()))
         if upload:
             self.login_button = Button(
-                self, text="Login", command=lambda: self.upload_data(
+                self, text="Prihlasiť", command=lambda: self.upload_data(
                     self.username_entry.get(), self.password_entry.get()))
 
         self.title_label.place(
@@ -129,7 +130,7 @@ class Application(Tk):
         """
         self.clear_frame()
         self.prog_bar = ttk.Progressbar(self, orient="horizontal",mode="determinate")
-        self.sync_label = Label(self, text="Downloading data...")
+        self.sync_label = Label(self, text="Sťahujem dáta...")
 
         self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
@@ -143,7 +144,7 @@ class Application(Tk):
         """
         self.clear_frame()
         self.prog_bar = ttk.Progressbar(self, orient="horizontal",mode="determinate" )
-        self.sync_label = Label(self,text="Upload data...")
+        self.sync_label = Label(self,text="Synchronizujem dáta...")
 
         self.prog_bar.place(relx=0.37, rely=0.35, width=200, height=25)
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
@@ -158,7 +159,7 @@ class Application(Tk):
         self.sync_label= Label(
             self, text="Žiadne internetové pripojenie")
         self.sync_button = Button(
-            self, text='Reload', command=lambda: self.cross_road_function())
+            self, text='Opäť načítať', command=lambda: self.cross_road_function())
 
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
@@ -679,7 +680,7 @@ class Application(Tk):
 
     def popup_edit_db_page(self, event):
         popup_edit_menu = Menu(self, tearoff=0)
-        popup_edit_menu.add_command(label="Edit number",
+        popup_edit_menu.add_command(label="Upraviť číslo",
                                     command=lambda: self.popup_edit_db_page_2(event.widget['text']))
         popup_edit_menu.post(event.x_root, event.y_root)
 
@@ -687,7 +688,7 @@ class Application(Tk):
         toplevel = Toplevel()
         toplevel.geometry("320x35")
         number_entry = Entry(toplevel)
-        button = Button(toplevel, text="Edit number", command=lambda: self.rewrite_student_number(name, number_entry.get()))
+        button = Button(toplevel, text="Upraviť číslo", command=lambda: self.rewrite_student_number(name, number_entry.get()))
         number_entry.place(x=5, y=5, width=150, height=25)
         button.place(x=160, y=5, width=150, height=25)
 
@@ -733,7 +734,7 @@ class Application(Tk):
 
         button = Button(
             toplevel,
-            text="Select",
+            text="Zvoliť",
             command=lambda: self.switch_student(
                 toplevel,
                 variable.get(),

@@ -49,7 +49,7 @@ class UploadThread(threading.Thread):
         if ret_value < 0:
             self.queue.put("Upload finished")
             time.sleep(0.5)
-            er.showError("FAIL UPLOAD")
+            er.showError("Synchronizácia sa nepodarila")
             return
         self.queue.put("Upload finished")
 
