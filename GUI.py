@@ -170,7 +170,9 @@ class Application(Tk):
 
         if not inactive_subjects_list:
 
-            database_button= Button(text="Database",command=lambda: self.database_page(0))
+            database_button= Button(text="Databáza",command=lambda: self.database_page(0))
+            new_period_button= Button(text="Začiatok nového obdobia")
+
 
             if (len(active_subjects_list)):
 
@@ -182,13 +184,13 @@ class Application(Tk):
                     e = i * 10+3
 
                     a = Label(text=active_subjects_list[i - 1].name , anchor = 'w')
-                    b = Button(text="Attendance",
+                    b = Button(text="Dochádzka",
                                command=lambda text=active_subjects_list[i - 1].name:
-                               self.attendance_page(text, "Skupina", "Tyzden 1"))
-                    c = Button(text="Sync subject",
+                               self.attendance_page(text, "Skupina", "Týždeň 1"))
+                    c = Button(text="Synchronizovať",
                                command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
 
-                    d = Button(text="Disable",
+                    d = Button(text="Deaktivovať",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
 
@@ -202,6 +204,7 @@ class Application(Tk):
                             y=(i * 30), width=120, height=25)
 
             database_button.place(relx=0.83, x= +10,rely=0.00, width=100, height=25)
+            new_period_button.place(relx=0.83, x=-190, rely=0.00, width=200, height=25)
 
         else:
 
@@ -210,10 +213,14 @@ class Application(Tk):
             tab1 = ttk.Frame(tabControl)
             tab2 = ttk.Frame(tabControl)
 
-            tabControl.add(tab1, text='Active')
-            tabControl.add(tab2, text='Inactive')
-            database_button_tab1 = Button(tab1,text="Database", command=lambda: self.database_page(0))
-            database_button_tab2 = Button(tab2,text="Database", command=lambda: self.database_page(0))
+            tabControl.add(tab1, text='Aktívne')
+            tabControl.add(tab2, text='Neaktívne')
+            database_button_tab1 = Button(tab1,text="Databáza", command=lambda: self.database_page(0))
+            new_period_tab1 = Button(tab1,text="Začiatok nového obdobia")
+
+            database_button_tab2 = Button(tab2,text="Databáza", command=lambda: self.database_page(0))
+            new_period_tab2 = Button(tab2,text="Začiatok nového obdobia")
+
 
             if (len(active_subjects_list)):
 
@@ -224,13 +231,13 @@ class Application(Tk):
                     d = i * 10 + 2
 
                     a = Label(tab1, text=active_subjects_list[i - 1].name, anchor= 'w')
-                    b = Button(tab1, text="Subject info",
+                    b = Button(tab1, text="Dochádzka",
                                command=lambda text=active_subjects_list[i - 1].name: self.attendance_page(text,
                                                                                                             "Skupina",
                                                                                                             "Tyzden 1"))
-                    c = Button(tab1, text="Sync subject",
+                    c = Button(tab1, text="Synchronizovať",
                                command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
-                    d = Button(tab1, text="Disable",
+                    d = Button(tab1, text="Deaktivovať",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
                     a.place(relx=0.375, x=-230, rely=0.20,
@@ -249,7 +256,7 @@ class Application(Tk):
                     b = i * 10
 
                     a = Label(tab2, text=inactive_subjects_list[i - 1].name, anchor= 'w')
-                    b = Button(tab2, text="Enable",
+                    b = Button(tab2, text="Aktivovať",
                                command=lambda text=inactive_subjects_list[i - 1].name: self.move_subject(text, 2))
 
                     a.place(relx=0.375, x=-150, rely=0.20,
@@ -259,8 +266,12 @@ class Application(Tk):
 
             database_button_tab1.place(
                 relx=0.65, x=+114, y=0, width=100, height=25)
+            new_period_tab1.place(
+                relx=0.65, x=-86, y=0, width=200, height=25)
             database_button_tab2.place(
                 relx=0.65, x=+114, y=0, width=100, height=25)
+            new_period_tab2.place(
+                relx=0.65, x=-86, y=0, width=200, height=25)
 
             tabControl.pack(expand=1, fill="both")
 
@@ -275,11 +286,10 @@ class Application(Tk):
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
         if self.monitoredDatabase == 0:
-            read_button = Button(text="Read cards", command=lambda: self.read_card_to_database(page_number))
+            read_button = Button(text="Čítaj karty", command=lambda: self.read_card_to_database(page_number))
         else:
-            read_button = Button(text="Reading",bg= 'green', command=lambda: self.read_card_to_database(page_number))
-        add_students_button = Button(text="Add new students")
-        back_button = Button(self, text="Back", command=lambda: [
+            read_button = Button(text="Čítam..",bg= 'green', command=lambda: self.read_card_to_database(page_number))
+        back_button = Button(self, text="Späť", command=lambda: [
                 self.subjects_page(1),
                 self.geometry("700x500"),
                 self.minsize(height=500,width=600)])
@@ -362,12 +372,14 @@ class Application(Tk):
 ####################################
         title_label.place(relx=0.385, rely=0.01, width=300, height=25)
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
-        add_students_button.place(relx=0.90, x = -150, rely=0.01, width=150, height=25)
 
         back_button.place(relx=0.90, rely=0.95, width=100, height=25)
 
     def attendance_page(self, subject_name, group, week):
         self.clear_frame()
+        self.group_tmp = group
+        self.week_tmp = week
+        self.subject_name_tmp = subject_name
 
         colors = [
             "gray",
@@ -383,17 +395,18 @@ class Application(Tk):
         self.attendance = dp.get_attendence()
         self.groups = dp.get_groups(subject_name)
 
+
         if group is "Skupina":
             group = list(self.groups)[0]
         if self.monitored == 0:
-            start_button = Button(text="Read cards", command=lambda: self.read_card(subject_name, group, week))
+            start_button = Button(text="Čítaj karty", command=lambda: self.read_card(subject_name, group, week))
         else:
-            start_button = Button(text="Reading",bg = 'green', command=lambda: self.read_card(subject_name, group, week))
+            start_button = Button(text="Čítam...",bg = 'green', command=lambda: self.read_card(subject_name, group, week))
 
         title_label = Label(self, text=subject_name, font=self.title_font)
         back_button = Button(
             self,
-            text="Back",
+            text="Späť",
             command=lambda: [
                 self.subjects_page(1),
                 self.geometry("700x500"),
@@ -429,7 +442,7 @@ class Application(Tk):
 
         self.popup_change_group_menu = Menu(self, tearoff=0)
         self.popup_change_group_menu.add_command(
-            label="Change group",
+            label="Zmeniť skupinu",
             command=lambda: self.change_group(
                 subject_name,
                 week))
@@ -440,28 +453,22 @@ class Application(Tk):
 
         week_options = []
         for i in range(1, 13):
-            week_options.append("Tyzden " + str(i))
+            week_options.append("Týždeň " + str(i))
 
         group_variable = StringVar(self)
         group_variable.set(group)
 
-        w = OptionMenu(self, group_variable, *group_options)
-        w.place(relx=0.375, x=-50, rely=0.18, width=350, height=28)
+        w = OptionMenu(self, group_variable, *group_options,command= self.attendance_option_menu_group)
+        w.place(relx=0.375, x=50, rely=0.18, width=350, height=28)
 
         week_variable = StringVar(self)
         week_variable.set(week)
 
-        week_option_menu = OptionMenu(self, week_variable, *week_options)
-        week_option_menu.place(relx=0.375, x=-200, rely=0.18, width=150, height=28)
+        week_option_menu = OptionMenu(self, week_variable, *week_options, command= self.attendance_option_menu_week)
+        week_option_menu.place(relx=0.375, x=-100, rely=0.18, width=150, height=28)
 
         tmp, week_number = str(week_variable.get()).split(' ')
-        select_button = Button(
-            self,
-            text="Select",
-            command=lambda: self.attendance_page(
-                subject_name,
-                group_variable.get(),
-                week_variable.get()))
+
 
         bot = 0
         if group is not "Skupina":
@@ -533,7 +540,6 @@ class Application(Tk):
                 bot = len(self.groups[group])
                 i = i + 1
 
-        select_button.place(relx=0.375, x=300, rely=0.18, width=150, height=25)
         title_label.place(relx=0.375, x= -250, rely=0.18, y = -75, width=800, height=25)
         back_button.place(relx=0.375, x=85, rely=0.3, y=-30+ (25 * (bot)), width=150, height=25)
         start_button.place(x=0, y=0, width=100, height=25)
@@ -574,6 +580,8 @@ class Application(Tk):
 
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
+
+
 
 # FUNCTIONS GUI -------------------------------------------------
 
@@ -619,6 +627,12 @@ class Application(Tk):
         self.queue = queue.Queue()
         DownloadThread(self.queue, name, password).start()
         self.after(100, self.process_queue)
+
+    def attendance_option_menu_week(self, value):
+        self.attendance_page(self.subject_name_tmp, self.group_tmp, value)
+
+    def attendance_option_menu_group(self, value):
+        self.attendance_page(self.subject_name_tmp, value, self.week_tmp)
 
     def process_queue(self):
         """
