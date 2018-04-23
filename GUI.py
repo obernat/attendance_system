@@ -166,30 +166,6 @@ class Application(Tk):
         self.sync_label.place(relx=0.37, rely=0.30, width=200, height=25)
         self.sync_button.place(relx=0.42, rely=0.42, width=120, height=25)
 
-    def move_old_teacher(self):
-
-        self.clear_frame()
-
-        sure = messagebox.askquestion("Presunut", "Naozaj chcete subor presunut do historie?", icon='warning')
-
-        if sure == 'no':
-            messagebox.showinfo("Nepresunute", "Subor nebol presunuty do historie.")
-            self.subjects_page(0)
-
-        else:
-            messagebox.showinfo("Uspesne presunute", "Subor bol uspesne presunuty do historie.")
-
-            now = datetime.datetime.now()
-
-            if not os.path.exists('history'):
-                os.makedirs('history')
-            src = 'teacher'
-            dst = 'history'
-            shutil.move(src, dst)
-
-            self.login_page(download=1)
-
-
     def subjects_page(self, tab_number):
         self.clear_frame()
 
@@ -306,8 +282,6 @@ class Application(Tk):
                 tabControl.select(tab1)
             else:
                 tabControl.select(tab2)
-
-
 
     def database_page(self,page_number):
         self.clear_frame()
@@ -620,6 +594,29 @@ class Application(Tk):
         """
         for child in self.winfo_children():
             child.destroy()
+
+    def move_old_teacher(self):
+
+        self.clear_frame()
+
+        sure = messagebox.askquestion("Presunut", "Naozaj chcete subor presunut do historie?", icon='warning')
+
+        if sure == 'no':
+            messagebox.showinfo("Nepresunute", "Subor nebol presunuty do historie.")
+            self.subjects_page(0)
+
+        else:
+            messagebox.showinfo("Uspesne presunute", "Subor bol uspesne presunuty do historie.")
+
+            now = datetime.datetime.now()
+
+            if not os.path.exists('history'):
+                os.makedirs('history')
+            src = 'teacher'
+            dst = 'history'
+            shutil.move(src, dst)
+
+            self.login_page(download=1)
 
     def cross_road_function(self):
         """

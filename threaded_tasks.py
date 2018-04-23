@@ -4,6 +4,7 @@ import is_parser as isp
 import  error_handler as er
 import time
 import data_parser as dp
+import database_handler as dh
 
 
 class DownloadThread(threading.Thread):
@@ -20,6 +21,8 @@ class DownloadThread(threading.Thread):
     def run(self):
 
         ret_value, teacher = isp.download_routine(self.name, self.password)
+        _, students_list = dh.create_students_database(teacher)
+        dp.save_student_dict(students_list)
         if ret_value < 0:
             self.queue.put("Download finished")
             time.sleep(0.5)
