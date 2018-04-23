@@ -285,7 +285,7 @@ class Application(Tk):
 
     def database_page(self,page_number):
         self.clear_frame()
-        dp.save_student_dict(self.students_list)
+        self.students_list = dp.load_student_dict()
         self.minsize(height=700, width=1150) # set page size
         title_label = Label( self, text="Databáza študentov", font=self.title_font)
         if self.monitoredDatabase == 0:
