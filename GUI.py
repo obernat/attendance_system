@@ -210,7 +210,7 @@ class Application(Tk):
                     d = i * 10+2
                     e = i * 10+3
 
-                    a = Label(text=active_subjects_list[i - 1].name , anchor = 'w')
+                    a = Message(text=active_subjects_list[i - 1].name , anchor = 'w',width=230)
                     b = Button(text="Dochádzka",
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.attendance_page(text, "Skupina", "Týždeň 1"))
@@ -222,13 +222,13 @@ class Application(Tk):
 
 
                     a.place(relx=0.375, x=-250, rely=0.20,
-                            y=(i * 30), width=210, height=25)
+                            y=(i * 55), width=210, height=50)
                     b.place(relx=0.375, x=-30, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                            y=(i * 55)+10, width=120, height=25)
                     c.place(relx=0.375, x=+90, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                            y=(i * 55)+10, width=120, height=25)
                     d.place(relx=0.375, x=+210, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                            y=(i * 55)+10, width=120, height=25)
 
             database_button.place(relx=0.83, x= +10,rely=0.00, width=100, height=25)
             new_period_button.place(relx=0.83, x=-190, rely=0.00, width=200, height=25)
@@ -257,7 +257,7 @@ class Application(Tk):
                     c = i * 10 + 1
                     d = i * 10 + 2
 
-                    a = Label(tab1, text=active_subjects_list[i - 1].name, anchor= 'w')
+                    a = Message(tab1, text=active_subjects_list[i - 1].name, anchor= 'w',width=210)
                     b = Button(tab1, text="Dochádzka",
                                command=lambda text=active_subjects_list[i - 1].name: self.attendance_page(text,
                                                                                                             "Skupina",
@@ -268,13 +268,13 @@ class Application(Tk):
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
 
                     a.place(relx=0.375, x=-230, rely=0.20,
-                            y=(i * 30), width=190, height=25)
-                    b.place(relx=0.375, x=-60, rely=0.20,
-                            y=(i * 30), width=120, height=25)
-                    c.place(relx=0.375, x=+60, rely=0.20,
-                            y=(i * 30), width=120, height=25)
-                    d.place(relx=0.375, x=+180, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                            y=(i * 55), width=190, height=50)
+                    b.place(relx=0.375, x=-30, rely=0.20,
+                            y=(i * 55)+10, width=120, height=25)
+                    c.place(relx=0.375, x=+90, rely=0.20,
+                            y=(i * 55)+10, width=120, height=25)
+                    d.place(relx=0.375, x=+210, rely=0.20,
+                            y=(i * 55)+10, width=120, height=25)
 
             if (len(inactive_subjects_list)):
 
@@ -282,14 +282,14 @@ class Application(Tk):
                     a = i
                     b = i * 10
 
-                    a = Label(tab2, text=inactive_subjects_list[i - 1].name, anchor= 'w')
+                    a = Message(tab2, text=inactive_subjects_list[i - 1].name, anchor= 'w',width=210)
                     b = Button(tab2, text="Aktivovať",
                                command=lambda text=inactive_subjects_list[i - 1].name: self.move_subject(text, 2))
 
                     a.place(relx=0.375, x=-150, rely=0.20,
-                            y=(i * 30), width=210, height=25)
+                            y=(i * 55), width=210, height=50)
                     b.place(relx=0.375, x=+60, rely=0.20,
-                            y=(i * 30), width=120, height=25)
+                            y=(i * 55)+10, width=120, height=25)
 
             database_button_tab1.place(
                 relx=0.65, x=+114, y=0, width=100, height=25)
