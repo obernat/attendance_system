@@ -48,8 +48,6 @@ class Application(Tk):
 
         if os.path.isfile('student_dict'):
             self.students_list = dp.load_student_dict()
-        else:
-            _, self.students_list = dh.create_students_database(dp.get_teacher())
 
         self.teacher = dp.load_teacher()
 
@@ -168,7 +166,7 @@ class Application(Tk):
 
     def subjects_page(self, tab_number):
         self.clear_frame()
-
+        self.teacher = dp.load_teacher()
         active_subjects_list, inactive_subjects_list = dp.get_subjects_lists()
 
         if not inactive_subjects_list:
@@ -383,7 +381,7 @@ class Application(Tk):
         self.group_tmp = group
         self.week_tmp = week
         self.subject_name_tmp = subject_name
-
+        self.students_list  = dp.load_student_dict()
         colors = [
             "gray",
             "green",
@@ -770,7 +768,6 @@ class Application(Tk):
     def change_attendance(self, subject_name, group, week_selected, choice):
         name, week = str(self.selected).split('_')
         self.attendance[name][0][int(week)] = choice
-        print(week)
         for subject in self.teacher.subjects_list:
             for student in subject.student_list:
                 if student.name == name:

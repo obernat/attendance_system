@@ -23,6 +23,7 @@ class DownloadThread(threading.Thread):
         ret_value, teacher = isp.download_routine(self.name, self.password)
         _, students_list = dh.create_students_database(teacher)
         dp.save_student_dict(students_list)
+
         if ret_value < 0:
             self.queue.put("Download finished")
             time.sleep(0.5)
