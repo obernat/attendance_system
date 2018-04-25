@@ -5,3 +5,4 @@ lxml
 pyscard
 opencv-python
 pyautogui
+fuzzywuzzy
