@@ -1,0 +1,7 @@
+pytesseract
+six
+requests
+lxml
+pyscard
+opencv-python
+pyautogui
