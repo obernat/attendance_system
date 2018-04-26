@@ -1,6 +1,10 @@
+from threading import Thread
 from tkinter import *
 from tkinter import font as tkfont, messagebox
 from tkinter import ttk
+
+import pyautogui
+import pyperclip
 from six.moves import cPickle as pickle
 import os
 import sys
@@ -18,6 +22,7 @@ import read_card3 as rc3
 import ISIC.getName as gN
 import datetime
 import shutil
+import time
 
 
 
@@ -796,17 +801,49 @@ class Application(Tk):
             self.attendance_page(subject_name, group, week)
             self.read.stopReadCards(self.cardmonitor)
 
+    def auto_click(self):
+        pyautogui.FAILSAFE = False
+        if not os.path.exists('images'):
+            os.makedirs('images')
+        my_path = os.getcwd() + '\\images'
+        pyperclip.copy(my_path)
+        while True:
+            if (pyautogui.getWindow('Scanner Mouse')):
+                pyautogui.getWindow('Scanner Mouse').restore()
+                pyautogui.press('enter')
+            if (pyautogui.getWindow('IRIScan Mouse')):
+                pyautogui.getWindow('IRIScan Mouse').restore()
+                pyautogui.hotkey('ctrl', 's')
+                time.sleep(0.01)
+                for i in range(1, 7):
+                    pyautogui.press('tab')
+                    #time.sleep(0.01)
+                pyautogui.press('enter')
+                # pyautogui.typewrite(my_path)
+                time.sleep(0.01)
+                pyautogui.hotkey('ctrl','v')
+                time.sleep(0.01)
+                pyautogui.press('enter')
+                time.sleep(0.01)
+                pyautogui.press('enter')
+                pyautogui.getWindow('IRIScan Mouse').restore()
+                time.sleep(0.01)
+                pyautogui.hotkey('alt', 'f4')
+                time.sleep(0.01)
 
     def read_card_to_database(self, page_number):
         if (self.monitoredDatabase == 0):
             self.monitoredDatabase = 1
             self.database_page(page_number)
             self.read = rc3.read_card2(self, page_number)
+            self.mouse_thread = Thread(target=self.auto_click)
+            self.mouse_thread.start()
             self.cardmonitor = self.read.readCards()
         else:
             self.monitoredDatabase = 0
             self.database_page(page_number)
             self.read.stopReadCards(self.cardmonitor)
+
 
 
 
