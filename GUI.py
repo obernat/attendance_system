@@ -830,17 +830,22 @@ class Application(Tk):
                 time.sleep(0.01)
                 pyautogui.hotkey('alt', 'f4')
                 time.sleep(0.01)
+            if (self.mouse_read != True):
+                break;
 
     def read_card_to_database(self, page_number):
+        self.mouse_read = False
         if (self.monitoredDatabase == 0):
+            self.mouse_read = True
+            self.mouse_thread = Thread(target=self.auto_click)
+            self.mouse_thread.start()
             self.monitoredDatabase = 1
             self.database_page(page_number)
             self.read = rc3.read_card2(self, page_number)
-            self.mouse_thread = Thread(target=self.auto_click)
-            self.mouse_thread.start()
             self.cardmonitor = self.read.readCards()
         else:
             self.monitoredDatabase = 0
+            self.mouse_read = False
             self.database_page(page_number)
             self.read.stopReadCards(self.cardmonitor)
 
