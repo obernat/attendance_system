@@ -23,6 +23,7 @@ import ISIC.getName as gN
 import datetime
 import shutil
 import time
+import platform
 
 
 
@@ -802,6 +803,22 @@ class Application(Tk):
             self.read.stopReadCards(self.cardmonitor)
 
     def auto_click(self):
+        win_version = platform.platform().split("-")[1].split(".")[0]
+        if(win_version == "10"):
+            tab1_count = 7
+            tab2_count = 1
+        else:
+            tab1_count = 6
+            tab2_count = 9
+
+        if (pyautogui.getWindow('IRIScan Mouse')):
+            time.sleep(0.2)
+            pyautogui.getWindow('IRIScan Mouse').minimize()
+            pyautogui.getWindow('IRIScan Mouse').restore()
+            time.sleep(0.01)
+            pyautogui.hotkey('alt', 'f4')
+            time.sleep(0.01)
+
         pyautogui.FAILSAFE = False
         if not os.path.exists('images'):
             os.makedirs('images')
@@ -812,20 +829,24 @@ class Application(Tk):
                 pyautogui.getWindow('Scanner Mouse').restore()
                 pyautogui.press('enter')
             if (pyautogui.getWindow('IRIScan Mouse')):
+                pyautogui.getWindow('IRIScan Mouse').minimize()
                 pyautogui.getWindow('IRIScan Mouse').restore()
                 pyautogui.hotkey('ctrl', 's')
                 time.sleep(0.01)
-                for i in range(1, 7):
+                for i in range(1, tab1_count):
                     pyautogui.press('tab')
                     #time.sleep(0.01)
                 pyautogui.press('enter')
-                # pyautogui.typewrite(my_path)
                 time.sleep(0.01)
                 pyautogui.hotkey('ctrl','v')
                 time.sleep(0.01)
                 pyautogui.press('enter')
                 time.sleep(0.01)
+                for i in range(1, tab2_count):
+                    pyautogui.press('tab')
+                time.sleep(0.01)
                 pyautogui.press('enter')
+                pyautogui.getWindow('IRIScan Mouse').minimize()
                 pyautogui.getWindow('IRIScan Mouse').restore()
                 time.sleep(0.01)
                 pyautogui.hotkey('alt', 'f4')
