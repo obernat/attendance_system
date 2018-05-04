@@ -29,7 +29,7 @@ def try_login(s, name, password, timeout=86400):
     # Creating post with given payload to log in, cookies saved for future
     try:
         r = s.post(
-            "https://test.is.stuba.sk/auth/?lang=sk",
+            "https://is.stuba.sk/auth/?lang=sk",
             data=payload,
             timeout=10)
     except requests.exceptions.RequestException as e:
@@ -52,6 +52,8 @@ def try_login(s, name, password, timeout=86400):
     # else:
     #    return -2 #parsing error
 
+
+
     if (r.text.find("Nesprávne prihlasovacie meno alebo heslo.") != -1 or
             r.text.find("Prihlasovací formulár nebol korektne vyplnený.") != -1):
         return -1  # login error
@@ -68,14 +70,14 @@ def get_subjects(s):
     # Creating get to teacher page, cookies send automatically
     try:
         r = s.get(
-            "https://test.is.stuba.sk/auth/ucitel/?_m=195;lang=sk",
+            "https://is.stuba.sk/auth/ucitel/?_m=195;lang=sk",
             timeout=10)  # what is _m?
     except requests.exceptions.RequestException as e:
         print(e)  # Logger
         return -3, None  # timeout, bad url
 
     # Creating get to delegated teacher page
-    #r = s.get("https://test.is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
+    #r = s.get("https://is.stuba.sk/auth/ucitel/?lang=sk;delegid=10139")
 
     if r.status_code != 200:
         return -2, None  # error getting the page, maybe page down/no internet access
@@ -105,7 +107,7 @@ def get_groups_ids(s, subject_id):
     if s is None:
         return -5, None  # session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
+    url = "https://is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
         str(subject_id) + ";lang=sk"
 
     try:
@@ -158,7 +160,7 @@ def get_all_students_data(s, subject_id, groups):
     if s is None:
         return -5, None  # session not created
 
-    url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
+    url = "https://is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
         str(subject_id) + ";lang=sk"
 
     payload = {
@@ -351,7 +353,7 @@ def download_subject_attendance(session, subject):
 def try_connection():
     s = requests.Session()
     try:
-        r = s.get("https://test.is.stuba.sk", timeout=10)
+        r = s.get("https://is.stuba.sk", timeout=10)
     except requests.exceptions.RequestException as e:
         print(e)  # Logger
         return -1  # timeout, bad url
@@ -414,7 +416,7 @@ def upload_routine(subject, name="none", password="none"):
 
     # upload students attendance for each student
     for student in subject.student_list:
-        url = "https://test.is.stuba.sk/auth/nucitel/dochazka.pl"
+        url = "https://is.stuba.sk/auth/nucitel/dochazka.pl"
         url += "?predmet=" + str(subject.sid) + ";"  # predmet
         url += "studium=" + str(student.study) + ";"
         url += "podrobne=" + str(student.group) + ";"
