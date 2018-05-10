@@ -59,7 +59,7 @@ class Application(Tk):
 
 # PAGES GUI -------------------------------------------------
 
-    def login_page(self, download=0, upload=0):
+    def login_page(self, download=0, upload=0, subject_name='none'):
         """
         Page with login formular
         :param download - when is set up on 1 is called download function
@@ -82,7 +82,7 @@ class Application(Tk):
         if upload:
             self.login_button = Button(
                 self, text="Prihlasiť", command=lambda: self.upload_data(
-                    self.username_entry.get(), self.password_entry.get()))
+                    subject_name,self.username_entry.get(), self.password_entry.get()))
 
         self.title_label.place(
             relx=0.42,
@@ -195,7 +195,7 @@ class Application(Tk):
                                command=lambda text=active_subjects_list[i - 1].name:
                                self.attendance_page(text, "Skupina", "Týždeň 1"))
                     c = Button(text="Synchronizovať",
-                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1))
+                               command=lambda text=active_subjects_list[i - 1].name: self.login_page(upload=1, subject_name=text))
 
                     d = Button(text="Deaktivovať",
                                command=lambda text=active_subjects_list[i - 1].name: self.move_subject(text, 1))
@@ -381,9 +381,8 @@ class Application(Tk):
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
 
         back_button.place(relx=0.90, rely=0.95, width=100, height=25)
-    #TODO dopice mega bug upload len jedne predmet
+
     def attendance_page(self, subject_name, group, week):
-        print(self.teacher.subjects_list[0].name)
         self.clear_frame()
         self.group_tmp = group
         self.week_tmp = week
@@ -635,7 +634,7 @@ class Application(Tk):
             else:
                 self.no_connection_page() #Connection is KO - display page with warnning
 
-    def upload_data(self, name="none", password="none"):
+    def upload_data(self,subject_name, name="none", password="none"):
         """
         Function create thread for uploading data and call upload_page
         :param name:  login to IS
@@ -644,7 +643,7 @@ class Application(Tk):
         """
         self.uploading_page()
         self.queue = queue.Queue()
-        UploadThread(self.queue, name, password).start()
+        UploadThread(self.queue, name, password,subject_name).start()
         self.after(100, self.process_queue)
 
     def download_data(self, name="none", password="none", ):

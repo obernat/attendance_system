@@ -36,7 +36,7 @@ class DownloadThread(threading.Thread):
 
 
 class UploadThread(threading.Thread):
-    def __init__(self, queue,name,password):
+    def __init__(self, queue,name,password,subject_name):
         """
         Construct a new 'ThreadedTask' object.
         """
@@ -44,13 +44,21 @@ class UploadThread(threading.Thread):
         self.queue = queue
         self.name = name
         self.password = password
+        self.subject_name =subject_name
 
     def run(self):
         teacher = dp.load_teacher()
+        for subject in teacher.subjects_list:
+            if subject.name == self.subject_name:
+                tmp = subject
 
-        ret_value, subject= isp.upload_routine(
-            teacher.subjects_list[0], self.name, self.password)
-        teacher.subjects_list[0]= subject
+        ret_value, ret_subject= isp.upload_routine(
+            tmp, self.name, self.password)
+
+        for subject in teacher.subjects_list:
+            if subject.name == self.subject_name:
+                subject=ret_subject
+
         dp.save_teacher(teacher)
         if ret_value < 0:
             self.queue.put("Upload finished")
