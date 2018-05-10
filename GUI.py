@@ -381,8 +381,9 @@ class Application(Tk):
         read_button.place(relx=0.90, rely=0.01, width=100, height=25)
 
         back_button.place(relx=0.90, rely=0.95, width=100, height=25)
-
+    #TODO dopice mega bug upload len jedne predmet
     def attendance_page(self, subject_name, group, week):
+        print(self.teacher.subjects_list[0].name)
         self.clear_frame()
         self.group_tmp = group
         self.week_tmp = week

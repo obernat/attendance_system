@@ -48,8 +48,10 @@ class UploadThread(threading.Thread):
     def run(self):
         teacher = dp.load_teacher()
 
-        ret_value = isp.upload_routine(
+        ret_value, subject= isp.upload_routine(
             teacher.subjects_list[0], self.name, self.password)
+        teacher.subjects_list[0]= subject
+        dp.save_teacher(teacher)
         if ret_value < 0:
             self.queue.put("Upload finished")
             time.sleep(0.5)

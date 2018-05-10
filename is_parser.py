@@ -312,6 +312,7 @@ def merge_IS_attendance_with_local(IS_student_list, local_student_list):
                     local_student.attendance[i] = IS_student.attendance[i]
 
 
+
 def download_subject_attendance(session, subject):
 
     if session is None:
@@ -455,7 +456,8 @@ def upload_routine(subject, name="none", password="none"):
 
         print ("Student " + student.name + " synced.")
 
-    return 1
+
+    return 1, subject
 
 
 #ret, a = download_routine("xbernato", sys.argv[1])
