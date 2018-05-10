@@ -46,7 +46,7 @@ class read_card2(CardObserver):
                 er.showError("Neexistuje par meno - isic")
 
             else:
-                self.gui.change_attendance_from_card(self.subject, self.group, int(number_of_week)-1, 6, student_name, self.week)
+                self.gui.change_attendance_from_card(self.subject, self.group, int(number_of_week)-1, 1, student_name, self.week)
                 self.cards.add(chip_id)
         for card in removedcards:
             print("-Removed: ", toHexString(card.atr))
