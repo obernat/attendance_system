@@ -37,6 +37,7 @@ class read_card2(CardObserver):
             list_of_files = glob.glob('images/*')  # * means all if need specific format then *.csv
             latest_file = max(list_of_files, key=os.path.getctime)
             student_name=gN.get_name_from_image(latest_file, self.student_names)
+            os.remove(latest_file)
             #student_name='Baka Tomáš, Bc.'
             for student in self.gui.students_list:
                 if student.full_name==student_name:

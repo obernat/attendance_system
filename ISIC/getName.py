@@ -61,7 +61,6 @@ def closestMatch(studentList):
     for image in imageList:
 
         name = processImage(image, index)
-
         #treba pip install fuzzywuzzy
 
         #toto najde nejak 3 najblizsie mena k hladanemu

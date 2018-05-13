@@ -88,7 +88,7 @@ class Application(Tk):
             relx=0.42,
             rely=0.42,
             y=-120,
-            width=120,
+            width=150,
             height=25)
         self.username_label.place(
             relx=0.42,
@@ -613,12 +613,18 @@ class Application(Tk):
             messagebox.showinfo("Uspesne presunute", "Subor bol uspesne presunuty do historie.")
 
             now = datetime.datetime.now()
-
-            if not os.path.exists('history'):
-                os.makedirs('history')
             src = 'teacher'
             dst = 'history'
-            shutil.move(src, dst)
+
+            if os.path.exists('history'):
+                shutil.rmtree(dst)
+                os.makedirs('history')
+                shutil.move(src, dst)
+
+            else:
+                os.makedirs('history')
+                shutil.move(src, dst)
+
 
             self.login_page(download=1)
 
