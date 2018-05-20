@@ -5,7 +5,8 @@ import re
 from lxml import html
 import database as db
 
-
+#global variable to determine whether we use delegate or not
+USE_DELEGATE = True
 # PRIVATE FUNCTIONS ---------------------------------------------------------
 
 
@@ -61,17 +62,44 @@ def try_login(s, name, password, timeout=86400):
         return 1
 
 
-def get_subjects(s):
+def get_delegates(s):
+    #function returns list of possible delegators
+
+    if s is None:
+        return -4, None  # session not created
+
+    try:
+        r = s.get(
+            "https://is.stuba.sk/auth/system/zmena_identity.pl?_m=287;lang=sk",
+            timeout=10)  # what is _m?
+    except requests.exceptions.RequestException as e:
+        print(e)  # Logger
+        return -3, None  # timeout, bad url
+
+    if r.status_code != 200:
+        return -2, None  # error getting the page, maybe page down/no internet access
+
+    match = "<a href=\"/auth/lide/clovek.pl\?id=([0-9]+).*?>(.*?)</a>"
+    result = re.findall(match, r.text, re.DOTALL)
+
+    if result:
+        return 1, result
+    else:
+        return -1, None  # parsing error, no delegators
+
+
+def get_subjects(s, delegate_id):
     #download only subjects administrating by user!
 
     if s is None:
         return -4, None  # session not created
 
     # Creating get to teacher page, cookies send automatically
+    url = "https://is.stuba.sk/auth/ucitel/?_m=195;lang=sk"
+    if delegate_id > 0:
+        url += ";delegid="+ str(delegate_id)
     try:
-        r = s.get(
-            "https://is.stuba.sk/auth/ucitel/?_m=195;lang=sk",
-            timeout=10)  # what is _m?
+        r = s.get(url, timeout=10)  # what is _m?
     except requests.exceptions.RequestException as e:
         print(e)  # Logger
         return -3, None  # timeout, bad url
@@ -102,13 +130,15 @@ def get_subjects(s):
         return -1, None  # parsing error, no subjects
 
 
-def get_groups_ids(s, subject_id):
+def get_groups_ids(s, subject_id, delegate_id):
 
     if s is None:
         return -5, None  # session not created
 
     url = "https://is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
         str(subject_id) + ";lang=sk"
+    if delegate_id > 0:
+        url += ";delegid="+ str(delegate_id)
 
     try:
         r = s.get(url, timeout=10)
@@ -155,13 +185,15 @@ def get_week_attendance(week):
     return -1  # parsing failed
 
 
-def get_all_students_data(s, subject_id, groups):
+def get_all_students_data(s, subject_id, groups, delegate_id):
 
     if s is None:
         return -5, None  # session not created
 
     url = "https://is.stuba.sk/auth/nucitel/dochazka.pl?predmet=" + \
         str(subject_id) + ";lang=sk"
+    if delegate_id > 0:
+        url += ";delegid="+ str(delegate_id)
 
     payload = {
         "lang": "sk",
@@ -312,14 +344,13 @@ def merge_IS_attendance_with_local(IS_student_list, local_student_list):
                     local_student.attendance[i] = IS_student.attendance[i]
 
 
-
-def download_subject_attendance(session, subject):
+def download_subject_attendance(session, subject, delegate_id):
 
     if session is None:
         return -5  # session not created
 
     # download subjects
-    ret_value, subjects_list_with_links = get_subjects(session)
+    ret_value, subjects_list_with_links = get_subjects(session, delegate_id)
     if ret_value == -1:
         print("K dispozícii nie sú žiadne predmety s administrátorskými právami!")
     elif ret_value < -1:
@@ -331,14 +362,14 @@ def download_subject_attendance(session, subject):
         if name != subject.name:
             continue
         # get list of ids
-        ret_value, group_ids = get_groups_ids(session, sub_id)
+        ret_value, group_ids = get_groups_ids(session, sub_id, delegate_id)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať skupiny!")
             return -3
 
         # get students attendance
         ret_value, stud_list = get_all_students_data(
-            session, sub_id, group_ids)
+            session, sub_id, group_ids, delegate_id)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať údaje o študentoch")
             return -2
@@ -361,19 +392,42 @@ def try_connection():
 
     return 1
 
-
-def download_routine(name="none", password="none"):
+#frontend pouzije USE_DELEGATE, ak je to false, odignoruje treti
+#element v tupli co vracia tato funkcia a dr_download_data zavola
+#len s jednym argumentom
+#ak je to true, vyvola sa nove okno po sign up so zoznamom delegatov,
+#ktory vrati ako treti element v tupli tato funkcia
+#nasledne sa zavola dr_download_data, kde sa posunie delegate_id,
+#ktore ziska frontend od pouzivatela z toho listu
+def dr_sign_up_choose_delegate(name="none", password="none"):
     session = requests.Session()
-    teacher = db.Teacher()
 
     # login
     ret_value = try_login(session, name, password)
     if ret_value < 0:
         print("Nesprávne prihlasovacie údaje!")
-        return -4, None
+        return -2, None, None
+
+    global USE_DELEGATE
+    if not USE_DELEGATE:
+        return 2, session, None
+
+    # get delegates
+    ret_value, delegates = get_delegates(session):
+        if ret_value < 0:
+            print("Nie je dostupny ziaden delegat")
+            return -1, None, None
+
+    return 1, session, delegates
+
+
+def dr_download_data(session, delegate_id=0):
+    teacher = db.Teacher()
+    teacher.delegate_id = delegate_id
+
 
     # download subjects
-    ret_value, subjects_list_with_links = get_subjects(session)
+    ret_value, subjects_list_with_links = get_subjects(session, delegate_id)
     if ret_value == -1:
         print("K dispozícii nie sú žiadne predmety s administrátorskými právami!")
         return -3, None
@@ -384,14 +438,14 @@ def download_routine(name="none", password="none"):
     # iterate all subjects
     for name, sub_id in subjects_list_with_links:
         # get list of ids
-        ret_value, group_ids = get_groups_ids(session, sub_id)
+        ret_value, group_ids = get_groups_ids(session, sub_id, delegate_id)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať skupiny!")
             return -2, None
 
         # get students attendance
         ret_value, stud_list = get_all_students_data(
-            session, sub_id, group_ids)
+            session, sub_id, group_ids, delegate_id)
         if ret_value < 0:
             print("Nepodarilo sa vyparsovať údaje o študentoch")
             return -1, None
@@ -400,7 +454,9 @@ def download_routine(name="none", password="none"):
     return 1, teacher
 
 
-def upload_routine(subject, name="none", password="none"):
+#frontend bude volat tuto funkciu s dalsim parametrom delegate_id, kde
+#jednoducho posunie teacher.delegate_id
+def upload_routine(subject, delegate_id, name="none", password="none"):
     session = requests.Session()
 
     # login
@@ -410,7 +466,7 @@ def upload_routine(subject, name="none", password="none"):
         return -3
 
     # merge attendance with IS
-    ret_value = download_subject_attendance(session, subject)
+    ret_value = download_subject_attendance(session, subject, delegate_id)
     if ret_value < 0:
         print("Synchronizácia údajov bola neúspešná!")
         return -2
@@ -423,6 +479,9 @@ def upload_routine(subject, name="none", password="none"):
         url += "podrobne=" + str(student.group) + ";"
         url += "misto_vyuky=0;"
         url += "vybrane_cviceni=" + str(student.group)
+        if delegate_id > 0:
+            url += ";delegid="+ str(delegate_id)
+
 
         payload = {
             "lang": "sk",

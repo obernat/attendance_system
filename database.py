@@ -4,6 +4,7 @@ import re
 class Teacher:
     def __init__(self):
         self.subjects_list = []
+        self.delegate_id = 0
 
 
 class Subject:
