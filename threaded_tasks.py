@@ -8,19 +8,22 @@ import database_handler as dh
 
 
 class DownloadThread(threading.Thread):
-    def __init__(self, queue,name,password):
+    def __init__(self, queue,session,delegat_id):
         """
         Construct a new 'ThreadedTask' object.
         """
         threading.Thread.__init__(self)
         self.queue = queue
-        self.name = name
-        self.password = password
+        self.session = session
+        self.delegat_id = delegat_id
 
 
     def run(self):
 
-        ret_value, teacher = isp.download_routine(self.name, self.password)
+        if self.delegat_id:
+            ret_value, teacher = isp.dr_download_data(self.session,int(self.delegat_id))
+        else:
+            ret_value, teacher = isp.dr_download_data(self.session)
         _, students_list = dh.create_students_database(teacher)
         dp.save_student_dict(students_list)
 
@@ -53,7 +56,7 @@ class UploadThread(threading.Thread):
                 tmp = subject
 
         ret_value, ret_subject= isp.upload_routine(
-            tmp, self.name, self.password)
+            tmp,teacher.delegate_id, self.name, self.password)
 
         for subject in teacher.subjects_list:
             if subject.name == self.subject_name:

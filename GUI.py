@@ -77,7 +77,7 @@ class Application(Tk):
 
         if download:
             self.login_button = Button(
-                self, text="Prihlasiť", command=lambda: self.download_data(
+                self, text="Prihlasiť", command=lambda: self.use_delegate(
                     self.username_entry.get(), self.password_entry.get()))
         if upload:
             self.login_button = Button(
@@ -143,6 +143,19 @@ class Application(Tk):
         self.prog_bar.start()
 
         _, self.students_list = dh.create_students_database(dp.get_teacher())
+
+    def delegates_page(self,session,delegates):
+        self.clear_frame()
+
+        title_label = Label(text="Vyberte delegáta", font=self.title_font)
+
+        for i, delegate in enumerate(delegates):
+            a = i
+            c = Button(text=delegate[1],
+                       command=lambda text=delegate[0]: self.download_data(session,text))
+            c.place(relx=0.375, x=-20, rely=0.20,y=(i * 55)+20, width=200, height=25)
+
+        title_label.place(relx=0.42,rely=0.42,y=-150,x= -20,width=150,height=25)
 
     def uploading_page(self):
         """
@@ -632,6 +645,7 @@ class Application(Tk):
         """
         Function decide witch page will displayed first
         """
+
         if os.path.isfile('teacher'):
             self.subjects_page(1) #Data is downloaded - display page with subjest
         else:
@@ -652,16 +666,27 @@ class Application(Tk):
         UploadThread(self.queue, name, password,subject_name).start()
         self.after(100, self.process_queue)
 
-    def download_data(self, name="none", password="none", ):
+
+    def use_delegate(self, name="none", password="none", ):
+
+        ret_value, session, delegates = isp.dr_sign_up_choose_delegate(name, password)
+
+        if isp.USE_DELEGATE:
+            self.delegates_page(session,delegates)
+        else:
+            self.download_data(session)
+
+    def download_data(self, session,delegat_id= 0):
         """
         Function create thread for dowloading data and call download_page
         :param name: name to IS
         :param password:  password to IS
         :return: nothing
         """
+
         self.downloading_page()
         self.queue = queue.Queue()
-        DownloadThread(self.queue, name, password).start()
+        DownloadThread(self.queue,session,delegat_id).start()
         self.after(100, self.process_queue)
 
     def attendance_option_menu_week(self, value):

@@ -413,10 +413,10 @@ def dr_sign_up_choose_delegate(name="none", password="none"):
         return 2, session, None
 
     # get delegates
-    ret_value, delegates = get_delegates(session):
-        if ret_value < 0:
-            print("Nie je dostupny ziaden delegat")
-            return -1, None, None
+    ret_value, delegates = get_delegates(session)
+    if ret_value < 0:
+        print("Nie je dostupny ziaden delegat")
+        return -1, None, None
 
     return 1, session, delegates
 
