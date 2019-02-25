@@ -59,3 +59,9 @@ class Person:
         self.full_name = name
         self.ISIC = ISIC
         self.just_name = name.split(",")[0]
+
+    def __str__(self):
+        return "'%s', '%s', '%s'" % (self.full_name, self.ISIC, self.just_name)
+
+    def __repr__(self):
+        return "%s;%s" % (self.full_name, self.ISIC)

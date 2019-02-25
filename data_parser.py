@@ -1,5 +1,5 @@
 from six.moves import cPickle as pickle
-
+import database as db
 
 def save_teacher(teacher):
     try:
@@ -14,12 +14,18 @@ def save_teacher(teacher):
 
 def save_student_dict(student_dict):
     try:
+        with open('student_dict.txt', 'w') as f:
+            for s in student_dict:
+                f.write("%s\n" % repr(s))
+        '''
+        # original implementation with Pickle
         f = open('student_dict', 'wb')
         save = {
             'student_dict': student_dict,
         }
         pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
         f.close()
+        '''
     except Exception as e:
          print('Unable to pickle student_dict object:', e)
 
@@ -30,16 +36,25 @@ def load_teacher():
             teacher = data['teacher']
         return teacher
     except Exception as e:
-        print('Unable to read data from teacher:', e)
+        print('Error: load_teacher(): Unable to read data from teacher:', e)
 
 def load_student_dict():
     try:
+        with open('student_dict.txt', 'r') as f:
+            student_list = []
+            for line in f:
+                st_data = line.strip().split(';')
+                student_list.append(db.Person(*st_data))
+        return student_list
+        '''
+        # original implementation with Pickle
         with open('student_dict', 'rb') as f:
             data = pickle.load(f)
             student_dict = data['student_dict']
         return student_dict
+        '''
     except Exception as e:
-        print('Unable to read data from teacher:', e)
+        print('Error: load_student_dict(): Unable to read data from "student_dict.txt":', e)
 
 def get_subjects_lists():
     teacher = load_teacher()
