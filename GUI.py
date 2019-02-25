@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from threading import Thread
 from tkinter import *
 from tkinter import font as tkfont, messagebox
@@ -32,6 +34,7 @@ class Application(Tk):
 
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
+        self.grid()
 
         #platforms have different bind for rightclick
         if platform == "darwin":
@@ -478,27 +481,26 @@ class Application(Tk):
         group_variable = StringVar(self)
         group_variable.set(group)
 
-        w = OptionMenu(self, group_variable, *group_options,command= self.attendance_option_menu_group)
-        w.place(relx=0.375, x=50, rely=0.18, width=350, height=28)
+        attendance_frame = Frame(self)
+        first_row_of_attendance_frame = Frame(attendance_frame)
+        first_row_of_attendance_frame.grid(row=0,columnspan=13)
+
+        w = OptionMenu(first_row_of_attendance_frame, group_variable, *group_options,command= self.attendance_option_menu_group)
+        w.grid(row=0)
 
         week_variable = StringVar(self)
         week_variable.set(week)
 
-        week_option_menu = OptionMenu(self, week_variable, *week_options, command= self.attendance_option_menu_week)
-        week_option_menu.place(relx=0.375, x=-100, rely=0.18, width=150, height=28)
+        week_option_menu = OptionMenu(first_row_of_attendance_frame, week_variable, *week_options, command= self.attendance_option_menu_week)
+        week_option_menu.grid(row=0, column=1)
 
         tmp, week_number = str(week_variable.get()).split(' ')
-
-
         bot = 0
         if group is not "Skupina":
-            i = 0
-
             for k in range(0, 12):
                 if (k == int(week_number) - 1):
-                    t = k
                     t = Label(
-                        self,
+                        attendance_frame,
                         text=str(
                             k + 1),
                         bg="#37d3ff",
@@ -507,27 +509,27 @@ class Application(Tk):
                         highlightcolor="#37d3ff",
                         highlightbackground="#37d3ff",
                     )
-                    t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
-                            y=-22, width=21, height=21)
+                    #t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
+                    #        y=-185, width=21, height=21)
+                    t.grid(row=1,column=k+1,padx=1)
                 else:
-                    t = k
-                    t = Label(self, text=str(k + 1))
-                    t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
-                            y=-22, width=20, height=20)
+                    t = Label(attendance_frame, text=str(k + 1))
+                    #t.place(relx=0.4, x=+(k * 27)+50, rely=0.3,
+                    #        y=-185, width=20, height=20)
+                    t.grid(row=1,column=k+1,padx=1)
 
+            i = 0
             for name in self.groups[group]:
-
-                a = name
-                a = Label(self, text=name, anchor="w")
-                a.place(relx=0.375, x=-100, rely=0.3,
-                        y=+(i * 23), width=150, height=20)
+                a = Label(attendance_frame, text=name, anchor="w")
+                #a.place(relx=0.375, x=-100, rely=0.3,
+                #        y=+(i * 23)-165, width=150, height=20)
+                a.grid(row=i+2, column=0)
                 a.bind(self.right_click, self.popup_student)
                 a.bind("<Enter>", self.on_enter)
 
                 for j in range(0, 12):
                     if (j == int(week_number) - 1):
-                        g = j
-                        g = Label(self,
+                        g = Label(attendance_frame,
                                   text=name + "_" + str(j),
                                   bg=colors[self.attendance[name][0][j]],
                                   fg=colors[self.attendance[name][0][j]],
@@ -535,10 +537,12 @@ class Application(Tk):
                                   highlightthickness=2,
                                   highlightcolor="#37d3ff",
                                   highlightbackground="#37d3ff",
+                                  width=2,
                                   )
 
-                        g.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
-                                y=+(i * 23), width=21, height=21)
+                        #.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
+                        #        y=+(i * 23)-165, width=21, height=21)
+                        g.grid(row=i+2, column=j+1, padx=2)
                         g.bind(self.right_click, self.popup)
                         g.bind(
                             "<Button-1>",
@@ -549,57 +553,68 @@ class Application(Tk):
                                 week))
                         g.bind("<Enter>", self.on_enter)
                     else:
-                        g = j
-                        g = Label(self,
+                        g = Label(attendance_frame,
                                   text=name + "_" + str(j),
                                   bg=colors[self.attendance[name][0][j]],
-                                  fg=colors[self.attendance[name][0][j]])
-                        g.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
-                                y=+ (i * 23), width=18, height=18)
+                                  fg=colors[self.attendance[name][0][j]],
+                                  width=2,
+                                  )
+                        #g.place(relx=0.4, x=+(j * 27)+50, rely=0.3,
+                        #        y=+ (i * 23)-165, width=18, height=18)
+                        g.grid(row=i+2, column=j+1, padx=2)
 
                 bot = len(self.groups[group])
                 i = i + 1
 
-        title_label.place(relx=0.375, x= -250, rely=0.18, y = -75, width=800, height=25)
-        back_button.place(relx=0.375, x=85, rely=0.3, y=-30+ (25 * (bot)), width=150, height=25)
+        back_button.grid(row=0, column=0, pady=10)
+        start_button.grid(row=0, column=1, pady=10)
+        attendance_frame.grid(row=1, columnspan=2)
+
+        """
+        #title_label.place(relx=0.375, x= -250, rely=0.18, y = -75, width=800, height=25)
+        #back_button.place(relx=0.375, x=85, rely=0.3, y=-30+ (25 * (bot)), width=150, height=25)
+        #start_button.place(x=0, y=0, width=100, height=25)
+        title_label.place(relx=0.375, x= -250, rely=0.18, y = -145, width=800, height=25)
+        back_button.place(relx=0.375, x= -350, rely=0.3, y=-25, width=150, height=25)
         start_button.place(x=0, y=0, width=100, height=25)
 
         #legend
         legend_label_1 = Label(self, text="Prázdne",anchor= 'w')
-        legend_label_1.place(x=15, y=-5 + (25 * (bot)),rely=0.18, width=200, height=15)
+        legend_label_1.place(x=45, y=100,rely=0.18, width=200, height=15)
         legend_label_1_color = Label(self, text="c", bg= colors[0],fg = colors[0])
-        legend_label_1_color.place(x=3, y=-3 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_1_color.place(x=25, y=103,rely=0.18, width=10, height=10)
         legend_label_2 = Label(self, text="Skorší odchod",anchor= 'w')
-        legend_label_2.place(x=15, y=10 + (25 * (bot)),rely=0.18, width=200, height=15)
+        legend_label_2.place(x=45, y=115,rely=0.18, width=200, height=15)
         legend_label_2_color = Label(self, text="c", bg=colors[7], fg=colors[7])
-        legend_label_2_color.place(x=3, y=12 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_2_color.place(x=25, y=118,rely=0.18, width=10, height=10)
         legend_label_3 = Label(self, text="Neospravedlnená neúčasť",anchor= 'w')
-        legend_label_3.place(x=15, y=25 + (25 * (bot)),rely=0.18, width=200, height=15)
+        legend_label_3.place(x=45, y=130,rely=0.18, width=200, height=15)
         legend_label_3_color = Label(self, text="c", bg=colors[4], fg=colors[4])
-        legend_label_3_color.place(x=3, y=27 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_3_color.place(x=25, y=133,rely=0.18, width=10, height=10)
         legend_label_4 = Label(self, text="Ospravedlnená neúčasť",anchor= 'w')
-        legend_label_4.place(x=15, y=40 + (25 * (bot)),rely=0.18, width=200, height=15)
+        legend_label_4.place(x=45, y=145,rely=0.18, width=200, height=15)
         legend_label_4_color = Label(self, text="c", bg=colors[3], fg=colors[3])
-        legend_label_4_color.place(x=3, y=42 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_4_color.place(x=25, y=148,rely=0.18, width=10, height=10)
         legend_label_5 = Label(self, text="Prítomný na inom cvičení",anchor= 'w')
-        legend_label_5.place(x=15, y=55 + (25 * (bot)),rely=0.18, width=250, height=15)
+        legend_label_5.place(x=45, y=160,rely=0.18, width=220, height=15)
         legend_label_5_color = Label(self, text="c", bg=colors[6], fg=colors[6])
-        legend_label_5_color.place(x=3, y=57 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_5_color.place(x=25, y=163,rely=0.18, width=10, height=10)
         legend_label_6 = Label(self, text="Vylúčenie z cvičenia",anchor= 'w')
-        legend_label_6.place(x=15, y=70 + (25 * (bot)),rely=0.18, width=250, height=15)
+        legend_label_6.place(x=45, y=175,rely=0.18, width=220, height=15)
         legend_label_6_color = Label(self, text="c", bg=colors[5], fg=colors[5])
-        legend_label_6_color.place(x=3, y=72 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_6_color.place(x=25, y=178,rely=0.18, width=10, height=10)
         legend_label_7= Label(self, text="Zúčastnil sa",anchor= 'w')
-        legend_label_7.place(x=15, y=85 + (25 * (bot)),rely=0.18, width=250, height=15)
+        legend_label_7.place(x=45, y=190,rely=0.18, width=220, height=15)
         legend_label_7_color = Label(self, text="c", bg=colors[1], fg=colors[1])
-        legend_label_7_color.place(x=3, y=87 + (25 * (bot)),rely=0.18, width=10, height=10)
+        legend_label_7_color.place(x=25, y=193,rely=0.18, width=10, height=10)
         legend_label_8 = Label(self, text="Zúčastnil sa s neskorým príchodom",anchor= 'w')
-        legend_label_8.place(x=15, y=100 + (25 * (bot)),rely=0.18, width=250, height=15)
+        legend_label_8.place(x=45, y=205,rely=0.18, width=220, height=15)
         legend_label_8_color = Label(self, text="c", bg=colors[2], fg=colors[2])
-        legend_label_8_color.place(x=3, y=102 + (25 * (bot)),rely=0.18, width=10, height=10)
-
+        legend_label_8_color.place(x=25, y=208,rely=0.18, width=10, height=10)
+        """
 
         self.minsize(height=(250 + (bot * 25)), width=1000)
+        self.minsize(height=(250 + (3 * 25)), width=1000)
 
 
 
