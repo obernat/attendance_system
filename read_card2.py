@@ -29,14 +29,13 @@ class read_card2(CardObserver):
             response, sw1, sw2 = card.connection.transmit(SELECT)
             hex_id = self.int_array_to_hex_separated_string(response)
             chip_id = int("".join(item for item in list(reversed(hex_id.split(':')))), 16)
-            print("+Inserted: ")
-            print(chip_id)
+            print("+Inserted: %d" % chip_id)
 
             student_name = ""
 
             for student in self.gui.students_list:
-                if student.ISIC==chip_id:
-                    student_name=student.full_name
+                if str(student.ISIC) == str(chip_id):
+                    student_name = student.full_name
             #student_name = 'Baka Tomáš, Bc.'
             #print(student_name)
             print(self.subject)
