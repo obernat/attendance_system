@@ -104,7 +104,13 @@ ENV/
 active_subjects
 attendance
 inactive_subjects
-student_dict
-teacher
+student_dict*
+teacher*
 **/*.jpg
 **/*.png
+
+# vim swap files
+**/*.sw*
+
+# ctags
+tags
