@@ -204,6 +204,9 @@ def get_all_students_data(s, subject_id, groups, delegate_id):
         "omezit": "Obmedziť",
     }
 
+    if delegate_id > 0:
+        payload["delegid"] = str(delegate_id)
+
     for i in groups:
         payload["vybrane_cviceni"].append(i)
 
@@ -506,6 +509,9 @@ def upload_routine(subject, delegate_id, name="none", password="none"):
             "dochazka13": str(student.attendance[12]),
             "ulozit_podrobne": "Uložiť",
         }
+
+        if delegate_id > 0:
+            payload["delegid"] = str(delegate_id)
 
         try:
             r = session.post(url, data=payload, timeout=10)
